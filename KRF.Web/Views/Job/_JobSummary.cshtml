@@ -1,0 +1,128 @@
+﻿<style>
+
+    #job-summary .m_block {
+        width: 500px;
+    }
+
+        #job-summary .m_block .row .colLeft {
+            width: 190px;
+        }
+
+        #job-summary .m_block .row .colRight {
+            width: 240px;
+        }
+
+    #job-summary .row .row-label {
+        height: 30px;
+        line-height: 30px;
+        color: #333;
+        font-size: 13px;
+        padding: 0 10px 0 0;
+        text-align: left;
+    }
+
+    #job-summary .row .row-input {
+        height: 30px;
+        line-height: 30px;
+        vertical-align: middle;
+        color: #333;
+        font-size: 13px;
+    }
+
+    #job-summary .rowTextarea {
+        margin-left: 10px;
+    }
+</style>
+<form id="job-summary" name="job-information" enctype="multipart/form-data">
+    <input type="hidden" name="jobID" id="jobID" />
+    <input type="hidden" name="id" id="id" value="0" />
+    <input type="hidden" name="uploaddatetime" id="uploaddatetime" />
+    <div class="clear_fix"></div>
+    <div class="form-footer">
+        <a id="save-job-summary" class="addLead_saveCancel" href="#">Save</a>
+    </div>
+    <div class="clear_fix"></div>
+    <hr />
+    <div class="m_block">
+        <div class="row">
+            <div class="colLeft" style="width:210px;">Id </div>
+            <div class="colRight" style="width:230px;">
+                <input id="summaryjobid" type="text" readonly maxlength="100" class="inputTextReadOnly" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="colLeft" style="width:210px;">Customer Name</div>
+            <div class="colRight" style="width:230px;">
+                <input id="customername" type="text" readonly maxlength="100" class="inputTextReadOnly" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="colLeft" style="width:210px">
+                <button id="btn-job-site-address" type="button" class="googleMapsButton"></button>&nbsp;&nbsp;Job Site Address
+            </div>
+            <div class="colRight" style="width:230px;">
+                <input id="jobsiteaddress" type="text" readonly maxlength="100" class="inputTextReadOnly" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="colLeft" style="width:210px;">Contact Person</div>
+            <div class="colRight" style="width:230px;">
+                <input id="contactperson" type="text" readonly maxlength="100" class="inputTextReadOnly" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="colLeft" style="width:210px;">Sales Person</div>
+            <div class="colRight" style="width:230px;">
+                <input id="salesperson" type="text" readonly maxlength="100" class="inputTextReadOnly" />
+            </div>
+        </div>
+    </div>
+    <div class="m_block">
+        <div class="row" style="width:500px;">
+            <div class="colLeft" style="width:250px;">Contract Price</div>
+            <div class="colRight">
+                <input id="contractprice" type="text" readonly class="inputTextReadOnly qty" />
+            </div>
+        </div>
+        <div class="row" style="width:500px">
+            <div class="colLeft" style="width:250px;">Total Change Order ($)</div>
+            <div class="colRight">
+                <input id="totalchangeorder" type="text" readonly class="inputTextReadOnly qty" />
+            </div>
+        </div>
+        <div class="row" style="width:500px">
+            <div class="colLeft" style="width:250px;">Total Price ($)</div>
+            <div class="colRight">
+                <input id="totalprice" type="text" readonly class="inputTextReadOnly qty" />
+            </div>
+        </div>
+        <div class="row" style="width:500px">
+            <div class="colLeft" style="width:250px;">Total Payment Received ($)</div>
+            <div class="colRight">
+                <input id="totalpaymentreceived" type="text" readonly class="inputTextReadOnly qty" />
+            </div>
+        </div>
+        <div class="row" style="width:500px">
+            <div class="colLeft" style="width:250px;">Total Outstanding ($)</div>
+            <div class="colRight">
+                <input id="totaloutstanding" type="text" readonly class="inputTextReadOnly qty" />
+            </div>
+        </div>
+        <div class="row" style="width:500px">
+            <div class="colLeft" style="width:250px;">Status</div>
+            <div class="colRight">
+                <select id="jobstatus" class="inputText">
+                    <option value="volvo">Please select</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="clear_fix"></div>
+    <br/><br /><br /><br />
+    <div class="row rowTextarea" style="width:84%; margin-left:110px;">
+        <div class="row-label">Notes </div>
+        <div class="row-input">
+            <textarea id="summarynote" class="inputText" style="height: 90px"> </textarea>
+        </div>
+    </div>
+</form>

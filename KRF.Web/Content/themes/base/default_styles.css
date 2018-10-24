@@ -1,0 +1,1750 @@
+body {
+    margin: 0;
+    padding: 0;
+    background: #CDC5A9;
+    font-family: Tahoma;
+}
+
+html {
+    margin: 0;
+    padding: 0;
+}
+/*----------------------------------------------------------------Login Page-------------------------------------------*/
+.loginWraper {
+    position: relative;
+    margin: auto;
+    width: 453px;
+    height: 450px;
+    background: #9b9275;
+    top: 120px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    border: 10px solid #fff;
+    -moz-box-shadow: 0 0px 15px 3px #9b9275;
+    -webkit-box-shadow: 0 0px 15px 3px #9b9275;
+    box-shadow: 0 0px 15px 3px #9b9275;
+	vertical-align: middle
+}
+
+    .loginWraper .logo {
+        width: 453px;
+        height: 153px;
+    }
+
+    .loginWraper .title {
+        vertical-align: middle;
+        color: #fff;
+        font-size: 20px;
+        width: 453px;
+        text-align: center;
+        padding: 10px 0 10px 0;
+    }
+
+    .loginWraper .holder {
+        width: 453px;
+        height: auto;
+        margin-left:10px;
+    }
+
+        .loginWraper .holder .row {
+            width: 453px;
+            height: 35px;
+            margin: 10px 0 10px 0;
+        }
+
+            .loginWraper .holder .row .colLeft {
+                width: 120px;
+                height: 35px;
+                line-height: 35px;
+                vertical-align: middle;
+                padding: 0 10px 0 0;
+                float: left;
+                text-align: right;
+                color: #4f452c;
+            }
+
+            .loginWraper .holder .row .colRight {
+                width: 300px;
+                height: 35px;
+                background: #CDC5A9;
+                float: left;
+                border-radius: 3px;
+                overflow: hidden;
+                font-size: 15px;
+            }
+
+            .loginWraper .holder .row .colRightBlank {
+                width: 300px;
+                height: 35px;
+                float: left;
+                border-radius: 3px;
+                overflow: hidden;
+                font-size: 15px;
+            }
+
+                .loginWraper .holder .row .colRightBlank a {
+                    text-decoration: none;
+                    color: #4f452c;
+                }
+
+                    .loginWraper .holder .row .colRightBlank a:hover {
+                        text-decoration: none;
+                        color: #CDC5A9;
+                    }
+
+            .loginWraper .holder .row .colRight img {
+                float: left;
+            }
+
+            .loginWraper .holder .row .colRight .input {
+                width: 249px;
+                height: 35px;
+                line-height: 35px;
+                vertical-align: middle;
+                background: none;
+                float: left;
+                border: none;
+                padding: 0 0 0 10px;
+                color: #4f452c;
+                font-size: 15px;
+            }
+
+.loginButton {
+    background: none repeat scroll 0 0 #CDC5A9;
+    border: medium none;
+    border-radius: 3px;
+    font-size: 15px;
+    height: 35px;
+    margin: 0 0 0 171px;
+    padding: 0 40px;
+    color: #4F452C;
+}
+
+    .loginButton:hover {
+        background: #4F452C;
+        font-size: 15px;
+        color: #CDC5A9;
+    }
+/*----------------------------------------------------------------Dashboard Page-------------------------------------------*/
+.dashBody {
+    margin: 0;
+    padding: 0;
+    background: #F5F4F4;
+    font-family: tahoma;
+}
+
+.dashboard_Wraper {
+    margin: auto;
+    width: 100%;
+    height: auto;
+    background: #fff;
+}
+
+.dashboard_Topbar {
+    width: 100%;
+    height: 47px;
+    line-height: 47px;
+    background: url(images/dash_Topbar.jpg) repeat-x;
+}
+
+.dashboard_head {
+    width: 100%;
+    height: 91px;
+    line-height: 91px;
+    background: #fff;
+}
+
+.dashboard_logo {
+    width: 225px;
+    height: 91px;
+    line-height: 91px;
+    float: left;
+    background: url(images/logo.jpg);
+}
+
+.logout {
+    height: 16px;
+    line-height: 16px;
+    vertical-align: middle;
+    text-align: center;
+    width: auto;
+    color: #fff;
+    font-size: 14px;
+    border-left: 1px solid #646464;
+    float: right;
+    margin: 15px 0 0 0;
+    padding: 0 0 0 20px;
+}
+
+    .logout a {
+        color: #fff;
+        text-align: center;
+        text-decoration: none;
+        font-weight: bold;
+        margin: 0 20px 0 0;
+    }
+
+.userName {
+    background-position: right top;
+    height: 16px;
+    line-height: 16px;
+    vertical-align: middle;
+    text-align: center;
+    width: auto;
+    color: #ade2e5;
+    font-size: 14px;
+    float: right;
+    padding: 0 15px 0 15px;
+    margin: 15px 0 0 0;
+}
+
+    .userName a {
+        background: url(images/username_arrow.png) right 7px no-repeat;
+        padding-right: 20px;
+        color: #a7a7a7;
+        text-align: center;
+        text-decoration: none;
+    }
+
+.dateName {
+    background-position: right top;
+    height: 16px;
+    line-height: 16px;
+    vertical-align: middle;
+    text-align: center;
+    width: auto;
+    color: #ade2e5;
+    font-size: 14px;
+    float: right;
+    padding: 0 15px 0 15px;
+    margin: 15px 0 0 0;
+}
+
+    .dateName a {
+        padding-right: 20px;
+        color: #a7a7a7;
+        text-align: center;
+        text-decoration: none;
+    }
+
+.dashboard_Search_holder {
+    width: auto;
+    height: 91px;
+    line-height: 91px;
+    float: right;
+    margin: 0 30px 0 0;
+}
+
+.dashboard_Search_holder_row1 {
+    width: auto;
+    height: 22px;
+    line-height: 22px;
+    margin: 21px 0 0 0;
+}
+
+.dashboard_Search_holder_row1_searchAll {
+    width: 113px;
+    height: 20px;
+    line-height: 20px;
+    margin: 0px 20px 0 0;
+    border: 1px solid #c4c4c4;
+    border-radius: 3px;
+    overflow: hidden;
+    background: url(images/searchAll_bg.jpg) repeat-x;
+    color: #696969;
+    font-size: 15px;
+    padding: 0 0 0 10px;
+    float: left;
+}
+
+    .dashboard_Search_holder_row1_searchAll .btn {
+        width: 22px;
+        height: 20px;
+        float: right;
+        overflow: hidden;
+        background: url(images/searchAll_btn.jpg) no-repeat;
+    }
+
+.dashboard_Search_holder_row1_searchAll_search {
+    width: 186px;
+    height: 20px;
+    line-height: 22px;
+    border: 1px solid #c4c4c4;
+    border-radius: 3px;
+    overflow: hidden;
+    color: #696969;
+    font-size: 15px;
+    padding: 0 0 0 10px;
+    float: left;
+}
+
+    .dashboard_Search_holder_row1_searchAll_search .btnS {
+        width: 28px;
+        height: 20px;
+        float: right;
+        overflow: hidden;
+        background: url(images/search.jpg) no-repeat;
+        cursor: default;
+    }
+
+    .dashboard_Search_holder_row1_searchAll_search input {
+        width: 156px;
+        height: 18px;
+        line-height: 18px;
+        vertical-align: middle;
+        border: none;
+        background: none;
+        color: #696969;
+        font-size: 15px;
+        font-family: Tahoma;
+        float: left;
+    }
+
+.dashboard_Search_holder_row2 {
+    width: auto;
+    height: 22px;
+    line-height: 22px;
+    margin: 10px 0 0 0;
+    padding: 0 0 0 146px;
+}
+
+.check {
+    background: url(images/tic_on.jpg) no-repeat;
+    height: 15px;
+    width: 15px;
+    border: none;
+    display: block;
+    float: left;
+    margin: 3px 0 0 0;
+}
+
+    .check.down {
+        background: url(images/tic_off.jpg) no-repeat;
+        height: 15px;
+        width: 15px;
+        border: none;
+        display: block;
+        float: left;
+    }
+
+.check_Lable {
+    width: auto;
+    height: 20px;
+    margin: 0 10px 0 10px;
+    color: #696969;
+    font-size: 15px;
+    float: left;
+}
+
+.navBar {
+    background: url(images/navbar.jpg) repeat-x;
+    width: calc(100% - 20px);
+    height: 30px;
+    padding: 0 0 0 20px;
+}
+
+    .navBar a {
+        width: auto;
+        padding: 0 20px;
+        height: 30px;
+        color: #fff;
+        line-height: 30px;
+        vertical-align: middle;
+        float: left;
+        text-decoration: none;
+        font-size: 15px;
+        font-weight: bold;
+    }
+
+        .navBar a:hover {
+            background: #013a71;
+        }
+
+        .navBar a.selected {
+            background: #013a71;
+        }
+
+.left_Nav {
+    width: 183px;
+    height: auto;
+    background: #e0e0e0;
+    float: left;
+    border-right: 1px solid #d3d3d3;
+    padding: 20px 0 0 0;
+}
+
+.content_block {
+    width: 1000px ;
+    min-height: 200px;
+    background: #f5f4f4;
+    float: left;
+}
+
+.left_Nav .headings {
+    width: 163px;
+    height: 20px;
+    line-height: 20px;
+    vertical-align: middle;
+    color: #797979;
+    font-size: 13px;
+    font-weight: bold;
+    margin: 0 0 10px 20px;
+}
+
+    .left_Nav .headings span {
+        height: 20px;
+        line-height: 20px;
+        vertical-align: middle;
+        float: left;
+        margin: 0 10px 0 0;
+    }
+
+.left_Nav .linkBtn {
+    width: 163px;
+    height: 20px;
+    line-height: 20px;
+    vertical-align: middle;
+    color: #565656;
+    font-size: 12px;
+    font-weight: bold;
+    text-decoration: none;
+    margin: 5px 0 5px 10px;
+    float: left;
+    padding-left: 10px;
+}
+
+    .left_Nav .linkBtn:hover {
+        color: #fff;
+        background: #015cb5;
+    }
+
+
+
+
+
+.clear_fix {
+    clear: both;
+}
+
+.btnHolders {
+}
+
+.left_Nav .devider {
+    width: 183px;
+    height: 20px;
+    line-height: 20px;
+    vertical-align: middle;
+    color: #797979;
+    font-size: 13px;
+    font-weight: bold;
+    border-bottom: 1px solid #d3d3d3;
+}
+
+.left_Nav .deviderBlank {
+    width: 183px;
+    height: 20px;
+    line-height: 20px;
+    vertical-align: middle;
+    color: #797979;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.devider_right {
+    background: url(images/devider_right.png) top right no-repeat;
+}
+
+.devider_left {
+    background: url(images/devider_left.png) top left no-repeat;
+}
+
+.left_Nav .linkBtnAdd {
+    width: 139px;
+    height: 20px;
+    line-height: 20px;
+    vertical-align: middle;
+    color: #565656;
+    font-size: 12px;
+    font-weight: bold;
+    text-decoration: none;
+    margin: 5px 0 5px 20px;
+    float: left;
+    padding: 0 0 0 25px;
+    background: url(images/plus.png) top left no-repeat;
+}
+
+    .left_Nav .linkBtnAdd:hover {
+        color: #015cb5;
+    }
+
+.linkBtnAdd_Selected {
+    color: #fff!important;
+    background: #015cb5!important;
+}
+/*-----------------------------Add scrollbar----------------------------*/
+
+.scrollbox3 {
+    overflow: auto;
+    width: 400px;
+    height: 360px;
+    padding: 0 5px;
+}
+
+.track3 {
+    border: 1px solid #f1f1f1;
+    margin-right: 2px;
+    width: 8px;
+    -webkit-transition: background 250ms linear;
+    transition: background 250ms linear;
+}
+
+    .track3:hover,
+    .track3.dragging {
+        background: #013750; /* Browsers without rgba support */
+    }
+
+.handle3 {
+    width: 7px;
+    right: 0;
+    background: #013A71;
+    opacity: 0.4;
+    border-radius: 7px;
+    -webkit-transition: width 250ms;
+    transition: width 250ms;
+}
+
+.track3:hover .handle3,
+.track3.dragging .handle3 {
+    width: 10px;
+}
+
+
+/*---------------------------scrollbar finish----------------------------*/
+/*-------------------------------content page---------------------------------------*/
+.content_block .head {
+    width: 1150px;
+    height: 70px;
+    line-height: 70px;
+    vertical-align: middle;
+    padding: 0 0 0 20px;
+    color: #565656;
+    font-size: 24px;
+}
+
+.content_block .gridBlock {
+    width:100%;
+    height: 350px;
+    margin: 0 20px 0 20px;
+    border: 1px solid #d4d4d4;
+    border-radius: 3px 3px 0 0;
+    background: #fff;
+    margin-bottom: 25px;
+}
+
+    .content_block .gridBlock .head {
+        width: 100%;
+        height: 37px;
+        line-height: 37px;
+        vertical-align: middle;
+        font-size: 15px;
+        padding: 0 0 0 10px;
+        border-bottom: 1px solid #d4d4d4;
+        background: url(images/gridBlock_head.jpg) repeat-x;
+        font-weight: bold;
+    }
+
+    .content_block .gridBlock .tabHolder {
+        width: 100% ;
+        height: 37px;
+        line-height: 37px;
+        vertical-align: middle;
+        font-size: 15px;
+        margin: 10px 10px 0 10px;
+        background: url(images/tabholder_bg.png) repeat-x;
+    }
+
+        .content_block .gridBlock .tabHolder a {
+            width: 143px;
+            height: 36px;
+            line-height: 36px;
+            vertical-align: middle;
+            background: #fff;
+            border-radius: 5px 5px 0 0;
+            border-top: 1px solid #d4d4d4;
+            border-left: 1px solid #d4d4d4;
+            border-right: 1px solid #d4d4d4;
+            display: block;
+            float: left;
+            text-decoration: none;
+            text-align: center;
+            color: #565656;
+        }
+
+
+
+        .content_block .gridBlock .tabHolder .selected {
+            border-bottom: 1px solid #d4d4d4;
+            background: #f1f1f1;
+        }
+
+
+.help_icon {
+    width: 12px;
+    height: 12px;
+    background: url(images/help_icon.png);
+    float: right;
+    display: block;
+    margin: 5px 10px 0 0;
+}
+
+/*-------------------------------add a lead---------------------------------------*/
+
+
+.content_block .gridBlock_small {
+    width: calc(53% - 75px);
+    height: 310px;
+    margin: 0 20px 0 20px;
+    margin-bottom: 25px;
+    float: left;
+}
+
+    .content_block .gridBlock_small .head {
+        width: calc(100% - 10px);
+        height: 37px;
+        line-height: 37px;
+        vertical-align: middle;
+        font-size: 15px;
+        padding: 0 0 0 10px;
+        border-bottom: 1px solid #d4d4d4;
+        background: url(images/gridBlock_head.jpg) repeat-x;
+        font-weight: bold;
+    }
+
+    .content_block .gridBlock_small .tabHolder {
+        font-size: 15px;
+        height: 37px;
+        line-height: 37px;
+        vertical-align: middle;
+        width: calc(100% - 0px);
+        background: url(images/tabholder_bg.png) repeat-x;
+    }
+
+        .content_block .gridBlock_small .tabHolder a {
+            width: 200px;
+            height: 36px;
+            line-height: 36px;
+            vertical-align: middle;
+            background: #fff;
+            border-radius: 5px 5px 0 0;
+            border-top: 1px solid #d4d4d4;
+            border-left: 1px solid #d4d4d4;
+            border-right: 1px solid #d4d4d4;
+            display: block;
+            float: left;
+            text-decoration: none;
+            text-align: center;
+            color: #565656;
+        }
+
+            .content_block .gridBlock_small .tabHolder a:hover {
+                background: #f1f1f1;
+            }
+
+        .content_block .gridBlock_small .tabHolder .selected {
+            border-bottom: 1px solid #d4d4d4;
+            background: #f1f1f1;
+        }
+
+
+    .content_block .gridBlock_small .contentarea {
+        width: 100%;
+        min-height: 273px;
+        background: #fff;
+        border-right: 1px solid #d4d4d4;
+        border-left: 1px solid #d4d4d4;
+        border-bottom: 1px solid #d4d4d4;
+        float:left;
+    }
+
+
+
+.topBlock {
+    width: 48%;
+    min-height: 150px;
+    margin-top: 10px;
+    float: left;
+}
+
+    .topBlock .ColumnA {
+        width: 30%;
+        min-height: 150px;
+        float: left;
+    }
+
+    .topBlock .ColumnB {
+        width: 70%;
+        min-height: 150px;
+        float: left;
+    }
+
+    .topBlock .ColumnA .row {
+        color: #565656;
+        font-size: 13px;
+        height: 30px;
+        line-height: 30px;
+        margin: 5px 0;
+        padding-right: 20px;
+        text-align: right;
+        vertical-align: middle;
+        width: calc(100% - 20px);
+    }
+
+    .topBlock .ColumnB .row {
+        color: #565656;
+        font-size: 13px;
+        height: 30px;
+        line-height: 30px;
+        margin: 5px 0;
+        padding-right: 20px;
+        text-align: right;
+        vertical-align: middle;
+        width: calc(100% - 20px);
+    }
+
+
+
+
+.content_block .gridBlockLarge {
+    width: calc(100% - 40px);
+    min-height: 170px;
+    margin: 0 20px 0 20px;
+    border: 1px solid #d4d4d4;
+    border-radius: 3px 3px 0 0;
+    background: #fff;
+    margin-bottom: 25px;
+}
+
+    .content_block .gridBlockLarge .head {
+        width: calc(100% - 10px);
+        height: 37px;
+        line-height: 37px;
+        vertical-align: middle;
+        font-size: 15px;
+        padding: 0 0 0 10px;
+        border-bottom: 1px solid #d4d4d4;
+        background: url(images/gridBlock_head.jpg) repeat-x;
+        font-weight: bold;
+    }
+
+.InputText {
+    background: #DBE4E9;
+    color: #565656;
+    font-size: 13px;
+    font-family: Tahoma;
+    margin: 0 auto;
+    padding: 0 0 0 10px;
+    position: relative;
+    float: left;
+    width: 100%;
+    text-align: left;
+    height: 30px;
+    border: none;
+}
+.inputTextReadOnly {
+    width: calc(100% - 25px);
+    height: 30px;
+    background: #CDC5A9;
+    border: none;
+    padding: 0 0 0 10px;
+}
+.InputText_date {
+    background: none repeat scroll 0 0 #DBE4E9;
+    color: #565656;
+    font-size: 13px;
+    font-family: Tahoma;
+    margin: 0 auto;
+    padding: 0 0 0 10px;
+    position: relative;
+    float: left;
+    width: calc(100% - 40px);
+    text-align: left;
+    height: 30px;
+    border: none;
+}
+
+.searchAll_search {
+    background: #DBE4E9;
+    color: #696969;
+    float: left;
+    font-size: 15px;
+    height: 30px;
+    line-height: 30px;
+    margin: 20px;
+    overflow: hidden;
+    padding: 0 0 0 10px;
+    width: 90%;
+}
+
+    .searchAll_search .btnS {
+        width: 30px;
+        height: 30px;
+        float: right;
+        overflow: hidden;
+        background: url(images/search_lead.png) no-repeat;
+        cursor: default;
+    }
+
+    .searchAll_search input {
+        width: calc(100% - 50px);
+        height: 30px;
+        line-height: 30px;
+        vertical-align: middle;
+        border: none;
+        background: none;
+        color: #696969;
+        font-size: 15px;
+        font-family: Tahoma;
+        float: left;
+    }
+
+
+
+
+.topBlockSM {
+    margin: auto;
+    min-height: 50px;
+    width: 90%;
+}
+
+    .topBlockSM .ColumnA {
+        width: 31%;
+        min-height: 50px;
+        float: left;
+    }
+
+    .topBlockSM .ColumnB {
+        width: 69%;
+        min-height: 50px;
+        float: left;
+    }
+
+    .topBlockSM .ColumnA .row {
+        color: #565656;
+        font-size: 13px;
+        height: 30px;
+        line-height: 30px;
+        margin: 5px 0;
+        padding-right: 20px;
+        text-align: right;
+        vertical-align: middle;
+        width: calc(100% - 20px);
+    }
+
+    .topBlockSM .ColumnB .row {
+        color: #565656;
+        font-size: 13px;
+        height: 30px;
+        line-height: 30px;
+        margin: 5px 0;
+        padding-right: 20px;
+        text-align: right;
+        vertical-align: middle;
+        width: calc(100% - 20px);
+    }
+
+
+
+.blockB_dropDown_holder {
+    float: left;
+    font-size: 15px;
+    height: 30px;
+    line-height: 30px;
+    margin: 20px;
+    width: 90%;
+}
+
+.addIn_inputSm {
+    background: #DBE4E9;
+    border: medium none;
+    color: #565656;
+    float: left;
+    height: 30px;
+    margin-left: 10px;
+    padding: 0 0 0 10px;
+    width: 30%;
+}
+
+.bottomBlockA {
+    float: left;
+    margin-top: 10px;
+    min-height: 100px;
+    width: 30%;
+    margin-bottom: 10px;
+}
+
+.bottomBlockB {
+    float: left;
+    margin-top: 10px;
+    min-height: 100px;
+    width: 33%;
+    margin-bottom: 10px;
+}
+
+.bottomBlockC {
+    float: left;
+    margin-top: 10px;
+    min-height: 100px;
+    width: 37%;
+    margin-bottom: 10px;
+}
+
+.Notes {
+    background: none repeat scroll 0 0 #DBE4E9;
+    border: medium none;
+    color: #565656;
+    float: left;
+    font-family: Tahoma;
+    font-size: 13px;
+    height: 155px;
+    padding: 5px;
+    position: relative;
+    text-align: left;
+    width: 100%;
+    resize: none;
+}
+
+.noteSpec {
+    width: 100%;
+    height: 5px;
+    display: block;
+}
+
+
+
+
+.gridBlockLarge_btnHolder {
+    background: none repeat scroll 0 0 #FFFFFF;
+    border: 1px solid #D4D4D4;
+    border-radius: 3px 3px 0 0;
+    margin: 0 20px 25px;
+    min-height: 50px;
+    width: calc(100% - 40px);
+}
+
+.addLead_saveCancel {
+    width: 140px;
+    height: 30px;
+    line-height: 30px;
+    vertical-align: middle;
+    float: right;
+    margin: 10px 10px 0 10px;
+    display: block;
+    background: #DBE4E9;
+    text-align: center;
+    text-decoration: none;
+    color: #565656;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+    
+/*-------------------------------add a lead end---------------------------------------*/
+
+
+/*-------------------------------Inventory---------------------------------------*/
+
+.inventory_page .gridHeader {
+    width: calc(100% - 20px);
+    min-height: 30px;
+    background: #cccccc;
+    margin: auto;
+    margin-top: 10px;
+}
+
+.inventory_page .gridHolder {
+    width: calc(100% - 20px);
+    min-height: 30px;
+    max-height: 211px;
+    border-left: 1px solid #cccccc;
+    border-bottom: 1px solid #cccccc;
+    margin: auto;
+    overflow-y: auto;
+    background: #CCCCCC;
+}
+
+.inventoryRow {
+    width: 100%;
+    height: 30px;
+    margin: auto;
+}
+
+.inventory_page .gridHolder .inventoryRow:nth-child(odd) {
+    background: #fff;
+}
+
+.inventory_page .gridHolder .inventoryRow:nth-child(even) {
+    background: #eeeeee;
+}
+
+.inventoryColumn1 {
+    width: calc(18% - 11px);
+    height: 30px;
+    line-height: 30px;
+    vertical-align: middle;
+    color: #565656;
+    font-size: 13px;
+    padding: 0 0 0 10px;
+    border-right: 1px solid #cccccc;
+    float: left;
+}
+
+.inventoryColumn2 {
+    width: calc(18% - 11px);
+    height: 30px;
+    line-height: 30px;
+    vertical-align: middle;
+    color: #565656;
+    font-size: 13px;
+    padding: 0 0 0 10px;
+    border-right: 1px solid #cccccc;
+    float: left;
+}
+
+.inventoryColumn3 {
+    width: calc(14% - 11px);
+    height: 30px;
+    line-height: 30px;
+    vertical-align: middle;
+    color: #565656;
+    font-size: 13px;
+    padding: 0 0 0 10px;
+    border-right: 1px solid #cccccc;
+    float: left;
+    overflow:hidden;
+}
+
+.inventoryColumn4 {
+    width: calc(16% - 11px);
+    height: 30px;
+    line-height: 30px;
+    vertical-align: middle;
+    float: left;
+    color: #565656;
+    font-size: 13px;
+    padding: 0 0 0 10px;
+    border-right: 1px solid #cccccc;
+    vertical-align: middle;
+}
+
+.inventoryColumn5 {
+    width: calc(16% - 11px);
+    height: 30px;
+    line-height: 30px;
+    vertical-align: middle;
+    float: left;
+    color: #565656;
+    font-size: 13px;
+    padding: 0 0 0 10px;
+    border-right: 1px solid #cccccc;
+    vertical-align: middle;
+}
+
+.inventoryColumn6 {
+    width: calc(11% - 11px);
+    height: 30px;
+    line-height: 30px;
+    vertical-align: middle;
+    float: left;
+    color: #565656;
+    font-size: 13px;
+    padding: 0 0 0 10px;
+    border-right: 1px solid #cccccc;
+}
+
+.inventoryColumn7 {
+    width: calc(7% - 11px);
+    height: 30px;
+    line-height: 30px;
+    vertical-align: middle;
+    float: left;
+    color: #565656;
+    font-size: 13px;
+    padding: 0 0 0 10px;
+    border-right: 1px solid #cccccc;
+}
+
+
+.inventoryColumn_linkBtn {
+    width: auto;
+    height: 30px;
+    line-height: 30px;
+    vertical-align: middle;
+    color: #015CB5;
+    font-size: 13px;
+    float: left;
+    text-decoration: underline;
+}
+
+    .inventoryColumn_linkBtn:hover {
+        color: #565656;
+    }
+
+
+.inpTextInv {
+    width: calc(100% - 20px);
+    height: 20px;
+    float: left;
+    background: #76da14;
+    border: none;
+    display: none;
+    padding-left: 10px;
+    margin: 4px 0 4px;
+    font-size: 13px;
+    color: #0d5d11;
+}
+
+.save_class, .cancel_class {
+    display: none;
+    margin-right: 5px;
+}
+
+.delete_class {
+    background: url(images/cancel_btn.png) no-repeat;
+    width: 30px;
+    height: 30px;
+    display: block;
+}
+
+.delete_classn {
+    background: url(images/cancel_btn.png) no-repeat;
+    width: 30px;
+    height: 30px;
+    display: block;
+}
+
+.madals {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 3;
+    opacity: 0.8;
+    background: #000;
+    display: none;
+}
+
+.addItem_popup {
+    width: 800px;
+    height: 600px;
+    background: #fff;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 4;
+    position: absolute;
+    margin: auto;
+    display: none;
+}
+
+.addAssembly_popup {
+    width: 900px;
+    height: 600px;
+    background: #fff;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 4;
+    position: absolute;
+    margin: auto;
+    display: none;
+}
+
+.gridBlockLarge_btnHolder_head {
+    background: url("images/gridBlock_head.jpg") repeat-x scroll 0 0;
+    border-radius: 3px 3px 0 0;
+    height: 30px;
+    line-height: 30px;
+    vertical-align: middle;
+    width: 1140px;
+    color: #565656;
+    padding-left: 10px;
+    border-bottom: 1px solid #D4D4D4;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.rowHeight {
+    height: 100px!important;
+}
+
+.InputTextAddInv {
+    background: none repeat scroll 0 0 #DBE4E9;
+    border: medium none;
+    color: #565656;
+    float: left;
+    font-family: Tahoma;
+    font-size: 13px;
+    height: 30px;
+    margin: 0 auto;
+    padding: 0 0 0 10px;
+    position: relative;
+    text-align: left;
+    width: 50%;
+}
+
+.addMarkup_block {
+    height: 30px;
+    line-height: 30px;
+    vertical-align: middle;
+    margin: 10px 0 10px 0;
+    width: auto;
+    float: left;
+    color: #565656;
+    font-size: 13px;
+    padding-right: 20px;
+    text-align: right;
+}
+
+.gridBlockLarge_btnHolderSaveCancel {
+    background: none repeat scroll 0 0 #FFFFFF;
+    padding: 0 20px 0 0;
+    border-radius: 3px 3px 0 0;
+    margin: 0 20px 25px;
+    min-height: 50px;
+    width: calc(100% - 60px);
+}
+
+.headSpacer {
+    width: 100%;
+    height: 20px;
+    display: block;
+}
+
+/*-------------------------------Inventory item End---------------------------------------*/
+/*-------------------------------Inventory Assembly ---------------------------------------*/
+
+
+
+.formHolder {
+    width: 900px;
+    height: 140px;
+}
+
+    .formHolder .m_block {
+        width: 450px;
+        height: 140px;
+        float: left;
+    }
+
+        .formHolder .m_block .row {
+            width: 450px;
+            height: 30px;
+            margin: 10px 0 10px 0;
+        }
+
+            .formHolder .m_block .row .colLeft {
+                width: 100px;
+                height: 30px;
+                line-height: 30px;
+                vertical-align: middle;
+                float: left;
+                color: #333;
+                font-size: 13px;
+                padding: 0 10px 0 0;
+                text-align: right;
+            }
+
+            .formHolder .m_block .row .colRight span {
+                margin: 0 5px 0 10px;
+            }
+
+            .formHolder .m_block .row .colRight {
+                width: 340px;
+                height: 30px;
+                line-height: 30px;
+                vertical-align: middle;
+                float: left;
+                color: #333;
+                font-size: 13px;
+            }
+
+.assamblyInputText {
+    width: calc(100% - 10px);
+    height: 30px;
+    background: #DBE4E9;
+    border: none;
+    padding: 0 0 0 10px;
+}
+
+.assamblyInputTextArea {
+    width: calc(80% - 20px);
+    height: 50px;
+    background: #DBE4E9;
+    border: none;
+    padding: 10px;
+    resize: none;
+}
+
+.assembly2GridHolder {
+    width: 900px;
+    min-height: 200px;
+}
+
+    .assembly2GridHolder .leftBlock {
+        width: 485px;
+        height: 310px;
+        display: block;
+        margin: 0 45px 0 20px;
+        float: left;
+        border: 1px solid #d4d4d4;
+        border-radius: 3px 3px 0 0;
+    }
+
+    .assembly2GridHolder .rightBlock {
+        width: 310px;
+        height: 330px;
+        display: block;
+        float: left;
+        border: 1px solid #d4d4d4;
+        border-radius: 3px 3px 0 0;
+    }
+/*Available Items */
+.leftBlock .rowHead {
+    width: 485px;
+    height: 30px;
+    display: block;
+    background: #cccccc;
+}
+
+.leftBlock .row {
+    width: 475px;
+    height: 30px;
+    display: block;
+}
+
+    .leftBlock .row:nth-child(2n) {
+        background: none repeat scroll 0 0 #eeeeee;
+    }
+
+    .leftBlock .row:nth-child(odd) {
+        border-bottom: 1px solid #eeeeee;
+    }
+
+#leftBlockrowHolder {
+    width: 485px;
+     height: 249px;
+    display: block;
+    overflow-y:auto;
+}
+
+.leftBlock .row .assColumn1 {
+    border-right: 1px solid #cccccc;
+    color: #565656;
+    float: left;
+    font-size: 13px;
+    height: 30px;
+    line-height: 30px;
+    padding: 0 0 0 10px;
+    vertical-align: middle;
+    width: 65px;
+}
+
+.leftBlock .row .assColumn2 {
+    border-right: 1px solid #cccccc;
+    color: #565656;
+    float: left;
+    font-size: 13px;
+    height: 30px;
+    line-height: 30px;
+    padding: 0 0 0 10px;
+    vertical-align: middle;
+    width: 136px;
+    text-overflow: ellipsis;
+    overflow:hidden;
+}
+
+.leftBlock .row .assColumn3 {
+    border-right: 1px solid #cccccc;
+    color: #565656;
+    float: left;
+    font-size: 13px;
+    height: 30px;
+    line-height: 30px;
+    padding: 0 0 0 10px;
+    vertical-align: middle;
+    width: 105px;
+}
+
+.leftBlock .row .assColumn4 {
+    border-right: 1px solid #cccccc;
+    color: #565656;
+    float: left;
+    font-size: 13px;
+    height: 30px;
+    line-height: 30px;
+    padding: 0 0 0 10px;
+    vertical-align: middle;
+    width: 97px;
+}
+
+.leftBlock .row .assColumn5 {
+    border-right: 1px solid #cccccc;
+    color: #565656;
+    float: left;
+    font-size: 13px;
+    height: 30px;
+    line-height: 30px;
+   
+    vertical-align: middle;
+    width: 25px;
+}
+/*Items in Assembly */
+.rightBlock .rowHead {
+    width: 310px;
+    height: 30px;
+    display: block;
+    background: #cccccc;
+}
+
+.rightBlock .row {
+    width: 300px;
+    height: 30px;
+    display: block;
+}
+
+    .rightBlock .row:nth-child(2n) {
+        background: none repeat scroll 0 0 #eeeeee;
+    }
+
+    .rightBlock .row:nth-child(odd) {
+        border-bottom: 1px solid #eeeeee;
+    }
+
+#rightBlockrowHolder {
+    width: 310px;
+     height: 249px;
+    display: block;
+}
+
+.rightBlock .row .assColumn1 {
+    border-right: 1px solid #cccccc;
+    color: #565656;
+    float: left;
+    font-size: 13px;
+    height: 30px;
+    line-height: 30px;
+    padding: 0 0 0 10px;
+    vertical-align: middle;
+    width: 65px;
+}
+
+.rightBlock .row .assColumn2 {
+    border-right: 1px solid #cccccc;
+    color: #565656;
+    float: left;
+    font-size: 13px;
+    height: 30px;
+    line-height: 30px;
+    padding: 0 0 0 10px;
+    vertical-align: middle;
+    width: 109px;
+    text-overflow: ellipsis;
+    overflow:hidden;
+}
+
+.rightBlock .row .assColumn3 {
+    border-right: 1px solid #cccccc;
+    color: #565656;
+    float: left;
+    font-size: 13px;
+    height: 30px;
+    line-height: 30px;
+    padding: 0 0 0 10px;
+    vertical-align: middle;
+    width: 67px;
+}
+
+.rightBlock .row .assColumn4 {
+    border-right: 1px solid #cccccc;
+    color: #565656;
+    float: left;
+    font-size: 13px;
+    height: 30px;
+    line-height: 30px;
+   
+    vertical-align: middle;
+    width: 25px;
+}
+
+.plus_class {
+    background: url("images/plus_btn.png") no-repeat scroll 0 0 rgba(0, 0, 0, 0);
+    display: block;
+    height: 30px;
+    width: 18px;
+    margin-left: 4px;
+}
+.minus_class {
+    background: url("images/minus_btn.png") no-repeat scroll 0 0 rgba(0, 0, 0, 0);
+    display: block;
+    height: 30px;
+    width: 18px;
+    margin-left: 4px;
+}
+
+
+
+
+
+/*-------------------------------Inventory Assembly End---------------------------------------*/
+/*-------------------------------Opportunities page ---------------------------------------*/
+
+.Opportunities_popup {
+    background: none repeat scroll 0 0 #fff;
+    bottom: 0;
+    display: none;
+    height: 600px;
+    left: 0;
+    margin: auto;
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 750px;
+    z-index: 4;
+}
+.oppRowGridHolder {
+    width:100%;
+    height:200px;
+    float:left;
+   margin:0 0 10px 10px;
+    
+}
+
+.oppRowHead {
+    width: calc(100% - 20px);
+    height:30px;
+    float:left;
+    background:#cccccc;
+    color:#565656;
+    margin:10px 0 0 10px;
+}
+.oppRow {
+    width:100%;
+    height:30px;
+    float:left;
+     background:#fff;
+    border-bottom: 1px solid #cccccc;
+     border-left: 1px solid #cccccc;
+}
+.totOpp {
+    width:1150px;
+    height:auto;
+    margin: 20px;
+    border:1px solid #cccccc;
+}
+
+
+/*-------------------------------Opportunities page  End---------------------------------------*/
+
+/*-------------------------------emp page---------------------------------------*/
+.a {
+    background: url(../images/tic_off.png) no-repeat;
+    height: 25px;
+    width: 25px;
+    border: none;
+    display: block;
+    float: left;
+}
+
+    .a.down {
+        background: url(../images/tic_on.png) no-repeat;
+        height: 25px;
+        width: 25px;
+        border: none;
+        display: block;
+        float: left;
+    }
+
+.securityCheck {
+    margin: 3px 0 0 3px;
+}
+
+/*-------------------------------emp end---------------------------------------*/
+/*-------------------------------global search---------------------------------------*/
+.global_search {
+    background: url(images/global_search.png) no-repeat;
+    width: 25px;
+    height: 21px;
+    display: block;
+    float: right;
+    margin: 5px 5px 0 0;
+	vertical-align:top;
+}
+
+    .global_search:hover {
+        background: url(images/global_search_up.png) no-repeat;
+    }
+
+.searchPopup {
+    width: 340px;
+    min-height: 70px;
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 100;
+}
+
+.headerTip {
+    background: url("images/arrow_up.png") no-repeat scroll 96% 100% rgba(0, 0, 0, 0);
+    float: left;
+    height: 20px;
+    width: 342px;
+    
+}
+
+.searchPopupContHolder {
+    width: 340px;
+    min-height: 50px;
+    background: #fff;
+    float: left;
+    border: 5px solid #015cb5;
+    box-sizing: border-box;
+    border-radius: 5px;
+	
+}
+
+    .searchPopupContHolder .row {
+        width: 350px;
+        height: 200px;
+        
+    }
+
+        .searchPopupContHolder .row .colLeft {
+            width:150px;
+            height: 30px;
+            line-height: 30px;
+            vertical-align: middle;
+            padding: 0 10px 0 0;
+            text-align: right;
+            color: #565656;
+            box-sizing: border-box;
+            float: left;
+            font-size: 13px;
+        }
+
+        .searchPopupContHolder .row .colRight {
+            width: 200px;
+            height: 30px;
+            padding: 0 20px 0 0;
+            color: #565656;
+            box-sizing: border-box;
+            float: left;
+			line-height: 30px;
+			vertical-align:middle;
+        }
+
+            .searchPopupContHolder .row .colRight .inputText {
+                width: 100%;
+                height: 30px;
+                padding: 0 0 0 10px;
+                color: #565656;
+                background: #dbe4e9;
+                border: none;
+                box-sizing: border-box;
+            }
+
+            .searchPopupContHolder .row .colRight .btn {
+                width: auto;
+                height: 30px;
+                line-height: 30px;
+                vertical-align: middle;
+                text-decoration: none;
+                font-size: 13px;
+                font-weight: bold;
+                padding: 0 10px;
+                border: none;
+                box-sizing: border-box;
+                float: left;
+                margin: 0 10px 0 0;
+                float: left;
+                background: none repeat scroll 0 0 #dbe4e9;
+                text-align: center;
+                color: #565656;
+                border: 1px solid #d4d4d4;
+            }
+
+                .searchPopupContHolder .row .colRight .btn:hover {
+                    background: none repeat scroll 0 0 #fff;
+                    border: 1px solid #dbe4e9;
+                    box-sizing: border-box;
+                }
+
+
+
+
+
+.accountPopup {
+    width: 200px;
+    min-height: 70px;
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 101;
+}
+
+.accountheaderTip {
+    background: url("images/arrow_up.png") no-repeat scroll 96% 100% rgba(0, 0, 0, 0);
+    float: left;
+    height: 20px;
+    width: 202px;
+    float: left;
+}
+
+.accountContHolder {
+    width: 200px;
+    min-height: 60px;
+    background: #fff;
+    float: left;
+    border: 5px solid #015cb5;
+    box-sizing: border-box;
+    border-radius: 5px;
+}
+
+    .accountContHolder a {
+        width: 190px;
+        color: #015cb5;
+        float: left;
+        font-size: 13px;
+        height: 40px;
+        line-height: 40px;
+        vertical-align: middle;
+        padding: 0 0 0 10px;
+        box-sizing: border-box;
+        text-decoration: none;
+        border-bottom: 1px solid #cccccc;
+    }
+
+        .accountContHolder a:hover {
+            color: #565656;
+        }
+/*-------------------------------Fleet---------------------------------------*/
+.fleetCol {
+    border-right: 1px solid #cccccc;
+    color: #565656;
+    float: left;
+    font-size: 13px;
+    height: 30px;
+    line-height: 30px;
+    padding: 0 0 0 10px;
+    vertical-align: middle;
+    width: 12.5%;
+    box-sizing: border-box;
+}
+
+
+

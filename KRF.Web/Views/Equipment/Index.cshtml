@@ -1,0 +1,160 @@
+﻿@{
+    ViewBag.Title = "Equipments";
+    Layout = "~/Views/Shared/_LayoutPage2.cshtml";
+}
+@Html.AntiForgeryToken()
+<style>
+    .alignRight {
+        text-align: right;
+    }
+
+    .content_block .formHolder {
+        height: 180px;
+        width: 100%;
+    }
+
+    .formHolder {
+        margin-left: 20px;
+    }
+
+        .formHolder .m_block {
+            width: 550px;
+        }
+
+            .formHolder .m_block .row .colLeft {
+                width: 150px;
+            }
+
+            .formHolder .m_block .row .colRight {
+                width: 300px;
+            }
+
+    .xdsoft_datetimepicker {
+        width: 315px !important;
+    }
+
+    .formHolder .m_block .row {
+        height: 30px;
+        margin: 10px 0;
+        width: 500px;
+    }
+</style>
+<div id="content_block" class="content_block">
+    <br />
+    <div id="list-equipment" class="gridBlock inventory_page">
+        <div class="head">
+            Equipments
+            @if (Convert.ToBoolean(ViewBag.AllowEdit))
+            {
+                <a id="add-equipment" class="addLead_saveCancel" href="#">Add Equipment</a>
+            }
+        </div>
+        <div id="errorMessages" style="width: 95%; margin-left: 20px; margin-right: 10px; margin-top:10px;">
+            <div class="alert alert-success alert-dismissable" style="display:none;">
+                <i class="fa fa-check"></i>
+                <button class="close" onclick="$('.alert-success').hide()" type="button">×</button>
+                <div id="dvSuccess"></div>
+            </div>
+            <div class="alert alert-danger alert-dismissable" style="display: none;">
+                <i class="fa fa-ban"></i>
+                <button class="close" onclick="$('.alert-danger').hide()" type="button">×</button>
+                <div id="dvError"></div>
+            </div>
+        </div>
+        <div class="table-container" style="border-color: black; border-width:1px">
+            <table id="grid-equipment" class="display" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        @if (Convert.ToBoolean(ViewBag.AllowEdit))
+                        {
+                            <th></th>
+                        }
+                        <th width="5%">ID</th>
+                        <th width="20%">Name</th>
+                        <th width="5%">Eqpt. ID</th>
+                        <th width="15%">Model No.</th>
+                        <th width="15%">S/N</th>
+                        <th width="10%">Date</th>
+                        <th width="10%">Purchase Price</th>
+                        <th width="15%">Vendor</th>
+                        <th width="15%">Status</th>
+                        @if (Convert.ToBoolean(ViewBag.AllowEdit))
+                        {
+                            <th></th>
+                        }
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var data;
+
+    $(document).ready(function () {
+        var token = $('[name=__RequestVerificationToken]').val();
+        updateGrid(false);
+
+        $("#add-equipment").click(function () {
+            window.location.href = '@Url.Action("Add", "Equipment")?ID=0';
+        });
+
+        $(document).on("click", "#grid-equipment .edit-equipment", function () {
+            var id = $(this).attr("data-val");
+            window.location.href = '@Url.Action("Add", "Equipment")?ID=' + id;
+        });
+
+        function search(nameKey, myArray) {
+            for (var i = 0; i < myArray.length; i++) {
+                if (myArray[i].ID == nameKey) {
+                    return myArray[i].Description;
+                }
+            }
+
+            return "";
+        }
+
+        $(document).on("click", "#grid-equipment .delete-equipment", function () {
+            var id = $(this).attr("data-val");
+            BootstrapDialog.confirm('Are you sure you want to delete?', function (result) {
+                if (result) {
+                    openModal();
+                    $.ajax({
+                        url: '@Url.Action("ToggleEquipmentStatus", "Equipment")',
+                        type: 'POST',
+                        data: { equipmentID: id, tobeEnabled: false, __RequestVerificationToken: token },
+                        success: function (data) {
+                            updateGrid();
+                            closeModal();
+                        }
+                    });
+                } else {
+                    //alert('Nope.');
+                }
+            });
+        });
+        $("#equipments-link").addClass("linkBtn linkBtnAdd_Selected");
+    });
+
+    function updateGrid() {
+        $('#grid-equipment').dataTable().fnDestroy();
+
+        $('#grid-equipment').dataTable({
+            "order": [[1, "asc"]],
+            columnDefs: [
+                { className: "dt-left", targets: [0, 2, 4, 5, 8, 9, 10] },
+                { className: "dt-right", targets: [1, 3, 6, 7] },
+                { defaultContent: "", render: $.fn.dataTable.render.number(',', '.', 2), targets: [7] }
+            ],
+            "iDisplayLength": 100,
+            "sAjaxSource": '@Url.Action("GetEquipments", "Equipment")',
+            "fnServerData": function (sSource, aoData, fnCallback) {
+                $.getJSON(sSource, aoData, function (json) {
+                    keyValue = json.keyValue;
+                    $("#status").populateDropDownList(keyValue.equipmentStatus, 0);
+                    fnCallback(json);
+                });
+            }
+        });
+    }
+</script>

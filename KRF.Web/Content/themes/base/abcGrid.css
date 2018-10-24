@@ -1,0 +1,83 @@
+.abcGrid .tHead {
+	width:100%;
+	height:34px;
+}
+.abcGrid .tHead .tcol {
+	/*width:calc(18.86957% - 8px);*/
+	height:30px;
+	line-height:30px;
+	vertical-align:middle;
+	background:#dbe4e9;
+	margin:0px 2px 0px 2px;
+	float:left;
+     color: #565656;
+	
+	
+}
+
+.abcGrid .tbody {
+	width:calc(100% + 10px);
+	min-height:100px;
+	overflow-y:auto;
+	overflow-x:hidden;
+	margin:0;
+	padding:0;
+}
+/*-----------------------------------------Column Design--------------------------*/
+.abcGrid {
+	
+	width:calc(100% - 20px);
+	min-height:100px;	
+	margin: 10px 10px 0 10px;
+    overflow-y:auto;
+    overflow-x:hidden;
+
+}
+.abcGrid .dataRow {
+	width:100%;
+	height:30px;
+	border-bottom:1px solid #f1f1f1;
+   
+}
+
+.abcGrid .dataRow .tcol {
+	height:30px;
+	line-height:30px;
+	vertical-align:middle;
+	
+	margin:0px 2px 0px 2px;
+	float:left;
+    color: #565656;
+}
+
+.abcGrid .dataRow .tcol a {	
+	 color: #565656;
+    text-decoration:none;	
+}
+.abcGrid .dataRow .tcol a:hover {	
+	 color: #565656;
+    text-decoration:underline;
+    	
+}
+
+
+
+.dataCol_DataHead {
+	margin:0 0 0 10px;
+	font-size:14px;
+	 color: #565656;
+}
+.dataCol_Data {
+	margin:0 0 0 10px;
+	font-size:14px;
+	 color: #565656;
+}
+
+.short_arrow{
+	width:8px;
+	height:5px;
+	background:url(../images/short_arrow.jpg) no-repeat;
+	float:right;
+	margin:15px 10px 0 0;
+	display:block;
+}

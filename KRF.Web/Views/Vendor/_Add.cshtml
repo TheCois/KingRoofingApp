@@ -1,0 +1,130 @@
+﻿<input id="vendor-id" type="hidden" value="0" name="vendor-id">
+<div id="employeeadd" class="gridBlock inventory_page">
+    <div class="head">
+        Add/Edit Vendor
+        @if (Convert.ToBoolean(ViewBag.EditMode))
+        {
+            <a id="save-vendor" class="addLead_saveCancel" href="#">Save & Close</a>
+            <a id="update-vendor" class="addLead_saveCancel" href="#">Update</a>
+        }
+        <a id="Cancel_PopAss" class="addLead_saveCancel" href="#">Cancel</a>
+    </div>
+    <div class="headSpacer"></div>
+    <div id="errorMessages" style="width: 95%; margin-left: 20px; margin-right: 10px;">
+        <div class="alert alert-success alert-dismissable" style="display:none;">
+            <i class="fa fa-check"></i>
+            <button class="close" onclick="$('.alert-success').hide()" type="button">×</button>
+            <div id="dvSuccess"></div>
+        </div>
+        <div class="alert alert-danger alert-dismissable" style="display: none;">
+            <i class="fa fa-ban"></i>
+            <button class="close" onclick="$('.alert-danger').hide()" type="button">×</button>
+            <div id="dvError"></div>
+        </div>
+    </div>
+    <div id="employee-form" class="formHolder">
+        <div class="m_block">
+            <div class="row">
+                <div class="colLeft">Vendor Name</div>
+                <div class="colRight">
+                    <input id="vendorname" type="text" class="inputText" maxlength="100">
+                </div>
+            </div>
+            <div class="row" style="height:120px">
+                <div class="colLeft">
+                    <button id="btn-vendor-address" type="button" class="googleMapsButton"></button>&nbsp;&nbsp;Address
+                </div>
+                <div class="colRight" style="height: 115px;">
+                    <textarea id="vendoraddress" class="inputText" style="height:110px" maxlength="1000"></textarea>
+                </div>
+            </div>
+            <div class="row">
+                <div class="colLeft">Manager</div>
+                <div class="colRight">
+                    <input id="manager" type="text" class="inputText" maxlength="100">
+                </div>
+            </div>
+            <div class="row">
+                <div class="colLeft">Sales Rep</div>
+                <div class="colRight">
+                    <input id="salesrep" type="text" class="inputText" maxlength="100">
+                </div>
+            </div>
+        </div>
+
+        <div class="m_block">
+            <div class="row">
+                <div class="colLeft">Office</div>
+                <div class="colRight">
+                    <input type="text" id="vendorphone" class="inputText" maxlength="15">
+                </div>
+            </div>
+            <div class="row">
+                <div class="colLeft">Fax</div>
+                <div class="colRight">
+                    <input type="text" id="vendorfax" class="inputText" maxlength="15">
+                </div>
+            </div>
+            @*<div class="row">
+                <div class="colLeft">Cell</div>
+                <div class="colRight">
+                    <input type="text" id="vendorcell" class="inputText" maxlength="15">
+                </div>
+            </div>*@
+            <div class="row">
+                <div class="colLeft">Email</div>
+                <div class="colRight">
+                    <input type="text" id="vendoremail" class="inputText" maxlength="50">
+                </div>
+            </div>
+            <div class="row">
+                <div class="colLeft">Website</div>
+                <div class="colRight">
+                    <input type="text" id="website" class="inputText" maxlength="50">
+                </div>
+            </div>
+            <div class="m_block">
+                <div class="row">
+                    <div class="colLeft">Cell</div>
+                    <div class="colRight" style="width: 120px">
+                        <input type="text" id="managercell" class="inputText" maxlength="15">
+                    </div>
+                    <div class="colLeft" style="width:40px">Email</div>
+                    <div class="colRight" style="width: 170px">
+                        <input type="text" maxlength="100" class="inputText" id="manageremail">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="colLeft">Cell</div>
+                    <div class="colRight" style="width: 120px">
+                        <input type="text" id="salesrepcell" class="inputText" maxlength="15">
+                    </div>
+                    <div class="colLeft" style="width:40px">Email</div>
+                    <div class="colRight" style="width: 170px">
+                        <input type="text" maxlength="100" class="inputText" id="salesrepemail">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <input type="hidden" id="middle-name" />
+    <input type="hidden" id="address-line2" />
+    <input type="hidden" id="city" />
+    <input type="hidden" id="state" />
+    <input type="hidden" id="zip" />
+    <input type="hidden" id="EmpPhone2" />
+    <input type="hidden" id="EmpPhone3" />
+    @*<input type="hidden" id="EmailID" />*@
+    <input type="hidden" id="DateCreated" />
+    <input type="hidden" id="DateUpdated" />
+    <input type="hidden" id="UserID" />
+    <input type="hidden" id="AppAccess" />
+    <input type="hidden" id="Status" />
+    <div class="clear_fix"></div>
+
+    @*<div class="popup-footer">
+            <a id="save-employee" class="addLead_saveCancel" href="#">Save</a>
+            <a id="Cancel_PopAss" class="addLead_saveCancel" href="#">Cancel</a>
+        </div>*@
+</div>

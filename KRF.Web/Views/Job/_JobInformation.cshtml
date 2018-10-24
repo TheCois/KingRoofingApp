@@ -1,0 +1,203 @@
+﻿<style>
+    .upcommingsession-border .control-group .row .colLeft {
+        width: 200px;
+    }
+    .upcommingsession-border .control-group .row .colRight {
+        width: 240px;
+    }
+    #buildingInformation {
+        height: 400px;
+        width: 450px;
+    }
+    #jobInformation {
+    }
+    #job-information .m_block {
+        width: 500px;
+    }
+    #job-information .m_block .row .colLeft {
+        width: 200px;
+    }
+
+    #job-information .m_block .row .colRight {
+        width: 240px;
+    }
+    #job-information .row .row-label {
+        height: 30px;
+        line-height: 30px;
+        color: #333;
+        font-size: 13px;
+        padding: 0 10px 0 0;
+        text-align: left;
+    }
+    #job-information .row .row-input {
+        height: 30px;
+        line-height: 30px;
+        vertical-align: middle;
+        color: #333;
+        font-size: 13px;
+    }
+    #job-information .rowTextarea{
+        margin-left:10px;
+    }
+
+    #job-information .m_block .row {
+        height: 30px;
+        margin: 10px 0;
+        width: 460px;
+    }
+</style>
+<form id="job-information" name="job-information" enctype="multipart/form-data">
+    <input type="hidden" name="jobID" id="jobID" />
+    <input type="hidden" name="id" id="id" value="0" />
+    <input type="hidden" name="uploaddatetime" id="uploaddatetime" class="inputText" />
+    <div class="clear_fix"></div>
+    <div class="form-footer">
+        <a id="save-job-information" class="addLead_saveCancel" href="#">Save</a>
+    </div>
+    <div class="clear_fix"></div>
+    <hr/>
+    <div class="m_block">
+        <div class="row">
+            <div class="colLeft" style="width:220px;">Name </div>
+            <div class="colRight" style="width:230px;">
+                <input id="jobname" type="text" maxlength="100" class="inputText" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="colLeft" style="width:220px;">Customer </div>
+            <div class="colRight" style="width:230px;">
+                <select id="customers" class="inputText">
+                    <option value="volvo">Please select</option>
+                </select>
+            </div>
+        </div>
+        <div class="row">
+            <div class="colLeft" style="width:220px;">Lead </div>
+            <div class="colRight" style="width:230px;">
+                <select id="leads" class="inputTextReadOnly">
+                    <option value="volvo">Please select</option>
+                </select>
+            </div>
+        </div>
+        <div class="clear_fix">
+        </div>
+        <br />
+        <fieldset id="buildingInformation" class="upcommingsession-border">
+            <legend class="upcommingsession-border">Building Information</legend>
+            <div style="height:18px">&nbsp;</div>
+            <div class="control-group">
+                <div class="row">
+                    <div class="colLeft">Project Type </div>
+                    <div class="colRight">
+                        <input type="text" id="project-type" readonly class="inputTextReadOnly" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="colLeft">Roof Type </div>
+                    <div class="colRight">
+                        <input type="text" id="roof-type" readonly class="inputTextReadOnly" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="colLeft">Age of Roof </div>
+                    <div class="colRight">
+                        <input type="text" id="age-of-roof" readonly class="inputTextReadOnly" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="colLeft">Building Stories </div>
+                    <div class="colRight">
+                        <input type="text" id="building-stories" readonly class="inputTextReadOnly" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="colLeft">Project expected to begin </div>
+                    <div class="colRight">
+                        <input type="text" id="proj-exp-to-begin" readonly class="inputTextReadOnly" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="colLeft">Additional Information </div>
+                    <div class="colRight">
+                        <textarea id="add-information" readonly class="inputTextReadOnly" style="height:150px;"> </textarea>
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+    </div>
+    
+    <div class="m_block">
+        <div class="row" style="width:500px;">
+            <div class="colLeft" style="width:220px;">Contact </div>
+            <div class="colRight">
+                <input id="contact" type="text" readonly class="inputTextReadOnly" />
+            </div>
+        </div>
+        <div class="row" style="width:500px">
+            <div class="colLeft" style="width:220px;">Select Job Address </div>
+            <div class="colRight">
+                <select id="address" class="inputText" >
+                    <option value="volvo">Please select</option>
+                </select>
+            </div>
+        </div>
+        <div class="row" style="width:500px">
+            <div class="colLeft" style="width:220px;">Select Estimate </div>
+            <div class="colRight">
+                <select id="estimates" class="inputText">
+                    <option value="volvo">Please select</option>
+                </select>
+            </div>
+        </div>
+        <br/>
+        <fieldset id="jobInformation" class="upcommingsession-border">
+            <legend class="upcommingsession-border">Job Address Detail</legend>
+            <div style="height:18px">&nbsp;</div>
+            <div class="control-group">
+                <div class="row">
+                    <div class="colLeft">
+                        <button id="btn-job-address" type="button" class="googleMapsButton"></button>&nbsp;&nbsp;Address 1 
+                    </div>
+                    <div class="colRight">
+                        <input type="text" id="address1" readonly class="inputTextReadOnly" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="colLeft">Address 2 </div>
+                    <div class="colRight">
+                        <input type="text" id="address2" readonly class="inputTextReadOnly" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="colLeft">City </div>
+                    <div class="colRight">
+                        <input type="text" id="city" readonly class="inputTextReadOnly" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="colLeft">State </div>
+                    <div class="colRight">
+                        <input type="text" id="state" readonly class="inputTextReadOnly" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="colLeft">Zip Code </div>
+                    <div class="colRight">
+                        <input type="text" id="zipcode" readonly class="inputTextReadOnly" />
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+        <div class="row rowTextarea" style="width:500px; margin-left: 10px">
+            <div class="row-label">Notes </div>
+            <div class="row-input">
+                <textarea id="note" class="inputText" style="height: 90px"> </textarea>
+            </div>
+        </div>
+    </div>
+    <input type="hidden" id="Description" />
+    <input type="hidden" id="Title" />
+    <input type="hidden" id="CreatedOn" />
+    <input type="hidden" id="DateUpdated" />
+    <input type="hidden" id="Status" />
+</form>

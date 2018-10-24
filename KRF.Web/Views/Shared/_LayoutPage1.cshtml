@@ -1,0 +1,405 @@
+﻿
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewBag.Title</title>
+    <link rel="icon" type="image/png" href="@Url.Content("~/Content/themes/base/images/favicon.png")">
+    <link href="@Styles.Url("~/Content/themes/base/default-css")" rel="stylesheet"/>
+    <link href="@Styles.Url("~/Content/themes/base/abcGrid")" rel="stylesheet"/>
+    <link href="@Styles.Url("~/Content/themes/base/abcDropdown")" rel="stylesheet"/>
+    <link href="@Styles.Url("~/Content/themes/base/jquery-ui-1.10.4.custom")" rel="stylesheet"/>
+    <link href="@Styles.Url("~/Content/themes/base/jquery-ui")" rel="stylesheet"/>
+    
+    <link href="@Url.Content("~/Content/themes/base/Gridmvc.css")" rel="stylesheet" />
+    <link href="@Url.Content("~/Content/themes/base/bootstrap.min.css")" rel="stylesheet" />
+    
+    <meta name="viewport" content="width=device-width" />
+         @section Scripts{
+            
+        }
+        
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/jqueryui")
+    @Scripts.Render("~/bundles/abcDropDown")
+    @Scripts.Render("~/bundles/jquery-ui-1.10.4.custom")
+    @Scripts.Render("~/bundles/enscroll-min")
+    <script src="@Url.Content("~/Scripts/gridmvc.min.js")"></script>
+    <script type="text/javascript" >
+
+        var data;
+        var jQuery_11 = jQuery.noConflict(true);
+        jQuery_11(document).ready(function () {
+            
+
+            jQuery_11("#accountPopup").dialog({
+                autoOpen: false,
+                show: {
+                    effect: "blind",
+                    duration: 1000
+                },
+                hide: {
+                    effect: "blind",
+                    duration: 1000
+                },
+                position:{my: "right-10 top+30",at: "right top", of:window}
+               
+            
+            });
+            jQuery_11("#accountDD").click(function () {
+                jQuery_11("#accountPopup").dialog("open");
+            });
+
+            jQuery_11("#searchPopup").dialog({
+                autoOpen: false,
+                show: {
+                    effect: "blind",
+                    duration: 1000
+                },
+                hide: {
+                    effect: "blind",
+                    duration: 1000
+                },
+                position: { my: "right-10 top+255", at: "right top", of: window }
+
+
+            });
+            jQuery_11("#glbsearch").click(function () {
+                jQuery_11("#searchPopup").dialog("open");
+            });
+
+
+            
+
+
+            data = {
+                "customer": [
+                    {
+                        "Company Name": "My Programmer",
+                        "Title": "Customer",
+                        "First Name": "Joel",
+                        "Last Name": "Bills",
+                        "Contact Name": "Mieckal",
+                        "Work Phone": "01525862",
+                        "Home Phone": "98521479",
+                        "Fax": "99925852",
+                        "Upload File": "image.jpg",
+                        "Address Type": "parmanent",
+                        "Billing Address": "999 Ansari USA",
+                        "City": "Newyork",
+                        "State": "USA",
+                        "Zip": "100249",
+                        "Email": "Joel@gmail.com"
+                    },
+
+                {
+                    "Company Name": "Janpact",
+                    "Title": "Inventory",
+                    "First Name": "Poul",
+                    "Last Name": "Joseph",
+                    "Contact Name": "Mr John",
+                    "Work Phone": "95842569",
+                    "Home Phone": "85347",
+                    "Fax": "99925852",
+                    "Upload File": "image.jpg",
+                    "Address Type": "pemporary",
+                    "Billing Address": "Building 1 USA",
+                    "City": "Newyork",
+                    "State": "USA",
+                    "Zip": "100249",
+                    "Email": "poul@gmail.in"
+                },
+                {
+                    "Company Name": "Q-5 Technology",
+                    "Title": "Solution",
+                    "First Name": "Duck",
+                    "Last Name": "Win",
+                    "Contact Name": "Mieckal",
+                    "Work Phone": "058462",
+                    "Home Phone": "915879",
+                    "Fax": "854752",
+                    "Upload File": "image.jpg",
+                    "Address Type": "parmanent",
+                    "Billing Address": "999 Ansari USA",
+                    "City": "Newyork",
+                    "State": "USA",
+                    "Zip": "100249",
+                    "Email": "duck@gmail.com"
+                }
+
+                ]
+            };
+
+            var b = 1;
+            for (var i = 0; i < data.customer.length; i++) {
+                var opp = data.customer[i];
+                jQuery_11("<br/><div id='opportunitiesRow_" + b + "'  class='oppRow'><div class='inventoryColumn1'><a href='#' class='inventoryColumn_linkBtn'>" + opp['First Name'] + ' ' + opp['Last Name'] + "</a></div><div class='inventoryColumn2'><a href='#' class='inventoryColumn_linkBtn'>" + opp['Contact Name'] + " </a></div><div class='inventoryColumn3'>" + opp['Work Phone'] + "</div><div class='inventoryColumn4'>" + opp['Email'] + "</div><div class='inventoryColumn5'><span id='myval'>" + opp['State'] + "</span><input type='text' class='inpTextInv' /></div><div class='inventoryColumn6'><a href='#' id='edit_" + b + "' class='edit_class inventoryColumn_linkBtn' onclick='view_class(this.id)'> View </a></div><div class='inventoryColumn7'><a id='delete_" + b + "' href='#' class='delete_class inventoryColumn_linkBtn' onclick='delete_class(this.id)'></a></div></div>").appendTo(jQuery_11("#oppRowGridHolder"));
+                b++;
+            }
+
+            jQuery_11("#save_Opp").click(function () {
+                var Company_Name = jQuery_11("#Company_Name").val();
+                var Title = jQuery_11("#Title").val();
+                var First_Name = jQuery_11("#First_Name").val();
+                var Last_Name = jQuery_11("#Last_Name").val();
+                var Contact_Name = jQuery_11("#Contact_Name").val();
+                var Work_Phone = jQuery_11("#Work_Phone").val();
+                var Home_Phone = jQuery_11("#Home_Phone").val();
+                var Fax = jQuery_11("#Fax").val();
+                var Upload_File = jQuery_11("#Upload_File").val();
+                var Address_Type = jQuery_11("#Address_Type").text();
+                var Billing_Address = jQuery_11("#Textarea1").val();
+                var City = jQuery_11("#City").val();
+                var State = jQuery_11("#State").val();
+                var Zip = jQuery_11("#Zip").val();
+                var Email = jQuery_11("#Email").val();
+
+
+
+
+                // data.opportunities.push('{"Customer Name":' + '"' + Customer_Name + '"' + ',""Address": ' + '"' + Address + '"' + ',""Contact Name":' + '"' + Contact_Name + '"' + ',"Phone #":' + '"' + Phone + '"' + ',"Company URL":' + '"' + Company_URL + '"' + ',"Name":' + '"' + Name + '"' + ',"Address 1":' + '"' + Address1 + '"' + ',"Address 2":' + '"' + Address2 + '"' + ',"Lead Source":' + '"' + Lead_Source + '"' + ',"Assigned to":' + '"' + Assigned_to + '"' + ',"Appointment Date":' + '"' + datepicker + '"' + ',"Roof Type":' + '"' + Roof_Type + '"' + ',"# of Stories":' + '"' + Stories + '"' + ',"Age":' + '"' + Age + '"' + ',"Notes":' + '"' + Notes + '"' + '}');
+                //  data[opportunities] = { "Customer Name": Customer_Name, "Address": Address };
+                var obj = new Object();
+                obj['Company Name'] = Company_Name;
+                obj['Title'] = Title;
+                obj['First Name'] = First_Name;
+                obj['Last Name'] = Last_Name;
+                obj['Contact Name'] = Contact_Name;
+                obj['Work Phone'] = Work_Phone;
+                obj['Home Phone'] = Home_Phone;
+                obj['Fax'] = Fax;
+                obj['Upload File'] = Upload_File;
+                obj['Address Type'] = Address_Type;
+                obj['Billing Address'] = Billing_Address;
+                obj['City'] = City;
+                obj['State'] = State;
+                obj['Zip'] = Zip;
+                obj['Email'] = Email;
+                data.customer.push(obj);
+
+
+                var opp = data.customer[b - 1];
+                jQuery_11("<br/><div id='opportunitiesRow_" + b + "'  class='oppRow'><div class='inventoryColumn1'><a href='#' class='inventoryColumn_linkBtn'>" + opp['First Name'] + ' ' + opp['Last Name'] + "</a></div><div class='inventoryColumn2'><a href='#' class='inventoryColumn_linkBtn'>" + opp['Contact Name'] + " </a></div><div class='inventoryColumn3'>" + opp['Work Phone'] + "</div><div class='inventoryColumn4'>" + opp['Email'] + "</div><div class='inventoryColumn5'><span id='myval'>" + opp['State'] + "</span><input type='text' class='inpTextInv' /></div><div class='inventoryColumn6'><a href='#' id='edit_" + b + "' class='edit_class inventoryColumn_linkBtn' onclick='view_class(this.id)'> View </a></div><div class='inventoryColumn7'><a id='delete_" + b + "' href='#' class='delete_class inventoryColumn_linkBtn' onclick='delete_class(this.id)'></a></div></div>").appendTo(jQuery_11("#oppRowGridHolder"));
+                b++;
+
+            });
+
+
+
+
+        });
+
+
+        function delete_class(id) {
+            var myId = id;
+            var indexIng = jQuery_11("#" + myId).parent().parent().attr("data-index")
+            var actVal = jQuery_11("#" + myId).parent().prev().find("input").val();
+            jQuery_11("#" + myId).parent().parent().remove();
+            //alert();
+        };
+
+
+        function view_class(id) {
+
+            var myId = id;
+            var mainId = jQuery_11("#" + myId).parent().parent().attr("id");
+            var getId = mainId.split("_");
+            var showId = getId[1];
+            var test = showId - 1;
+            var opp = data.customer[test];
+            jQuery_11("#Company_Name").val(opp["Company Name"]);
+            jQuery_11("#Title").val(opp["Title"]);
+            jQuery_11("#First_Name").val(opp["First Name"]);
+            jQuery_11("#Last_Name").val(opp["Last Name"]);
+            jQuery_11("#Contact_Name").val(opp["Contact Name"]);
+            jQuery_11("#Work_Phone").val(opp["Work Phone"]);
+            jQuery_11("#Home_Phone").val(opp["Home Phone"]);
+            jQuery_11("#Fax").val(opp["Fax"]);
+            jQuery_11("#Upload_File").val(opp["Upload File"]);
+            jQuery_11("#Address_Type").text(opp["Address Type"]);
+            jQuery_11("#Textarea1").val(opp["Billing Address"]);
+            jQuery_11("#City").val(opp["City"]);
+            jQuery_11("#State").val(opp["State"]);
+            jQuery_11("#Zip").val(opp["Zip"]);
+            jQuery_11("#Email").val(opp["Email"]);
+        };
+
+
+
+    </script>
+    
+
+    
+    
+</head>
+<body class="dashBody">
+   
+    <header>
+
+
+    </header>
+    <section class="dashboard_Wraper">
+    
+        <div class="dashboard_Topbar">
+            <div class="logout"><a href="help.html">Help</a><a href="index.html">Logout</a></div>
+            <div class="userName"><a id="accountDD" href="#">Hari Seldon</a></div>
+            <div class="dateName"><a href="#">April 20, 2014</a></div>
+
+        </div>
+        <div class="dashboard_head">
+            <div class="dashboard_logo"></div>
+            <div class="dashboard_Search_holder">
+                <div class="dashboard_Search_holder_row1">
+                    <div class="dashboard_Search_holder_row1_searchAll">
+                        Search All
+                        <div class="btn"></div>
+
+                    </div>
+                    <div class="dashboard_Search_holder_row1_searchAll_search">
+                        <input type="text" />
+                        <div class="btnS"></div>
+
+                    </div>
+                </div>
+                <div class="dashboard_Search_holder_row2">
+                    <a class="check" href="#"></a><span class="check_Lable">My Items</span>
+                    <a class="check" href="#"></a><span class="check_Lable">Exact</span>
+
+                </div>
+
+            </div>
+
+
+
+
+        </div>
+        <div class="navBar">
+            <a href="dashboard.html" class="">Dashboard</a>
+            <a href="#">Calander</a>
+            <a href="#">Reports</a>
+
+        </div>
+        <div class="left_Nav">
+            <div class="headings">
+                <span class="span1">
+                    <img src="@Url.Content("~/Content/themes/base/images/ico1.png")" /></span><span>SALES</span><a class="help_icon" href="#"></a>
+            </div>
+            <div class="clear_fix"></div>
+            <div class="btnHolders">
+                @Html.ActionLink("Prospect", "Index", "Prospect", null, new { @class = "linkBtn" })
+                <a class="linkBtn" href="#" onclick="location.href='@Url.Action("Index","Lead")'">Leads</a>
+                <a class="linkBtn linkBtnAdd_Selected" href="#" onclick="location.href='@Url.Action("Index","Customer")'">Customers</a>
+            </div>
+            <div class="clear_fix"></div>
+            <div class="devider"></div>
+            <div class="deviderBlank"></div>
+            <div class="headings">
+                <span class="span1">
+                    <img src="@Url.Content("~/Content/themes/base/images/ico2.png")" /></span><span>MANAGE</span><a class="help_icon" href="#"></a>
+            </div>
+            <div class="clear_fix"></div>
+            <div class="btnHolders">
+                <a class="linkBtn" href="#">Production</a>
+                @Html.ActionLink("Products", "Index", "Product", null, new { @class = "linkBtn" })
+                <a class="linkBtn" href="inventory.html">Inventory</a>
+                <a class="linkBtn" href="#">Equipment</a>
+                <a class="linkBtn" href="#">Fleet</a>
+                <a class="linkBtn" href="#">Crews</a>
+                <a class="linkBtn" href="employees.html">Employees</a>
+                <a class="linkBtn" href="#">Permits</a>
+
+            </div>
+            <div class="clear_fix"></div>
+            <div class="deviderBlank"></div>
+            <div class="deviderBlank"></div>
+            <div class="headings devider_right">
+                <span class="span1">
+                    <img src="@Url.Content("~/Content/themes/base/images/ico3.png")" /></span><span>REPORTS</span><a class="help_icon" href="#"></a>
+            </div>
+            <div class="clear_fix"></div>
+            <div class="btnHolders">
+                <a class="linkBtn" href="#">Reporting</a>
+                <a class="linkBtn" href="#">Employee Payment</a>
+
+
+            </div>
+            <div class="clear_fix"></div>
+            <div class="deviderBlank"></div>
+            <div class="deviderBlank devider_left"></div>
+            <div class="deviderBlank"></div>
+            <div class="headings">
+                <span class="span1">
+                    <img src="@Url.Content("~/Content/themes/base/images/ico4.png")" /></span><span>QUICK LINKS</span><a class="help_icon" href="#"></a>
+            </div>
+            <div class="clear_fix"></div>
+            <div class="btnHolders">
+                <a class="linkBtnAdd" href="add_lead.html">Add a Lead</a>
+                <a class="linkBtnAdd" href="#">Add a Task</a>
+                <a class="linkBtnAdd" href="#">Add a Job</a>
+
+
+            </div>
+            <div class="clear_fix"></div>
+            <div class="deviderBlank"></div>
+
+            <div class="deviderBlank"></div>
+            <div class="clear_fix"></div>
+        </div>
+
+    
+    <div>
+        @RenderBody()
+    </div>
+
+        </section>
+   <div id="searchPopup" class="searchPopup">
+<div class="headerTip"></div>
+<div class="searchPopupContHolder">
+	<div class="row">
+        <table>
+            <tr>
+                <td class="colLeft">Customer ID:</td>
+                <td class="colRight"><input type="text" class="inputText" /></td>
+
+            </tr>
+            <tr>
+                <td class="colLeft">Name:</td>
+                <td class="colRight"><input type="text" class="inputText" /></td>
+            </tr>
+            <tr>
+                <td class="colLeft">Location:</td>
+                <td class="colRight"><input type="text" class="inputText" /></td>
+            </tr>
+            <tr>
+                <td class="colLeft"></td>
+                <td class="colRight"><a href="#" class="btn" style="width:50px">Search</a><a href="#" class="btn">Reset</a></td>
+
+            </tr>
+
+        </table>
+    	
+        
+    </div>
+    
+    
+
+</div>
+
+</div>
+     <!--account -->
+    <div id="accountPopup" class="accountPopup">
+<div class="accountheaderTip"></div>
+<div class="accountContHolder">
+    <a href="#">My Account</a>
+    <br />
+    <a href="#">Change Password</a>
+</div>
+
+</div>  
+
+
+    @RenderSection("scripts", required: false)
+        
+</body>
+</html>

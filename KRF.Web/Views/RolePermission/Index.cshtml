@@ -1,0 +1,211 @@
+﻿@{
+    ViewBag.Title = "Role Permission";
+    Layout = "~/Views/Shared/_LayoutPage2.cshtml";
+}
+@Html.AntiForgeryToken()
+<style>
+    .alignRight {
+        text-align: right;
+    }
+
+    .formHolder {
+        height: 500px;
+    }
+
+        .formHolder .m_block {
+            width: 440px;
+        }
+</style>
+<div id="content_block" class="content_block">
+    <br />
+    <div id="list-rolepermission" class="gridBlock inventory_page">
+        <div class="head">Role Permissions<a id="save-rolepermission" class="addLead_saveCancel" href="#">Save</a></div>
+        <div class="headSpacer"></div>
+        <div id="errorMessages" style="width: 95%; margin-left: 20px; margin-right: 10px;">
+            <div class="alert alert-success alert-dismissable" style="display:none;">
+                <i class="fa fa-check"></i>
+                <button class="close" onclick="$('.alert-success').hide()" type="button">×</button>
+                <div id="dvSuccess"></div>
+            </div>
+            <div class="alert alert-danger alert-dismissable" style="display: none;">
+                <i class="fa fa-ban"></i>
+                <button class="close" onclick="$('.alert-danger').hide()" type="button">×</button>
+                <div id="dvError"></div>
+            </div>
+        </div>
+        <form id="frmRolePermission">
+            <div id="rolepermission-form" class="formHolder" style="width:95%; height:900px;">
+                <br />
+                <div class="m_block" style="height:50px;">
+                    <div class="row">
+                        <div class="colLeft" style="width:50px;">
+                            Role
+                        </div>
+                        <div class="colRight">
+                            <select id="roles" class="inputText">
+                                <option value="0">--Select--</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="clear_fix"></div>
+                    <hr style="margin-left:50px;" />
+                    <br />
+                    <div class="gridBlock" style="width: 100%;">
+                        <div class="table-container" style="border-color: black; border-width:1px; ">
+                            <table id="grid-permission" class="display" width="100%" cellspacing="0">
+                                <thead>
+                                    <tr>
+                                        <th width="60%">Page Name</th>
+                                        <th width="20%">View</th>
+                                        <th width="20%">Edit</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="clear_fix"></div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div id="cust-estimate"></div>
+
+</div>
+<script type="text/javascript">
+    var data;
+    $(document).ready(function () {
+        var token = $('[name=__RequestVerificationToken]').val();
+
+        var keyValue = {};
+
+        $('#grid-permission').dataTable({
+            "paging": false,
+            "columnDefs": [
+                { className: "dt-left", targets: [0, 1, 2] }
+            ]
+        });
+
+        var token = $('[name=__RequestVerificationToken]').val();
+        $.ajax({
+            url: '@Url.Action("GetRoles", "RolePermission")',
+            type: 'POST',
+            data: { __RequestVerificationToken: token },
+            beforeSend: function (xhr) {
+                openModal();
+            },
+            success: function (data) {
+                $("#roles").populateDropDownList(data.roles, 0);
+            },
+            complete: function (jqXHR, textStatus) {
+                closeModal();
+            }
+        });
+
+        $("#roles").on("change", RoleChange);
+
+        $("#save-rolepermission").on("click", SaveRolePermission);
+
+        $("#rolepermission-link").addClass("linkBtn linkBtnAdd_Selected");
+    });
+
+    function RoleChange() {
+        $('#list-rolepermission .alert-success').hide();
+        $('#list-rolepermission .alert-danger').hide();
+
+        var roleID = parseInt($("#roles option:selected").val());
+        $('#grid-permission').dataTable().fnDestroy();
+        
+        if (roleID > 0) {
+            $('#grid-permission').dataTable({
+                "order": [[0, "asc"]],
+                "columnDefs": [
+                    { className: "dt-left", targets: [0, 1, 2] }
+                ],
+                "aoColumns": [{ "sTitle": "Page Name" }, { "sTitle": "<input type='checkbox' id='selectAllView'></input>&nbsp;<span>View</span>", "bSortable": false }, { "sTitle": "<input type='checkbox' id='selectAllEdit'></input>&nbsp;<span>Edit</span>", "bSortable": false } ],
+                "iDisplayLength": 100,
+                "bSort": true,
+                "paging": false,
+                "sAjaxSource": '@Url.Action("GetRolePermissions", "RolePermission")',
+                "fnServerParams": function (aoData) {
+                    aoData.push({ "name": "roleID", "value": roleID });
+                }
+            });
+        }
+        else
+        {
+            $('#grid-permission').dataTable({
+                "bSort": false,
+                "paging": false,
+                "columnDefs": [
+                    { className: "dt-left", targets: [0, 1, 2] }
+                ]
+            }).fnClearTable();
+        }
+
+        $('#selectAllView').change(function () {
+            var isSelected = $(this).is(':checked');
+            if (isSelected) {
+                $('#grid-permission').find('.view').prop('checked', true);
+            } else {
+                $('#grid-permission').find('.view').prop('checked', false);
+            }
+        });
+        $('#selectAllEdit').change(function () {
+            var isSelected = $(this).is(':checked');
+            if (isSelected) {
+                $('#grid-permission').find('.edit').prop('checked', true);
+            } else {
+                $('#grid-permission').find('.edit').prop('checked', false);
+            }
+        });
+    }
+
+    function SaveRolePermission() {
+        $('#list-rolepermission .alert-success').hide();
+        $('#list-rolepermission .alert-danger').hide();
+
+        var token = $('[name=__RequestVerificationToken]').val();
+        var checkedIds = $('#grid-permission').find('input:checkbox:checked').map(function () {
+            if (this.id != "selectAllView" && this.id != "selectAllAdd" && this.id != "selectAllEdit" && this.id != "selectAllDelete")
+            return this.id;
+        }).get();
+        var roleID = parseInt($("#roles option:selected").val());
+        var permissions = [];
+        permissions = new String(checkedIds).split(',');
+        if (roleID == 0) {
+            $('#list-rolepermission .alert-danger').show();
+            $('#list-rolepermission .alert-danger').find('#dvError').text("Please select role.");
+            return;
+        }
+        if (checkedIds.length == 0) {
+            $('#list-rolepermission .alert-danger').show();
+            $('#list-rolepermission .alert-danger').find('#dvError').text("No permission selected.");
+            return;
+        }
+        $.ajax({
+            url: '@Url.Action("SaveRolePermissions", "RolePermission")',
+            type: 'POST',
+            data: { __RequestVerificationToken: token, roleID: roleID, permissions: JSON.stringify(permissions) },
+            beforeSend: function (xhr) {
+                openModal();
+            },
+            success: function (data) {
+                if (data.success) {
+                    $('#list-rolepermission .alert-success').show();
+                    $('#list-rolepermission .alert-success').find('#dvSuccess').text(data.message);
+                }
+                else {
+                    $('#list-rolepermission .alert-danger').show();
+                    $('#list-rolepermission .alert-danger').find('#dvError').text(data.message);
+                }
+            },
+            complete: function (jqXHR, textStatus) {
+                closeModal();
+            }
+        });
+    }
+
+    
+</script>

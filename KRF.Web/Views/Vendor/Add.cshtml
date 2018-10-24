@@ -1,0 +1,212 @@
+﻿@{
+    ViewBag.Title = "Vendor";
+    Layout = "~/Views/Shared/_LayoutPage2.cshtml";
+}
+@Html.AntiForgeryToken()
+@*<link href="~/Content/themes/base/bootstrap.min.css" rel="stylesheet" />*@
+<style>
+    .alignRight {
+        text-align: right;
+    }
+
+    .formHolder {
+        height: 350px;
+    }
+
+    .inputText {
+        width: calc(100% - 25px);
+        height: 30px;
+        background: #DBE4E9;
+        border: none;
+        padding: 0px 0px 0px 10px;
+    }
+
+    .formHolder .m_block {
+        width: 500px;
+    }
+
+    .formHolder {
+        width: 100%;
+        margin-left: 50px;
+    }
+
+    .dataTables_length {
+        display: none;
+    }
+</style>
+
+<div id="content_block" class="content_block">
+    <br />
+    @Html.Partial("_Add")
+</div>
+
+<script type="text/javascript">
+    var data;
+    $(document).ready(function () {
+
+        $("#vendors-link").addClass("linkBtn linkBtnAdd_Selected");
+
+        var token = $('[name=__RequestVerificationToken]').val();
+
+        var ID = parseInt(@ViewBag.ID);
+
+        getVendor(ID);
+
+        var keyValue = {}
+
+        $("#Cancel_PopAss").click(function () {
+            window.location.href = '@Url.Action("Index", "Vendor")';
+        });
+
+        $("#save-vendor").on("click", function () {
+            Save(true);
+        });
+        $("#update-vendor").on("click", function () {
+            Save(false);
+        });
+
+        function Save(close)
+        {
+            $('.alert-danger').hide();
+            $('.alert-danger').find('#dvError').text('');
+            $('.alert-success').hide();
+            $('.alert-success').find('#dvSuccess').text('');
+
+            var valid = true;
+            if ($("#vendorname").val() == "") {
+                $('.alert-danger').show();
+                $('.alert-danger').find('#dvError').append('Please enter vendor name.<br/>');
+                valid = false;
+            }
+            if ($("#vendoremail").val() == "") {
+                $('.alert-danger').show();
+                $('.alert-danger').find('#dvError').append('Please enter vendor email.<br/>');
+                valid = false;
+            }
+            if (valid == false) {
+                return;
+            }
+            var vendor = {
+                ID: parseInt($("#vendor-id").val()),
+                VendorName: $("#vendorname").val(),
+                ContactName: $("#contactname").val(),
+                VendorAddress: $("#vendoraddress").val(),
+                Phone: $("#vendorphone").val(),
+                Fax: $("#vendorfax").val(),
+                //Cell: $("#vendorcell").val(),
+                Email: $("#vendoremail").val(),
+                Active: true,
+                Manager: $("#manager").val(),
+                SalesRep: $("#salesrep").val(),
+                WebSite: $("#website").val(),
+                ManagerCell: $("#managercell").val(),
+                ManagerEmail: $("#manageremail").val(),
+                SalesRepCell: $("#salesrepcell").val(),
+                SalesRepEmail: $("#salesrepemail").val()
+            }
+
+            openModal();
+            $.ajax({
+                url: '@Url.Action("Save", "Vendor")',
+                type: 'POST',
+                dataType: 'json',
+                contentType: 'application/json; charset=utf-8',
+                data: JSON.stringify(vendor),
+                success: function (data) {
+                    if (data.hasSaved) {
+                        if(close)
+                            window.location.href = '@Url.Action("Index", "Vendor")';
+                        else {
+                            $('.alert-success').show();
+                            $('.alert-success').find('#dvSuccess').text(data.message);
+                            $("#vendor-id").val(data.ID);
+                        }
+                    }
+                    else {
+                        $('.alert-danger').show();
+                        $('.alert-danger').find('#dvError').text(data.message);
+                    }
+                    closeModal();
+                }
+            });
+        }
+
+        function search(nameKey, myArray) {
+            for (var i = 0; i < myArray.length; i++) {
+                if (myArray[i].ID == nameKey) {
+                    return myArray[i].Description;
+                }
+            }
+
+            return "";
+        }
+
+        $("#vendors-link").addClass("linkBtn linkBtnAdd_Selected");
+
+        $("#btn-vendor-address").click(function () {
+            var url = 'http://maps.google.com/maps?daddr=' + $("#vendoraddress").val();
+            var redirectWindow = window.open(url, '_blank');
+            redirectWindow.location;
+        });
+    });
+
+    function getVendor(ID) {
+        openModal();
+        $.ajax({
+            url: '@Url.Action("GetVendor", "Vendor")',
+            type: 'POST',
+            data: { vendorID: ID },
+            success: function (data) {
+                if (ID == 0) {
+                    emptyVendorForm(data);
+                } else {
+                    populateVendorForm(data);
+                    $('#update-vendor').show();
+                }
+                closeModal();
+            }
+        });
+    }
+
+    function emptyVendorForm(data) {
+        $("#vendor-id").val(0);
+        $("#vendorname").val("");
+        //$("#contactname").val("");
+        $("#vendoraddress").val("");
+        $("#vendorphone").val("");
+        $("#vendorfax").val("");
+        //$("#vendorcell").val("");
+        $("#vendoremail").val("");
+
+        $("#manager").val("");
+        $("#salesrep").val("");
+        $("#website").val("");
+        $("#managercell").val("");
+        $("#manageremail").val("");
+        $("#salesrepcell").val("");
+        $("#salesrepemail").val("");
+
+        $("#vendorname").focus();
+    }
+
+    function populateVendorForm(data) {
+        $("#vendor-id").val(data.vendor.ID);
+        $("#vendorname").val(data.vendor.VendorName);
+        //$("#contactname").val(data.vendor.ContactName);
+        $("#vendoraddress").val(data.vendor.VendorAddress);
+        $("#vendorphone").val(data.vendor.Phone);
+        $("#vendorfax").val(data.vendor.Fax);
+        //$("#vendorcell").val(data.vendor.Cell);
+        $("#vendoremail").val(data.vendor.Email);
+
+        $("#manager").val(data.vendor.Manager);
+        $("#salesrep").val(data.vendor.SalesRep);
+        $("#website").val(data.vendor.WebSite);
+        $("#managercell").val(data.vendor.ManagerCell);
+        $("#manageremail").val(data.vendor.ManagerEmail);
+        $("#salesrepcell").val(data.vendor.SalesRepCell);
+        $("#salesrepemail").val(data.vendor.SalesRepEmail);
+
+        $("#vendorname").focus();
+    }
+</script>

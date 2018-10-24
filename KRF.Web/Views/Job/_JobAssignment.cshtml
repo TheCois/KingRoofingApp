@@ -1,0 +1,176 @@
+﻿<style>
+    #job-assignment .m_block {
+        width: 250px;
+        height: 100px;
+    }
+
+        #job-assignment .m_block .row .colLeft {
+            width: 100px;
+            text-align: left;
+        }
+
+        #job-assignment .m_block .row .colRight {
+            width: 100px;
+        }
+
+    #job-assignment .table-container {
+        font-size: 0.75em;
+    }
+
+    .xdsoft_datetimepicker {
+        width: 315px !important;
+    }
+    #job-assignment .content_block .gridBlock {
+        background: none repeat scroll 0 0 #fff;
+        border: 1px solid #d4d4d4;
+        border-radius: 3px 3px 0 0;
+        height: 100%;
+        margin: 0 20px 25px;
+        width: calc(100% - 10px);
+    }
+</style>
+<form id="job-assignment" name="job-assignment" enctype="multipart/form-data">
+    <input type="hidden" name="jobID" id="jobID" />
+    <input type="hidden" name="id" id="id" value="0" />
+    <input type="hidden" name="uploaddatetime" id="uploaddatetime" class="inputText" />
+    <div class="clear_fix"></div>
+    <div class="form-footer">
+        <a id="save-job-assignment" class="addLead_saveCancel" href="#">Save</a>
+    </div>
+    <div class="clear_fix"></div>
+    <hr />
+    <div class="m_block" style="width: 220px; height: 50px; margin-left: 20px;">
+        <div class="row">
+            <div class="colLeft" style="width:110px">Job Start Date </div>
+            <div class="colRight">
+                <input id="jobstartdate" type="text" class="inputText qty" style="width:85px" placeholder="Select date">
+            </div>
+        </div>
+        <br />
+    </div>
+    <div class="m_block" style="width:300px; height:50px;">
+        <div class="row">
+            <div class="colLeft" style="width:200px">Average Working Hours/Day </div>
+            <div class="colRight">
+                <input id="averagehour" type="text" class="inputText qty" onkeypress="enterOnlyNumeric(this, event)" maxlength="3" style="width:60px" />
+            </div>
+        </div>
+    </div>
+    <div class="m_block" style="width: 260px; height: 50px;">
+        <div class="row">
+            <div class="colLeft" style="width:170px">Estimated Labor Hours </div>
+            <div class="colRight">
+                <input id="labourhour" type="text" readonly class="inputTextReadOnly qty" onkeypress="enterOnlyNumeric(this, event)" style="width:60px" maxlength="3" />
+            </div>
+        </div>
+    </div>
+    <div class="m_block" style="height:50px;">
+        <div class="row" style="width:230px">
+            <div class="colLeft" style="width:110px">Job End Date </div>
+            <div class="colRight">
+                <input id="jobenddate" type="text" readonly class="inputTextReadOnly qty" style="width:85px" placeholder="Select date">
+            </div>
+        </div>
+    </div>
+    <div class="m_block" style="width: 100%; height: 50px;">
+        <hr /><br/>
+    </div>
+    <div class="m_block" style="width:510px; height:80px; margin-left:20px;">
+        <div class="row">
+            <div class="colLeft" style="width:200px">Crew/Employee </div>
+            <div class="colRight" style="width:200px; height:80px">
+                <select id="crew-employees" class="inputText" style="width:270px">
+                    <option value="volvo">Please select</option>
+                </select>
+                @*<input id="search-crew-employee" class="ui-autocomplete-input inputText" type="text" placeholder="Search Crew/Employee" autocomplete="off" style="width:250px">*@
+                <input type="hidden" id="crewempID" />
+                <input type="hidden" id="crewempType" />
+            </div>
+        </div>
+    </div>
+    <div class="m_block" style="width: 180px; height: 80px">
+        <div class="row">
+            <div class="colLeft" style="width:50px">From </div>
+            <div class="colRight">
+                <input id="fromdate" type="text" class="inputText" style="width:85px" placeholder="Select date">
+            </div>
+        </div>
+    </div>
+    <div class="m_block" style="width: 250px; height: 80px">
+        <div class="row" style="width:250px">
+            <div class="colLeft" style="width:40px">To </div>
+            <div class="colRight" style="width:200px">
+                <input id="todate" type="text" class="inputText" style="width:85px" placeholder="Select date">
+                &nbsp;&nbsp;
+                <input type="button" id="add-assignment" value="Add" class="addBtn" />
+            </div>
+        </div>
+    </div>
+    <div class="clear_fix"></div>
+    <div id="list-assignment" class="gridBlock">
+        <div class="table-container" style="border-color: black; border-width:1px">
+            <table id="grid-items-assignment" class="display" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th width="60%">Resource Name</th>
+                        <th width="15%">From</th>
+                        <th width="15%">To</th>
+                        <th></th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+</form>
+<script>
+    jQuery('#jobstartdate').datetimepicker(
+        {
+            lang: 'en',
+            timepicker: false,
+            format: 'm/d/Y',
+            formatDate: 'm/d/Y',
+            closeOnDateSelect: true,
+            onSelectDate: function (dateText) {
+                JobStartDateAndAvgWorkingHourChange();
+            }
+        }
+    );
+    //jQuery('#jobenddate').datetimepicker(
+    //    {
+    //        lang: 'en',
+    //        timepicker: false,
+    //        format: 'm/d/Y',
+    //        formatDate: 'm/d/Y',
+    //        closeOnDateSelect: true
+    //    }
+    //);
+    jQuery('#fromdate').datetimepicker(
+        {
+            lang: 'en',
+            timepicker: false,
+            format: 'm/d/Y',
+            formatDate: 'm/d/Y',
+            closeOnDateSelect: true
+        }
+    );
+    jQuery('#todate').datetimepicker(
+        {
+            lang: 'en',
+            timepicker: false,
+            format: 'm/d/Y',
+            formatDate: 'm/d/Y',
+            closeOnDateSelect: true
+        }
+    );
+    $('#grid-items-assignment').dataTable({
+        "bFilter": false,
+        "bInfo": false,
+        "bPaginate": true,
+        "bSort": false,
+        "columnDefs": [
+            { className: "dt-left", targets: [0, 3] },
+            { className: "dt-right", targets: [1, 2] }
+        ],
+        "iDisplayLength": 5
+    });
+</script>

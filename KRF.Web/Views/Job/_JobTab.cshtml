@@ -1,0 +1,136 @@
+﻿<div id="tabs">
+    <ul>
+        <li id="liSummary"><a href="#summary-form" onclick="SummaryClick()">Summary</a></li>
+        <li id="liInformation" ><a href="#information-form">Information</a></li>
+        <li id="liAssignment"><a href="#assignment-form">Assignments</a></li>
+        <li id="liMilestone"><a href="#milestone-form" onclick="MilestoneClick()">Milestones</a></li>
+        <li id="liCO"><a href="#co-form" onclick="COClick()">Change Order</a></li>
+        <li id="liPO"><a href="#po-form" onclick="POClick()">Purchase Order</a></li>
+        <li id="liWO"><a href="#wo-form" onclick="WOClick()">Work Order</a></li>
+        <li id="liINV"><a href="#inv-form" onclick="INVClick()">Invoice</a></li>
+        <li id="liDocument"><a href="#job-document" onclick="DocumentClick()">Documents</a></li>
+        <li id="liPermit"><a href="#job-permit" onclick="PermitClick()">Permit</a></li>
+    </ul>
+    <div id="summary-form" class="formHolder" style="width:95%; height:700px;">
+        @Html.Partial("_JobSummary")
+    </div>
+    <div id="information-form" class="formHolder" style="width:95%; height:700px;">
+        @Html.Partial("_JobInformation")
+    </div>
+    <div id="assignment-form" class="formHolder" style="width:95%; height:850px;">
+        @Html.Partial("_JobAssignment")
+    </div>
+    <div id="milestone-form" class="formHolder" style="width:95%; height:850px;">
+        @Html.Partial("_JobMilestone")
+    </div>
+    <div id="co-form" class="formHolder" style="width:95%; height:850px;">
+        @Html.Partial("_JobCO")
+    </div>
+    <div id="po-form" class="formHolder" style="width:95%; height:850px;">
+        @Html.Partial("_JobPO")
+    </div>
+    <div id="wo-form" class="formHolder" style="width:95%; height:850px;">
+        @Html.Partial("_JobWO")
+    </div>
+    <div id="inv-form" class="formHolder" style="width:95%; height:850px;">
+        @Html.Partial("_JobInvoice")
+    </div>
+    <div id="job-document" class="formHolder" style="width:95%; height:850px;">
+        @Html.Partial("_JobDocument")
+    </div>
+    <div id="job-permit" class="formHolder" style="width:95%; height:1200px;">
+        @Html.Partial("_JobPermit")
+    </div>
+</div>
+<script>
+    function SummaryClick() {
+        ClearDivMessages();
+        var jobID = $('#job-id').val();
+        JobNS.POs.length = 0;
+        JobNS.WOs.length = 0;
+        JobNS.COs.length = 0;
+        JobNS.INVs.length = 0;
+        JobNS.tasks.length = 0;
+        JobNS.documents.length = 0;
+        getJobSummary(jobID);
+    }
+    function POClick()
+    {
+        ClearDivMessages();
+        var jobID = $('#job-id').val();
+        JobNS.WOs.length = 0;
+        JobNS.COs.length = 0;
+        JobNS.INVs.length = 0;
+        JobNS.tasks.length = 0;
+        JobNS.documents.length = 0;
+        GetJobPOList(jobID);
+    }
+    function WOClick() {
+        ClearDivMessages();
+        var jobID = $('#job-id').val();
+        JobNS.COs.length = 0;
+        JobNS.POs.length = 0;
+        JobNS.INVs.length = 0;
+        JobNS.tasks.length = 0;
+        JobNS.documents.length = 0;
+        GetJobWOList(jobID);
+    }
+    function INVClick() {
+        ClearDivMessages();
+        var jobID = $('#job-id').val();
+        JobNS.COs.length = 0;
+        JobNS.POs.length = 0;
+        JobNS.WOs.length = 0;
+        JobNS.tasks.length = 0;
+        JobNS.documents.length = 0;
+        GetJobINVList(jobID);
+    }
+    function COClick() {
+        ClearDivMessages();
+        var jobID = $('#job-id').val();
+        JobNS.POs.length = 0;
+        JobNS.WOs.length = 0;
+        JobNS.tasks.length = 0;
+        JobNS.INVs.length = 0;
+        JobNS.documents.length = 0;
+        GetJobCOList(jobID);
+    }
+    function MilestoneClick()
+    {
+        ClearDivMessages();
+        JobNS.WOs.length = 0;
+        JobNS.POs.length = 0;
+        JobNS.COs.length = 0;
+        JobNS.INVs.length = 0;
+        JobNS.documents.length = 0;
+        var jobID = $('#job-id').val();
+        GetJobTaskList(jobID);
+    }
+    function DocumentClick() {
+        ClearDivMessages();
+        JobNS.WOs.length = 0;
+        JobNS.POs.length = 0;
+        JobNS.COs.length = 0;
+        JobNS.tasks.length = 0;
+        JobNS.INVs.length = 0;
+        var jobID = $('#job-id').val();
+        GetJobDocumentList(jobID);
+    }
+    function PermitClick() {
+        ClearDivMessages();
+        JobNS.WOs.length = 0;
+        JobNS.POs.length = 0;
+        JobNS.COs.length = 0;
+        JobNS.tasks.length = 0;
+        JobNS.INVs.length = 0;
+        JobNS.documents.length = 0;
+        var jobID = $('#job-id').val();
+        GetJobInspectionList(jobID);
+    }
+</script>
+<style>
+    .ui-tabs {
+        margin: 0;
+        padding: 0px 0px 0px 0px;
+    }
+</style>

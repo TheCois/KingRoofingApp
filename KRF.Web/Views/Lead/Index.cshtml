@@ -1,0 +1,1012 @@
+﻿@{
+    ViewBag.Title = "Lead";
+    Layout = "~/Views/Shared/_LayoutPage2.cshtml";
+}
+
+@Html.AntiForgeryToken()
+<div class="content_block">
+    <!-- content block -->
+    <br />
+    <div class="gridBlock inventory_page">
+        <div class="head">
+            Leads
+            @if (Convert.ToBoolean(ViewBag.AllowEdit))
+            {
+                <a id="add-lead" class="addLead_saveCancel" href="#">Add Lead</a>
+            }
+        </div>
+        <div class="table-container">
+            <table id="grid-lead" class="display" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        @if (Convert.ToBoolean(ViewBag.AllowEdit))
+                        {
+                            <th></th>
+                        }
+                        <th>ID</th>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Email</th>
+                        <th>Home Phone</th>
+                        <th>Cell Phone</th>
+                        <th>Office Phone</th>
+                        <th>Status</th>
+                        <th>No. Of Estimates</th>
+                        @if (Convert.ToBoolean(ViewBag.AllowEdit))
+                        {
+                            <th></th>
+                        }
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+    <div id="lead-estimate"></div>
+
+</div>
+
+<div id="lead-form-popup" class="form_popup" style="height: 800px !important;">
+    <input id="lead-id" type="hidden" value="0" name="prospect-id">
+    <div class="gridBlockLarge_btnHolder_head">
+        Add Lead
+    </div>
+
+    @*    <div class="headSpacer"></div>*@
+
+    <div id="lead-form" class="formHolder" style="height: 800px !important;">
+        <div id="tabs" style="height: 90% !important;">
+            <ul>
+                <li><a href="#tabs-1">Contact Information</a></li>
+                <li><a href="#tabs-2">Project Information</a></li>
+                <li><a href="#tabs-3">Estimates</a></li>
+                <li><a href="#tabs-4">Proposals</a></li>
+            </ul>
+            <div id="tabs-1" style="height: 90% !important;">
+                <fieldset style="border: 1px solid #dcdcdc;">
+                    <legend>Contact</legend>
+                    <div class="m_block">
+                        <div class="row">
+                            <div class="colLeft">Business Name</div>
+                            <div class="colRight">
+                                <input type="text" id="business-name" class="inputText">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="colLeft">First Name</div>
+                            <div class="colRight">
+                                <input id="first-name" type="text" class="inputText">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="colLeft">Last Name</div>
+                            <div class="colRight">
+                                <input id="last-name" type="text" class="inputText">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="colLeft">Lead Name</div>
+                            <div class="colRight">
+                                <input id="lead-name" type="text" class="inputText">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="m_block">
+                        <div class="row">
+                            <div class="colLeft">Home Phone</div>
+                            <div class="colRight">
+                                <input type="text" id="telephone" class="inputText">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="colLeft">Cell Phone</div>
+                            <div class="colRight">
+                                <input id="cell" type="text" class="inputText">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="colLeft">Office Phone</div>
+                            <div class="colRight">
+                                <input id="office" type="text" class="inputText">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="colLeft">Fax</div>
+                            <div class="colRight">
+                                <input type="text" id="fax" class="inputText">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="colLeft">Email</div>
+                            <div class="colRight">
+                                <input type="text" id="email" class="inputText">
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <div class="clear_fix"></div>
+                <br />
+                <fieldset style="border: 1px solid #dcdcdc;">
+                    <legend>Billing Address</legend>
+                    <div class="m_block">
+                        <div class="row">
+                            <div class="colLeft">
+                                <button id="btn-bill-address" type="button" class="googleMapsButton"></button>&nbsp;&nbsp;Address 1
+                            </div>
+                            <div class="colRight">
+                                <input id="bill-address1" type="text" class="inputText">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="colLeft">
+                                Address 2
+                            </div>
+                            <div class="colRight">
+                                <input id="bill-address2" type="text" class="inputText">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="colLeft">&nbsp;</div>
+                            <div class="colRight">
+                                &nbsp;
+                            </div>
+                        </div>
+                    </div>
+                    <div class="m_block">
+                        <div class="row">
+                            <div class="colLeft">Zip Code</div>
+                            <div class="colRight">
+                                <input type="text" id="bill-zipcode" class="inputText">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="colLeft">City</div>
+                            <div class="colRight">
+                                <input type="text" id="bill-city" class="inputText inputTextReadOnly" readonly>
+                                <input type="text" id="bill-city-id" style="display: none">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="colLeft">State</div>
+                            <div class="colRight">
+                                <select id="bill-state" class="inputText">
+                                    <option value="volvo">Please select</option>
+                                    <option value="saab">State1</option>
+                                    <option value="mercedes">State2</option>
+                                    <option value="audi">State3</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <div class="clear_fix"></div>
+                <br />
+                <div class="single-co-row1">
+                    <div class="m_block1">
+                        <div class="row">
+                            <div class="row-label">Best method of contact </div>
+                            <div class="row-input">
+                                <select id="contact-method" class="inputText">
+                                    <option value="volvo">Please select</option>
+                                    <option value="saab">Saab</option>
+                                    <option value="mercedes">Mercedes</option>
+                                    <option value="audi">Audi</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="row-label">What is your relation to the property?</div>
+                            <div class="row-input">
+                                <select id="property-relationship" class="inputText">
+                                    <option value="volvo">Please select</option>
+                                    <option value="saab">Saab</option>
+                                    <option value="mercedes">Mercedes</option>
+                                    <option value="audi">Audi</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="row-label">How did you hear about us?</div>
+                            <div class="row-input">
+                                <select id="hear-about-us" class="inputText">
+                                    <option value="volvo">Please select</option>
+                                    <option value="saab">Saab</option>
+                                    <option value="mercedes">Mercedes</option>
+                                    <option value="audi">Audi</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div id="calltime" class="row" style="display: none;">
+                            <div class="row-label">When we may call</div>
+                            <div class="row-input">
+                                <div>
+                                    <input type="checkbox" name="Mon" value="">
+                                    <label for="Mon">Mon</label>
+                                    <input type="checkbox" name="Tue" value="">
+                                    <label for="Tue">Tue</label>
+                                    <input type="checkbox" name="Wed" value="">
+                                    <label for="Wed">Wed</label>
+                                    <input type="checkbox" name="Thurs" value="">
+                                    <label for="Thurs">Thurs</label><br />
+                                    <input type="checkbox" name="Fri" value="">
+                                    <label for="Fri">Fri&nbsp;</label>
+                                    <input type="checkbox" name="Sat" value="">
+                                    <label for="Sat">Sat&nbsp;</label>
+                                    <input type="checkbox" name="Sun" value="">
+                                    <label for="Sun">Sun</label>
+                                </div>
+                                <div>
+                                    <input type="checkbox" name="Mor" value="">
+                                    <label for="Mor">Morning</label>
+                                    <input type="checkbox" name="After" value="">
+                                    <label for="After">Afternoon</label>
+                                    <input type="checkbox" name="Eve" value="">
+                                    <label for="Eve">Evening</label>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="m_block1" style="width:35%">
+
+                        <div class="row">
+                            <div class="row-label">Information Taken By</div>
+                            <div class="row-input">
+                                <select id="info-takenby" class="inputText" disabled="disabled">
+                                    <option value="volvo">Please select</option>
+                                    <option value="saab">Saab</option>
+                                    <option value="mercedes">Mercedes</option>
+                                    <option value="audi">Audi</option>
+                                </select>
+                            </div>
+                        </div>
+
+
+                        <div class="m_block1" style="width: 46%">
+                            <div class="row">
+                                <div class="row-label">Assigned To</div>
+
+                                <div class="row-input">
+                                    <select id="assigned-to" class="inputText">
+                                        <option value="volvo">Please select</option>
+                                        <option value="saab">Saab</option>
+                                        <option value="mercedes">Mercedes</option>
+                                        <option value="audi">Audi</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="m_block1" style="width: 53%">
+                            <div class="row appointment">
+                                <div class="row-label">Appointment</div>
+                                <div class="row-input">
+                                    <input id="appnt-date" type="text" class="inputText">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="clear_fix"></div>
+
+                        <div class="row">
+                            <div class="row-label">Status</div>
+                            <div class="row-input">
+                                <select id="status" class="inputText">
+                                    <option value="volvo">Please select</option>
+                                    <option value="saab">Saab</option>
+                                    <option value="mercedes">Mercedes</option>
+                                    <option value="audi">Audi</option>
+                                </select>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="m_block1" style="width:30%">
+                        
+
+                        <div class="row rowTextarea" style="width:290px;">
+                            <div class="row-label">Note</div>
+                            <div class="row-input">
+                                <textarea id="note" class="inputText" style="height: 130px"> </textarea>
+                            </div>
+                        </div>
+
+
+                    </div>
+
+                    
+                </div>
+            </div>
+
+            <div id="tabs-2" style="height: 90% !important;">
+                <fieldset style="border: 1px solid #dcdcdc;">
+                    <legend>Job Address&nbsp;-&nbsp;<input type="checkbox" id="chkSameAsBillingAdd" />&nbsp;Same As Billing Address</legend>
+                    <div class="m_block">
+                        <div class="row">
+                            <div class="colLeft">
+                                <button id="btn-job-address" type="button" class="googleMapsButton"></button>&nbsp;&nbsp;Address 1
+                            </div>
+                            <div class="colRight">
+                                <input id="job-address1" type="text" class="inputText">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="colLeft">
+                                Address 2
+                            </div>
+                            <div class="colRight">
+                                <input id="job-address2" type="text" class="inputText">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="m_block">
+                        <div class="row">
+                            <div class="colLeft">Zip Code</div>
+                            <div class="colRight">
+                                <input type="text" id="job-zipcode" class="inputText">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="colLeft">City</div>
+                            <div class="colRight">
+                                <input type="text" id="job-city" class="inputText inputTextReadOnly" readonly>
+                                <input type="text" id="job-city-id" style="display: none">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="colLeft">State</div>
+                            <div class="colRight">
+                                <select id="job-state" class="inputText">
+                                    <option value="volvo">Please select</option>
+                                    <option value="saab">State1</option>
+                                    <option value="mercedes">State2</option>
+                                    <option value="audi">State3</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+                <div class="single-co-row1">
+                    <div class="m_block1">
+                        <div class="row">
+                            <div class="row-label">Project Type</div>
+                            <div class="row-input">
+                                <select id="project-type" class="inputText">
+                                    <option value="volvo">Please select</option>
+                                    <option value="saab">Saab</option>
+                                    <option value="mercedes">Mercedes</option>
+                                    <option value="audi">Audi</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="row-label">Existing Roof</div>
+                            <div class="row-input">
+                                <select id="existing-roof" class="inputText">
+                                    <option value="volvo">Please select</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="row-label">New Roof Type</div>
+                            <div class="row-input">
+                                <select id="roof-type" class="inputText">
+                                    <option value="volvo">Please select</option>
+                                    <option value="saab">Saab</option>
+                                    <option value="mercedes">Mercedes</option>
+                                    <option value="audi">Audi</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="row-label">Age of Roof</div>
+                            <div class="row-input">
+                                <select id="roof-age" class="inputText">
+                                    <option value="volvo">Please select</option>
+                                    <option value="saab">Saab</option>
+                                    <option value="mercedes">Mercedes</option>
+                                    <option value="audi">Audi</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="row-label">How many stories is your building?</div>
+                            <div class="row-input">
+                                <select id="building-stories" class="inputText">
+                                    <option value="volvo">Please select</option>
+                                    <option value="saab">Saab</option>
+                                    <option value="mercedes">Mercedes</option>
+                                    <option value="audi">Audi</option>
+                                </select>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="m_block1">
+                        <div class="row">
+                            <div class="row-label">When do you expect to begin this project?</div>
+                            <div class="row-input">
+                                <select id="project-start-timelines" class="inputText">
+                                    <option value="volvo">Please select</option>
+                                    <option value="saab">Saab</option>
+                                    <option value="mercedes">Mercedes</option>
+                                    <option value="audi">Audi</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="row-label">Additional Information</div>
+                            <div class="row-input">
+                                <textarea id="additional-info" class="inputText"> </textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tabs-3" style="height: 100% !important;">
+                @if (true || Convert.ToBoolean(ViewBag.AllowEdit))
+                {
+                    <a id="add-estimate" class="addLead_saveCancel" href="#">New Estimate</a><br /><br />
+                }
+                <div class="table-container" style="height: 90% !important;">
+                    <table id="grid-lead-estimates" class="display" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                @if (Convert.ToBoolean(ViewBag.AllowEdit))
+                                {
+                                    <th></th>
+                                }
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Roof Type</th>
+                                <th>Created Date</th>
+                                <th>Contract Price</th>
+                                <th>Status</th>
+                                @if (Convert.ToBoolean(ViewBag.AllowEdit))
+                                {
+                                    <th></th>
+                                }
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+
+                <div class="clear_fix"></div><br />
+            </div>
+        </div>
+        <div class="clear_fix"></div>
+        <div class="popup-footer">
+            <a id="save-lead" class="addLead_saveCancel" href="#">Save & Close</a>
+            <a id="update-lead" class="addLead_saveCancel" href="#">Update</a>
+            <a id="Cancel_PopAss" class="addLead_saveCancel" href="#">Cancel</a>
+        </div>
+        <div id="errorMessages" style="width: 95%; margin-left: 20px; margin-right: 10px;">
+            <div class="alert alert-success alert-dismissable" style="display:none;">
+                <i class="fa fa-check"></i>
+                <button class="close" onclick="$('.alert-success').hide()" type="button">×</button>
+                <div id="dvSuccess"></div>
+            </div>
+            <div class="alert alert-danger alert-dismissable" style="display: none;">
+                <i class="fa fa-ban"></i>
+                <button class="close" onclick="$('.alert-danger').hide()" type="button">×</button>
+                <div id="dvError"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="madals" class="madals"></div>
+<!-- modals and popup end-->
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        var token = $('[name=__RequestVerificationToken]').val();
+        jQuery('#appnt-date').datetimepicker(
+            {
+                allowTimes: [
+                    '6:00', '6:30',
+                    '7:00', '7:30',
+                    '8:00', '8:30',
+                    '9:00', '9:30',
+
+                    '10:00', '10:30',
+                    '11:00', '11:30',
+                    '12:00', '12:30',
+                    '13:00', '13:30',
+
+                    '14:00', '14:30',
+                    '15:00', '15:30',
+                    '16:00', '16:30',
+                    '17:00', '17:30',
+
+                    '18:00', '18:30',
+                    '19:00', '19:30',
+                    '20:00', '20:30',
+                    '21:00'
+                ]
+            }
+        );
+        //var keyValue = {};
+
+        $("#tabs").tabs();
+
+        $("#add-lead").click(function () {
+
+            $("#tabs").tabs("option", "active", 0);
+
+            $("#status").populateDropDownList(keyValue.status, 0);
+            $("#bill-state").populateDropDownList(keyValue.state, 0);
+            $("#job-state").populateDropDownList(keyValue.state, 0);
+            $("#bill-country").populateDropDownList(keyValue.country, 0);
+            $("#job-country").populateDropDownList(keyValue.country, 0);
+
+            $("#contact-method").populateDropDownList(keyValue.contactMethod, 0);
+            $("#hear-about-us").populateDropDownList(keyValue.hearAboutUsList, 0);
+            $("#property-relationship").populateDropDownList(keyValue.propertyRelationship, 0);
+            $("#project-start-timelines").populateDropDownList(keyValue.projectStartTimelines, 0);
+            $("#project-type").populateDropDownList(keyValue.projectTypes, 0);
+            $("#roof-age").populateDropDownList(keyValue.roofAgeList, 0);
+            $("#building-stories").populateDropDownList(keyValue.buildingStoriesList, 0);
+            $("#roof-type").populateDropDownList(keyValue.roofTypes, 0);
+            $("#existing-roof").populateDropDownList(keyValue.existingRoofs, 0);
+            $("#info-takenby").populateDropDownList(keyValue.employees, '@KRF.Web.SessionManager.EmpID');
+            $("#assigned-to").populateDropDownList(keyValue.employees, 0);
+
+
+            $("input[name='Mon']").prop("checked", false);
+            $("input[name='Tue']").prop("checked", false);
+            $("input[name='Wed']").prop("checked", false);
+            $("input[name='Thurs']").prop("checked", false);
+            $("input[name='Fri']").prop("checked", false);
+            $("input[name='Sat']").prop("checked", false);
+            $("input[name='Sun']").prop("checked", false);
+            //Sat: $("input[name='Mon']").val(),
+            $("input[name='Mor']").prop("checked", false);
+            $("input[name='After']").prop("checked", false);
+            $("input[name='Eve']").prop("checked", false);
+
+            $("#lead-form-popup").show();
+            $("#madals").css({ "height": $(document).height(), "width": $(document).width() });
+            $("#madals").show();
+        });
+
+        var id = GetParameterValues('ID');
+
+
+        $("#Cancel_PopAss").click(function () {
+            $("#madals").hide();
+            $("#lead-form-popup").hide();
+            $("#lead-form-popup input[type=text]").val("");
+            $("#lead-form-popup textarea").val("");
+            window.location.href = '@Url.Action("Index", "Lead")';
+        });
+
+        $(document).keyup(function (e) {
+            if (e.keyCode === 27) $("#Cancel_PopAss").click();   // esc
+        });
+
+        $('#grid-lead').dataTable({
+            "order": [[1, "desc"]],
+            columnDefs: [
+                { className: "dt-left", targets: [0, 1, 2, 3, 4, 5, 6, 7, 8, 10] },
+                { className: "dt-right", targets: [9] }
+            ],
+            "sAjaxSource": '@Url.Action("GetLeads", "Lead")',
+            "iDisplayLength": 100,
+            //"aLengthMenu": [[5, 10, 25, 50, 100, -1], [5, 10, 25, 50, 100, "All"]],
+            "fnServerData": function (sSource, aoData, fnCallback) {
+                aoData.push({ "name": "ID", "value": 5 });
+                $.getJSON(sSource, aoData, function (json) {
+                    keyValue = json.keyValue;
+                    fnCallback(json);
+                    if (id == 0) {
+                        $("#add-lead").click();
+                    }
+                });
+            }
+        });
+
+        $("#chkSameAsBillingAdd").change(function () {
+            if (this.checked) {
+                $("#job-address1").val($("#bill-address1").val());
+                $("#job-address2").val($("#bill-address2").val());
+                $("#job-state").val($("#bill-state option:selected").val());
+                $("#job-city-id").val($("#bill-city-id").val());
+                $("#job-city").val($("#bill-city").val());
+                $("#job-zipcode").val($("#bill-zipcode").val());
+            }
+        });
+
+        $("#save-lead").on("click", function () {
+            Save(true);
+        });
+        $("#update-lead").on("click", function () {
+            Save(false);
+        });
+
+        function Save(close) {
+            $('.alert-danger').find('#dvError').text('');
+            $('.alert-danger').hide();
+            $('.alert-success').find('#dvSuccess').text('');
+            $('.alert-success').hide();
+
+            if ($("#appnt-date").val() == "") {
+                $('.alert-danger').show();
+                $('.alert-danger').find('#dvError').text('Please enter appointment date');
+                return;
+            }
+            var frequency = {
+                Mon: $("input[name='Mon']").prop('checked'),
+                Tue: $("input[name='Tue']").prop('checked'),
+                Wed: $("input[name='Wed']").prop('checked'),
+                Thurs: $("input[name='Thurs']").prop('checked'),
+                Fri: $("input[name='Fri']").prop('checked'),
+                Sat: $("input[name='Sat']").prop('checked'),
+                Sun: $("input[name='Sun']").prop('checked'),
+                Mor: $("input[name='Mor']").prop('checked'),
+                After: $("input[name='After']").prop('checked'),
+                Eve: $("input[name='Eve']").prop('checked')
+            };
+
+            var callTime = JSON.stringify(frequency);
+
+            var lead = {
+                ID: parseInt($("#lead-id").val()),
+                LeadName: $("#lead-name").val(),
+                FirstName: $("#first-name").val(),
+                LastName: $("#last-name").val(),
+                BusinessName: $("#business-name").val(),
+                Email: $("#email").val(),
+                Telephone: $("#telephone").val(),
+                Cell: $("#cell").val(),
+                Office: $("#office").val(),
+                Fax: $("#fax").val(),
+
+                ContactMethod: parseInt($("#contact-method option:selected").val()),
+                PropertyRelationship: parseInt($("#property-relationship option:selected").val()),
+                HearAboutUs: parseInt($("#hear-about-us option:selected").val()),
+                RoofType: parseInt($("#roof-type option:selected").val()),
+                RoofAge: parseInt($("#roof-age option:selected").val()),
+                NumberOfStories: parseInt($("#building-stories option:selected").val()),
+                ProjectType: parseInt($("#project-type option:selected").val()),
+                ProjectStartTimeline: parseInt($("#project-start-timelines option:selected").val()),
+                Status: parseInt($("#status option:selected").val()),
+
+
+                CallTime: callTime,
+                Note: $("#note").val(),
+
+                InfoTakenBy: parseInt($("#info-takenby option:selected").val()),
+                AssignedTo: parseInt($("#assigned-to option:selected").val()),
+                AppointmentDateTime: $("#appnt-date").val(),
+
+                AdditionalInfo: $("#additional-info").val(),
+
+                BillAddress1: $("#bill-address1").val(),
+                BillAddress2: $("#bill-address2").val(),
+                BillState: $("#bill-state option:selected").val(),
+                BillCity: $("#bill-city-id").val(),
+                BillCountry: $("#bill-country option:selected").val(),
+                BillZipCode: $("#bill-zipcode").val(),
+
+                JobAddress1: $("#job-address1").val(),
+                JobAddress2: $("#job-address2").val(),
+                JobState: $("#job-state option:selected").val(),
+                JobCity: $("#job-city-id").val(),
+                JobCountry: $("#job-country option:selected").val(),
+                JobZipCode: $("#job-zipcode").val(),
+                ExistingRoof: parseInt($("#existing-roof option:selected").val()),
+                __RequestVerificationToken: token
+            }
+            openModal();
+            $.ajax({
+                url: '@Url.Action("Save", "Lead")',
+                type: 'POST',
+                data: lead,
+                success: function (data) {
+                    $("#lead-id").val(data.id);
+                    closeModal();
+
+                    if (close) {
+                        $("#madals").hide();
+                        $("#lead-form-popup").hide();
+
+                        window.location.href = '@Url.Action("Index", "Lead")';
+                    }
+                    else {
+                        $('.alert-success').show();
+                        $('.alert-success').find('#dvSuccess').text(data.message);
+                    }
+                }
+            });
+        }
+
+        $(document).on("click", "#grid-lead .edit-lead", function () {
+            var id = $(this).attr("data-val");
+            openModal();
+            $.ajax({
+                url: '@Url.Action("GetLead", "Lead")',
+                type: 'POST',
+                data: { id: id, __RequestVerificationToken: token },
+                success: function (data) {
+                    $("#lead-id").val(data.lead.ID);
+                    $("#lead-name").val(data.lead.LeadName);
+                    $("#first-name").val(data.lead.FirstName);
+                    $("#last-name").val(data.lead.LastName);
+                    $("#business-name").val(data.lead.BusinessName);
+                    $("#email").val(data.lead.Email);
+                    $("#telephone").val(data.lead.Telephone);
+                    $("#cell").val(data.lead.Cell);
+                    $("#office").val(data.lead.Office);
+                    $("#fax").val(data.lead.Fax);
+
+                    $("#status").populateDropDownList(keyValue.status, data.lead.Status);
+                    $("#bill-state").populateDropDownList(keyValue.state, data.lead.BillState);
+                    $("#job-state").populateDropDownList(keyValue.state, data.lead.JobState);
+
+                    $("#bill-city-id").val(data.lead.BillCity);
+                    if (data.lead.BillCity > 0)
+                        $("#bill-city").val(keyValue.city[(data.lead.BillCity - 1)].Description);
+                    $("#job-city-id").val(data.lead.JobCity);
+                    if (data.lead.JobCity > 0)
+                        $("#job-city").val(keyValue.city[(data.lead.JobCity - 1)].Description);
+
+                    $("#bill-country").populateDropDownList(keyValue.country, data.lead.BillCountry);
+                    $("#job-country").populateDropDownList(keyValue.country, data.lead.JobCountry);
+
+                    $("#contact-method").populateDropDownList(keyValue.contactMethod, data.lead.ContactMethod);
+                    $("#hear-about-us").populateDropDownList(keyValue.hearAboutUsList, data.lead.HearAboutUs);
+                    $("#property-relationship").populateDropDownList(keyValue.propertyRelationship, data.lead.PropertyRelationship);
+                    $("#project-start-timelines").populateDropDownList(keyValue.projectStartTimelines, data.lead.ProjectStartTimeline);
+                    $("#project-type").populateDropDownList(keyValue.projectTypes, data.lead.ProjectType);
+                    $("#roof-age").populateDropDownList(keyValue.roofAgeList, data.lead.RoofAge);
+                    $("#building-stories").populateDropDownList(keyValue.buildingStoriesList, data.lead.NumberOfStories);
+                    $("#roof-type").populateDropDownList(keyValue.roofTypes, data.lead.RoofType);
+                    $("#existing-roof").populateDropDownList(keyValue.existingRoofs, data.lead.ExistingRoof);
+
+                    $("#info-takenby").populateDropDownList(keyValue.employees, data.lead.InfoTakenBy);
+                    $("#assigned-to").populateDropDownList(keyValue.employees, data.lead.AssignedTo);
+
+                    $("#additional-info").val(data.lead.AdditionalInfo);
+
+                    $("#note").val(data.lead.Note);
+
+                    $("#appnt-date").val(data.appointment);
+
+                    $("#bill-address1").val(data.lead.BillAddress1);
+                    $("#bill-address2").val(data.lead.BillAddress2);
+                    //$("#bill-city").val(data.lead.BillCity);
+                    $("#bill-zipcode").val(data.lead.BillZipCode);
+
+                    $("#job-address1").val(data.lead.JobAddress1);
+                    $("#job-address2").val(data.lead.JobAddress2);
+                    //$("#job-city").val(data.lead.JobCity);
+                    $("#job-zipcode").val(data.lead.JobZipCode);
+
+                    var callTime = $.parseJSON(data.lead.CallTime);
+
+                    if (callTime != null) {
+                        $("input[name='Mon']").prop("checked", callTime.Mon);
+                        $("input[name='Tue']").prop("checked", callTime.Tue);
+                        $("input[name='Wed']").prop("checked", callTime.Wed);
+                        $("input[name='Thurs']").prop("checked", callTime.Thurs);
+                        $("input[name='Fri']").prop("checked", callTime.Fri);
+                        $("input[name='Sat']").prop("checked", callTime.Sat);
+                        $("input[name='Sun']").prop("checked", callTime.Sun);
+                        //Sat: $("input[name='Mon']").val(),
+                        $("input[name='Mor']").prop("checked", callTime.Mor);
+                        $("input[name='After']").prop("checked", callTime.After);
+                        $("input[name='Eve']").prop("checked", callTime.Eve);
+                    }
+
+                    createLeadEstimatesTable(data.lead.ID);
+
+                    $("#tabs").tabs("option", "active", 0);
+                    $("#lead-form-popup").show();
+                    $('#lead-form-popup').css(
+                        { "top": (window.pageYOffset + 10) + 'px' });
+                    $("#madals").css({ "height": $(document).height(), "width": $(document).width() });
+                    $("#madals").show();
+                    $('#update-lead').show();
+                    closeModal();
+                }
+            });
+        });
+
+        $(document).on("click", "#grid-lead .delete-lead", function () {
+            var id = $(this).attr("data-val");
+
+            BootstrapDialog.confirm('Are you sure you want to delete?', function (result) {
+                if (result) {
+                    openModal();
+                    $.ajax({
+                        url: '@Url.Action("DeleteLead", "Lead")',
+                        type: 'POST',
+                        data: { id: id, __RequestVerificationToken: token },
+                        success: function (data) {
+                            closeModal();
+                            if (data.hasSaved) {
+                                window.location.href = '@Url.Action("Index", "Lead")';
+                            }
+                            else {
+                                BootstrapDialog.alert('Some error occured while deleting.');
+                            }
+                        }
+                    });
+                } else {
+                    //alert('Nope.');
+                }
+            });
+
+        });
+
+        $("#lead-link").addClass("linkBtn linkBtnAdd_Selected");
+
+        $(window).resize(function () {
+            $('.form_popup').center();
+        });
+
+        function getCityAndState(addressType) {
+            var currentZipCode = $("#" + addressType + "-zipcode").val();
+            if (currentZipCode.length < 5)
+                return;
+            if (currentZipCode.length > 5)
+                currentZipCode = currentZipCode.substring(0, 5);
+
+            $.ajax({
+                url: "@(Url.Action("GetCityAndState", "Base"))",
+                type: "GET",
+                dataType: "json",
+                data: { zipCode: currentZipCode },
+                success: function (obj) {
+                    var cityId = obj['city'];
+                    if (cityId != undefined && cityId != null)
+                        $("#" + addressType + "-city-id").val(cityId);
+                    cityId--;
+                    var cityName = keyValue.city[cityId].Description;
+                    if (cityName != undefined && cityName != null)
+                        $("#" + addressType + "-city").val(cityName);
+
+                    var stateId = states[obj['state']];
+                    if (stateId > 0) {
+                        $("#" + addressType + "-state option")
+                            .prop("selected", false);
+                        $("#" + addressType + "-state option:eq('" + stateId + "')")
+                            .prop("selected", true);
+                    }
+                }
+            });
+        }
+
+        $("#bill-zipcode").on("input propertychange paste", function () {
+            getCityAndState("bill");
+        });
+
+        $("#job-zipcode").on("input propertychange paste", function () {
+            getCityAndState("job");
+        });
+
+        $("#btn-bill-address").click(function () {
+            var url = 'http://maps.google.com/maps?daddr=' + $("#bill-address1").val() + "+" + $("#bill-address2").val() + "+" + $("#bill-zipcode").val() + "+" + $("#bill-city").val();
+            var redirectWindow = window.open(url, '_blank');
+            redirectWindow.location;
+        });
+
+        $("#btn-job-address").click(function () {
+            var url = 'http://maps.google.com/maps?daddr=' + $("#job-address1").val() + "+" + $("#job-address2").val() + "+" + $("#job-zipcode").val() + "+" + $("#job-city").val();
+            var redirectWindow = window.open(url, '_blank');
+            redirectWindow.location;
+        });
+
+        $.mask.definitions['~'] = "[+-]";
+
+        $("#telephone").mask("(999) 999-9999");
+        $("#cell").mask("(999) 999-9999");
+        $("#fax").mask("(999) 999-9999");
+
+        $("#office").mask("(999) 999-9999? x99999");
+
+
+
+        function createLeadAddrTable(leadAddressTable) {
+            $('#grid-address').dataTable().fnDestroy();
+            $('#grid-address').dataTable({
+                "columnDefs": [
+                    { className: "dt-left", targets: [0, 1, 2, 3, 4, 5, 6] }
+                ],
+                "scrollY": "100px",
+                "scrollCollapse": true,
+                "paging": false,
+                "iDisplayLength": 5,
+                "bLengthChange": false,
+                "bFilter": false,
+                "bInfo": false,
+                "bSort": false,
+                "bAutoWidth": false,
+                "aaData": leadAddressTable
+            });
+        }
+
+        function createLeadEstimatesTable(leadID) {
+            $('#grid-lead-estimates').dataTable({
+                "order": [[1, "desc"]],
+                "iDisplayLength": 10,
+                "scrollY": "360px",
+                "scrollCollapse": true,
+                "paging": false,
+                columnDefs: [
+                    { className: "dt-left", targets: [0, 2, 3, 6] },
+                    { className: "dt-right", targets: [1, 4, 5] }
+                ],
+                "ajax": {
+                    'type': 'GET',
+                    'url': '@Url.Action("GetEstimates", "Estimate")',
+                    'data': {
+                        customerID: leadID
+                    }
+                }
+            });
+        }
+
+
+        $("#grid-lead-estimates").on("click", ".edit-estimate", function () {
+            var id = $(this).attr("data-val");
+            openModal();
+            $.ajax({
+                url: '@Url.Action("Estimate", "Estimate")',
+                type: 'POST',
+                data: { id: id },
+                success: function (data) {
+                    $("#lead-estimate").html(data);
+                    //$("#list-lead").hide();
+                    $("#madals").hide();
+                    //$("#lead-form-popup").hide();
+                    //$("#list-estimate").hide();
+                    closeModal();
+                }
+            });
+
+        });
+
+        $("#tabs-3").on("click", "#add-estimate", function () {
+            openModal();
+            $.ajax({
+                url: '@Url.Action("Estimate", "Estimate")',
+                type: 'POST',
+                data: { id: 0 },
+                success: function (data) {
+                    var leadID = parseInt($("#lead-id").val());
+                    createLeadEstimatesTable(leadID);
+                    closeModal();
+                }
+            });
+        });
+
+        $(document).on("click", "#grid-lead-estimates .delete-estimate", function () {
+            var id = $(this).attr("data-val");
+            BootstrapDialog.confirm('Are you sure you want to delete?', function (result) {
+                if (result) {
+                    openModal();
+                    $.ajax({
+                        url: '@Url.Action("DeleteEstimate", "Estimate")',
+                        type: 'POST',
+                        data: { id: id },
+                        success: function (data) {
+                            $("#lead-estimate").html(data);
+                            //$("#list-lead").hide();
+                            $("#madals").hide();
+                            //$("#lead-form-popup").hide();
+                            //$("#list-estimate").hide();
+                            closeModal();
+                        }
+                    });
+                } else {
+                    //alert('Nope.');
+                }
+            });
+        });
+    });
+</script>

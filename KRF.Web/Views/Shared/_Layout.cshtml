@@ -1,0 +1,49 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>@ViewBag.Title </title>
+        <link rel="icon" type="img/png" href="@Url.Content("~/Content/themes/base/images/favicon.png")">
+        <link href="~/Content/themes/base/mybootstrap.css" rel="stylesheet" />
+        <link rel="stylesheet" href="~/Content/themes/base/jquery-ui-1.11.2.css">
+        <link href="~/Content/themes/base/bootstrap-dialog.min.css" rel="stylesheet" />
+        @Styles.Render("~/Content/themes/base/default-css")
+        
+        <meta name="viewport" content="width=device-width" />
+        @section Scripts{
+            
+        }
+        
+            @Scripts.Render("~/bundles/jquery")    
+            @Scripts.Render("~/bundles/modernizr")
+            @Scripts.Render("~/bundles/scripts")
+        <script src="~/Scripts/jquery-ui-1.11.2.js"></script>
+        <script src="~/Scripts/bootstrap-dialog.min.js"></script>
+
+    </head>
+    <body>
+        <header>
+            
+        </header>
+        <div id="body">
+            @RenderSection("featured", required: false)
+                    
+            <section class="content-wrapper main-content clear-fix">
+                @RenderBody()
+            </section>
+        </div>
+        <footer>
+            <div class="content-wrapper">
+                <div class="float-left">
+                    
+                </div>
+            </div>
+        </footer>
+        <div id="fade"></div>
+        <div id="modal">
+            <img id="loader" src="~/Content/assets/images/loading.gif" />
+        </div>
+        
+        @RenderSection("scripts", required: false)
+    </body>
+</html>

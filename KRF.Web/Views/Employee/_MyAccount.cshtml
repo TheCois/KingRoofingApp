@@ -1,0 +1,158 @@
+﻿@model KRF.Web.Models.EmployeeData
+<input id="employee-id" type="hidden" value="0" name="employee-id">
+<div id="employeeadd" class="gridBlock inventory_page">
+    <div id="myaccount-form" class="formHolder">
+        <div class="m_block">
+            <div class="row">
+                <div class="colLeft">First Name</div>
+                <div class="colRight">
+                    <input id="mc-first-name" type="text" class="inputText" maxlength="50" readonly>
+                </div>
+            </div>
+            <div class="row">
+                <div class="colLeft">Last Name</div>
+                <div class="colRight">
+                    <input id="mc-last-name" type="text" class="inputText" maxlength="50" readonly>
+                </div>
+            </div>
+            <div class="row">
+                <div class="colLeft">Title</div>
+                <div class="colRight">
+                    <input id="mc-title" type="text" class="inputText" maxlength="10" readonly>
+                </div>
+            </div>
+            <div class="row">
+                <div class="colLeft">Type</div>
+                <div class="colRight">
+                    <input type="text" id="type" class="inputText" maxlength="50" readonly>
+                </div>
+            </div>
+            <div class="row">
+                <div class="colLeft">Home Address</div>
+                <div class="colRight">
+                    <input type="text" id="home-address" class="inputText" maxlength="200" readonly>
+                </div>
+            </div>
+            <div class="row">
+                <div class="colLeft">Phone Number 1</div>
+                <div class="colRight">
+                    <input type="text" id="phone-1" class="inputText" maxlength="15" readonly>
+                </div>
+            </div>
+            <div class="row">
+                <div class="colLeft">Phone Number 2</div>
+                <div class="colRight">
+                    <input type="text" id="phone-2" class="inputText" maxlength="15" readonly>
+                </div>
+            </div>
+            <div class="row">
+                <div class="colLeft">Email</div>
+                <div class="colRight">
+                    <input type="text" id="EmailID" class="inputText" maxlength="50" readonly>
+                </div>
+            </div>
+            <div class="row">
+                <div class="colLeft">Password</div>
+                <div class="colRight">
+                    <input type="password" id="Password" class="inputText" maxlength="50" readonly>
+                </div>
+            </div>
+            <div class="row">
+                <div class="colLeft">Confirm Password</div>
+                <div class="colRight">
+                    <input type="password" id="ConfirmPassword" class="inputText" maxlength="50" readonly>
+                </div>
+            </div>
+            <div class="row">
+                &nbsp;
+            </div>
+        </div>
+
+        <div class="m_block">
+            <div class="row">
+                <div class="colLeft">Hourly Rate</div>
+                <div class="colRight">
+                    <input type="text" id="hourly-rate" class="inputText" maxlength="6" readonly>
+                </div>
+            </div>
+            <div class="row">
+                <div class="colLeft">Territory</div>
+                <div class="colRight">
+                    <select id="territories" class="inputText" style="width: calc(100% - 15px)" disabled>
+                        <option value="volvo">Please select</option>
+                        <option value="saab">Saab</option>
+                        <option value="mercedes">Mercedes</option>
+                        <option value="audi">Audi</option>
+                    </select>
+                </div>
+            </div>
+            <fieldset class="upcommingsession-border">
+                <legend class="upcommingsession-border">Emergency Contact</legend>
+                <div style="height:18px">&nbsp;</div>
+                <div class="control-group">
+                    <div class="row">
+                        <div class="colLeft" style="width:100px">Name</div>
+                        <div class="colRight">
+                            <input type="text" id="emergency-contact-name" class="inputText" maxlength="100" readonly>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="colLeft" style="width:100px">Phone 1</div>
+                        <div class="colRight">
+                            <input type="text" id="emergency-phone1" class="inputText" maxlength="15" readonly>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="colLeft" style="width:100px">Phone 2</div>
+                        <div class="colRight">
+                            <input type="text" id="emergency-phone2" class="inputText" maxlength="15" readonly>
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+            <div class="row">
+                <div class="colLeft">Driving License #</div>
+                <div class="colRight">
+                    <input type="text" id="dl" class="inputText" maxlength="20" readonly>
+                </div>
+            </div>
+            @*<div class="row">
+                <div class="colLeft">Is Admin?</div>
+                <div class="colRight">
+                    <input type="checkbox" name="IsAdmin" id="IsAdmin" disabled/>
+                </div>
+            </div>*@
+            <div class="row">
+                <div class="colLeft">Role</div>
+                <div class="colRight">
+                    <select id="roleList" required="required" disabled class="inputText" style="width: calc(100% - 15px)">
+                        <option value="volvo">Please select</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row">
+                &nbsp;
+            </div>
+        </div>
+
+    </div>
+    <input type="hidden" id="middle-name" />
+    <input type="hidden" id="address-line2" />
+    <input type="hidden" id="city" />
+    <input type="hidden" id="state" />
+    <input type="hidden" id="zip" />
+    <input type="hidden" id="EmpPhone2" />
+    <input type="hidden" id="EmpPhone3" />
+    @*<input type="hidden" id="EmailID" />*@
+    <input type="hidden" id="DateCreated" />
+    <input type="hidden" id="DateUpdated" />
+    <input type="hidden" id="UserID" />
+    <input type="hidden" id="AppAccess" />
+    <input type="hidden" id="Status" />
+    <div class="clear_fix"></div>
+
+    @*<div class="popup-footer">
+            <a id="save-employee" class="addLead_saveCancel" href="#">Save</a>
+            <a id="Cancel_PopAss" class="addLead_saveCancel" href="#">Cancel</a>
+        </div>*@
+</div>

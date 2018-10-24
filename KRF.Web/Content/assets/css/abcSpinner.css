@@ -1,0 +1,43 @@
+.spinner {
+    background: none repeat scroll 0 0 #ccc;
+    border-radius: 3px;
+    height: 20px;
+    margin: 4px 0 0;
+    overflow: hidden;
+    width: 45px;
+    border: 1px solid #015cb5;
+}
+.spinner_inputText{
+width:20px;
+height:20px;
+line-height:20px;
+vertical-align:middle;
+background:#dbe4e9;
+border:none;
+padding:0 5px 0 5px;
+text-align:center;	
+color: #565656;
+    float: left;
+    font-size: 13px;
+}
+.spinner_btnHolder{
+width:15px;
+height:20px;
+line-height:20px;
+float:left;
+
+}
+.spinner_btnUp{
+width:15px;
+height:9px;
+background:#015cb5 url(../images/spinUp.png) no-repeat;
+display:block;
+border-bottom:1px solid #dbe4e9;
+}
+.spinner_btnDown{
+width:15px;
+height:10px;
+background:#004b8e;
+display:block;
+background:#015cb5 url(../images/spinDown.png) no-repeat;
+}

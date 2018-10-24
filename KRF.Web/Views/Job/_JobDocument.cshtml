@@ -1,0 +1,71 @@
+﻿<style>
+    #job-document .content_block .gridBlock {
+        background: none repeat scroll 0 0 #fff;
+        border: 1px solid #d4d4d4;
+        border-radius: 3px 3px 0 0;
+        height: 100%;
+        margin: 0 20px 25px;
+        width: 100%;
+    }
+    #job-document .content_block {
+        min-height:100px;
+    }
+    #job-document .table-container {
+        font-size: 0.75em;
+    }
+</style>
+<div id="job-doc-form" class="formHolder" style="width:100%;">
+    <div class="clear_fix"></div><br />
+    <form id="job-document" name="job-document" enctype="multipart/form-data" style="border: 2px solid #eeeeee; height:50px;">
+        <input type="hidden" name="uploaddatetime" id="uploaddatetime" class="inputText" />
+        <input type="hidden" name="jobID" id="jobID" />
+        <input type="hidden" name="id" id="id" value="0" />
+        <div class="clear_fix"></div>
+        <div class="m_block" style="width: 500px; height:100px">
+            <div class="row" style="width: 500px">
+                <div class="colLeft" style="width: 100px">Document </div>
+                <div class="colRight">
+                    <input id="file" class="uploadBtn" type="file" style="font-family: Verdana,Arial,sans-serif; font-size: 13px; float: left; margin-top: 3px;" name="file">
+                </div>
+            </div>
+        </div>
+        <div class="m_block" style="width: 500px; height: 100px">
+            <div class="row" style="width: 500px; float: left; ">
+                <div class="colLeft" style="width: 250px; float: left;">
+                    Type
+                    <select id="documenttypes" class="inputText" style="width:200px">
+                        <option value="volvo">Please select</option>
+                        <option value="saab">Change Order</option>
+                        <option value="mercedes">Invoice</option>
+                        <option value="audi">Purchase Order</option>
+                        <option value="audi">Work Order</option>
+                    </select>
+                </div>
+                <div class="colRight" style="width: 230px;">
+                    <a id="save-job-doc" class="addLead_saveCancel" style="margin:0px" href="#">Save</a>
+                </div>
+            </div>
+        </div>
+        <div class="clear_fix"></div>
+    </form>
+    <div class="clear_fix"></div><br />
+    <div id="content_block" class="content_block" style="width:100%">
+        <div id="list-document-item" class="gridBlock inventory_page" style="margin: 0px; width: 100%">
+            <div class="table-container" style="border-color: black; border-width:1px">
+                <table id="grid-job-docs" class="display" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th width="35%">Name</th>
+                            <th width="20%">Type</th>
+                            <th width="20%">Upload Date & Time</th>
+                            <th width="10%"></th>
+                            <th width="10%"></th>
+                        </tr>
+                    </thead>
+                </table>
+                <div class="clear_fix"></div>
+            </div>
+            <div class="clear_fix"></div>
+        </div>
+    </div>
+</div>

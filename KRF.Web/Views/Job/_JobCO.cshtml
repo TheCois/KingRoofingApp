@@ -1,0 +1,52 @@
+﻿<style>
+    #job-CO .row .row-input {
+        height: 30px;
+        line-height: 30px;
+        vertical-align: middle;
+        color: #333;
+        font-size: 13px;
+    }
+
+    #job-CO .table-container {
+        font-size: 0.75em;
+    }
+</style>
+<form id="job-CO" name="job-CO" enctype="multipart/form-data">
+    <input id="job-co-id" type="hidden" />
+    <div style="width:100%;" id="dvCOList">
+        @Html.Partial("_JobCOList")
+    </div>
+    <div style="width:100%; display:none" id="dvCOAdd">
+        @Html.Partial("_JobCOAdd")
+    </div>
+</form>
+<script>
+    $('#grid-items-co').dataTable({
+        "bFilter": true,
+        "bInfo": false,
+        "bPaginate": true,
+        "bSort": false,
+        "columnDefs": [
+            { className: "dt-left", targets: [0, 1, 4, 5, 6] },
+            { className: "dt-right", targets: [2, 3] },
+            { defaultContent: "", render: $.fn.dataTable.render.number(',', '.', 2), targets: [3] }
+        ],
+        "iDisplayLength": 10
+    });
+    $('#grid-items-co-estimates').dataTable({
+        "bFilter": false,
+        "bInfo": false,
+        "bPaginate": false,
+        "bSort": false,
+        "iDisplayLength": 10
+    });
+    jQuery('#codate').datetimepicker(
+        {
+            lang: 'en',
+            timepicker: false,
+            format: 'm/d/Y',
+            formatDate: 'm/d/Y',
+            closeOnDateSelect: true
+        }
+    );
+</script>

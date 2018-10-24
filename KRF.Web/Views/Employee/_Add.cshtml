@@ -1,0 +1,297 @@
+﻿@model KRF.Web.Models.EmployeeData
+<input id="employee-id" type="hidden" value="0" name="employee-id">
+<div id="employeeadd" class="gridBlock inventory_page">
+    <div class="head">
+        Add/Edit Employee
+        <a id="save-employee" class="addLead_saveCancel" href="#">Save & Close</a>
+        <a id="update-employee" class="addLead_saveCancel" href="#">Update</a>
+        <a id="Cancel_PopAss" class="addLead_saveCancel" href="#">Cancel</a>
+    </div>
+    <div class="headSpacer"></div>
+    <div id="errorMessages" style="width: 95%; margin-left: 20px; margin-right: 10px;">
+        <div class="alert alert-success alert-dismissable" style="display:none;">
+            <i class="fa fa-check"></i>
+            <button class="close" onclick="$('.alert-success').hide()" type="button">×</button>
+            <div id="dvSuccess"></div>
+        </div>
+        <div class="alert alert-danger alert-dismissable" style="display: none;">
+            <i class="fa fa-ban"></i>
+            <button class="close" onclick="$('.alert-danger').hide()" type="button">×</button>
+            <div id="dvError"></div>
+        </div>
+    </div>
+    <div id="employee-form" class="formHolder">
+        <div class="m_block">
+            <div class="row">
+                <div class="colLeft" style="width:150px">First Name</div>
+                <div class="colRight">
+                    <input id="first-name" type="text" class="inputText" maxlength="50">
+                </div>
+            </div>
+            <div class="row">
+                <div class="colLeft" style="width:150px">Last Name</div>
+                <div class="colRight">
+                    <input id="last-name" type="text" class="inputText" maxlength="50">
+                </div>
+            </div>
+            <div class="row">
+                <div class="colLeft" style="width:150px">Title</div>
+                <div class="colRight">
+                    <input id="title" type="text" class="inputText" maxlength="25">
+                </div>
+            </div>
+            <div class="row">
+                <div class="colLeft" style="width:150px">Type</div>
+                <div class="colRight">
+                    <input type="text" id="type" class="inputText" maxlength="50">
+                </div>
+            </div>
+            <div class="row">
+                <div class="colLeft" style="width:150px">
+                    <button id="btn-home-address" type="button" class="googleMapsButton"></button>&nbsp;&nbsp;Home&nbsp;Address&nbsp;1
+                </div>
+                <div class="colRight">
+                    <input type="text" id="home-address" class="inputText" maxlength="200">
+                </div>
+            </div>
+            <div class="row">
+                <div class="colLeft" style="width:150px">Home&nbsp;Address&nbsp;2</div>
+                <div class="colRight">
+                    <input type="text" id="address-line2" class="inputText" maxlength="200">
+                </div>
+            </div>
+            <div class="row">
+                <div class="colLeft" style="width:150px">Zip Code</div>
+                <div class="colRight">
+                    <input type="text" id="zipcode" class="inputText">
+                </div>
+            </div>
+            <div class="row">
+                <div class="colLeft" style="width:150px">City</div>
+                <div class="colRight">
+                    <input type="text" id="city" class="inputText inputTextReadOnly" readonly>
+                    <input type="text" id="city-id" style="display: none">
+                </div>
+            </div>
+            <div class="row">
+                <div class="colLeft" style="width:150px">State</div>
+                <div class="colRight">
+                    <select id="state" class="inputText">
+                        <option value="volvo">Please select</option>
+                        <option value="saab">State1</option>
+                        <option value="mercedes">State2</option>
+                        <option value="audi">State3</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row">
+                <div class="colLeft" style="width:150px">Phone Number 1</div>
+                <div class="colRight">
+                    <input type="text" id="phone-1" class="inputText" maxlength="15">
+                </div>
+            </div>
+            <div class="row">
+                <div class="colLeft" style="width:150px">Phone Number 2</div>
+                <div class="colRight">
+                    <input type="text" id="phone-2" class="inputText" maxlength="15">
+                </div>
+            </div>
+            <div class="row">
+                <div class="colLeft" style="width:150px">Email</div>
+                <div class="colRight">
+                    <input type="text" id="EmailID" class="inputText" maxlength="50">
+                </div>
+            </div>
+            <div class="row">
+                <div class="colLeft" style="width:150px">Password</div>
+                <div class="colRight">
+                    <input type="password" id="Password" class="inputText" maxlength="50">
+                </div>
+            </div>
+            <div class="row">
+                <div class="colLeft" style="width:150px">Confirm Password</div>
+                <div class="colRight">
+                    <input type="password" id="ConfirmPassword"  class="inputText" maxlength="50">
+                </div>
+            </div>
+            <div class="row">
+                &nbsp;
+            </div>
+            <div class="row" style="width:500px">
+                <hr />
+            </div>
+            <div class="row" style="width:500px">
+                <div class="colRight">
+                    <input type="text" id="skillname" maxlength="20" class="inputText" style="width:150px" placeholder="Skill Name" />
+                    <select id="skillLevels" class="inputText" style="width:150px">
+                        <option value="volvo">Please select</option>
+                        <option value="saab">Saab</option>
+                        <option value="mercedes">Mercedes</option>
+                        <option value="audi">Audi</option>
+                    </select>
+                </div>
+                <input type="button" id="add-skill" value="Add Skill" class="addBtn" />
+                <div class="clear_fix"></div>
+                <br />
+                <div style="width:100%">
+                    <div id="list-skill" class="gridBlock">
+                        <div class="table-container" style="border-color: black; border-width:1px">
+                            <table id="grid-items-skills" class="display" width="100%" cellspacing="0">
+                                <thead>
+                                    <tr>
+                                        <th width="50%">Skill Name</th>
+                                        <th>Experience Level</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="clear_fix"></div>
+            </div>
+        </div>
+
+        <div class="m_block">
+            <div class="row">
+                <div class="colLeft">Hourly Rate</div>
+                <div class="colRight">
+                    <input type="text" id="hourly-rate" class="inputText" maxlength="6">
+                </div>
+            </div>
+            <div class="row">
+                <div class="colLeft">Territory</div>
+                <div class="colRight">
+                    <select id="territories" class="inputText" style="width: calc(100% - 15px)">
+                        <option value="volvo">Please select</option>
+                        <option value="saab">Saab</option>
+                        <option value="mercedes">Mercedes</option>
+                        <option value="audi">Audi</option>
+                    </select>
+                </div>
+            </div>
+            <fieldset class="upcommingsession-border">
+                <legend class="upcommingsession-border">Emergency Contact</legend>
+                <div style="height:18px">&nbsp;</div>
+                <div class="control-group">
+                    <div class="row">
+                        <div class="colLeft" style="width:90px">Name</div>
+                        <div class="colRight">
+                            <input type="text" id="emergency-contact-name" class="inputText" maxlength="100">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="colLeft" style="width:90px">Phone 1</div>
+                        <div class="colRight">
+                            <input type="text" id="emergency-phone1" class="inputText" maxlength="15">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="colLeft" style="width:90px">Phone 2</div>
+                        <div class="colRight">
+                            <input type="text" id="emergency-phone2" class="inputText" maxlength="15">
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+            <div class="row">
+                <div class="colLeft">Driving License #</div>
+                <div class="colRight">
+                    <input type="text" id="dl" class="inputText" maxlength="20">
+                </div>
+            </div>
+            @*<div class="row">
+                <div class="colLeft">Is Admin?</div>
+                <div class="colRight">
+                    <input type="checkbox" name="IsAdmin" id="IsAdmin" />
+                </div>
+            </div>*@
+            <div class="row">
+                <div class="colLeft">Role</div>
+                <div class="colRight">
+                    <select id="roleList" required="required" class="inputText" style="width: calc(100% - 15px)">
+                        <option value="volvo">Please select</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row">
+                &nbsp;
+            </div>
+            <div class="row">
+                &nbsp;
+            </div>
+            <div class="row" style="width:500px">
+                <hr />
+            </div>
+            <div class="row" style="width:500px">
+                <div class="colRight">
+                    Crew Name
+                    <select id="crewList" class="inputText" style="width:150px">
+                        <option value="volvo">Please select</option>
+                        <option value="saab">Saab</option>
+                        <option value="mercedes">Mercedes</option>
+                        <option value="audi">Audi</option>
+                    </select>
+                    &nbsp;&nbsp;&nbsp;
+                    Foreman?<input type="checkbox" id="isLead" />
+                </div>
+                <input type="button" id="add-crew" value="Add Crew" class="addBtn" />
+                <div class="clear_fix"></div>
+                <br />
+                <div style="width:100%">
+                    <div id="list-crew" class="gridBlock">
+                        <div class="table-container">
+                            <table id="grid-items-crews" class="display" width="100%" cellspacing="0">
+                                <thead>
+                                    <tr>
+                                        <th width="50%">Crew Name</th>
+                                        <th>Foreman</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="clear_fix"></div>
+            </div>
+        </div>
+
+    </div>
+    <input type="hidden" id="middle-name" />
+    <input type="hidden" id="EmpPhone2" />
+    <input type="hidden" id="EmpPhone3" />
+    @*<input type="hidden" id="EmailID" />*@
+    <input type="hidden" id="DateCreated" />
+    <input type="hidden" id="DateUpdated" />
+    <input type="hidden" id="UserID" />
+    <input type="hidden" id="AppAccess" />
+    <input type="hidden" id="Status" />
+    <div class="clear_fix"></div>
+
+    @*<div class="popup-footer">
+            <a id="save-employee" class="addLead_saveCancel" href="#">Save</a>
+            <a id="Cancel_PopAss" class="addLead_saveCancel" href="#">Cancel</a>
+        </div>*@
+</div>
+<script>
+    $('#grid-items-skills').dataTable({
+        "bFilter": false,
+        "bInfo": false,
+        "bPaginate": true,
+        "bSort": false,
+        "iDisplayLength": 5
+    });
+    $('#grid-items-crews').dataTable({
+        "bFilter": false,
+        "bInfo": false,
+        "bPaginate": true,
+        "bSort": false,
+        "iDisplayLength": 5
+    });
+    $('#btn-home-address').click(function () {
+        var url = 'http://maps.google.com/maps?daddr=' + $('#home-address').val() + "+" + $("#address-line2").val() + "+" + $("#zipcode").val() + "+" + $("#city").val();
+        var redirectWindow = window.open(url, '_blank');
+        redirectWindow.location;
+    });
+</script>

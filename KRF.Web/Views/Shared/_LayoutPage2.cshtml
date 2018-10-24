@@ -1,0 +1,296 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewBag.Title</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+    <link rel="icon" type="image/png" href="@Url.Content("~/Content/assets/images/favicon.png")">
+
+    <link href="~/Content/themes/base/mybootstrap.css" rel="stylesheet" />
+    @Styles.Render("~/Content/css")
+    <link rel="stylesheet" href="~/Content/themes/base/jquery-ui-1.11.2.css">
+    <link href="~/Content/media/css/jquery.dataTables.css" rel="stylesheet" />
+    <link href="~/Content/themes/base/jquery.datetimepicker.css" rel="stylesheet" />
+
+    <link href="~/Content/themes/base/bootstrap-dialog.min.css" rel="stylesheet" />
+
+    <script src="~/Scripts/jquery-1.11.0.js"></script>
+    @Scripts.Render("~/bundles/jquery")
+    <script src="~/Content/media/js/jquery.dataTables.js"></script>
+
+    @Scripts.Render("~/bundles/scripts")
+
+    @*This is noth working when added in bundle*@
+
+
+    <script src="~/Scripts/jquery-ui-1.11.2.js"></script>
+    <script type="text/javascript" src="~/Content/assets/js/enscroll-0.6.0.min.js"></script>
+    <script src="~/Scripts/jquery.datetimepicker.js"></script>
+    <script src="~/Scripts/jquery.csv-0.71.min.js"></script>
+    <script src="~/Scripts/jquery.maskedinput.min.js"></script>
+    <script src="~/Scripts/bootstrap-dialog.min.js"></script>
+    <script src="~/Scripts/site.js"></script>
+
+    @*<script src="~/Scripts/bootstrap.min.js"></script>*@
+    @*<script src="~/Scripts/run_prettify.js"></script>*@
+
+    <link href="~/Content/icon.css" rel="stylesheet" />
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#MyAccount").click(function () {
+                $("#accountPopup").hide("fast");
+                var userID = $(this).data("id");
+
+                $.ajax({
+                    url: '@Url.Action("MyAccount", "Employee")/' + userID,
+                    type: 'POST',
+                    beforeSend: function (xhr) {
+                        openModal();
+                    },
+                    success: function (data) {
+                        $('#dvEmployeeAccount').html(data);
+                    },
+                    complete: function (jqXHR, textStatus) {
+                        closeModal();
+                    }
+                });
+
+                $("#my_account_form_popup").show();
+                $("#MyAccountModals").css({ "height": $(document).height(), "width": $(document).width() });
+                $("#MyAccountModals").show();
+            });
+
+            $("#Cancel_MyAccount").click(function () {
+                $("#MyAccountModals").hide();
+                $("#my_account_form_popup").hide();
+            });
+        });
+    </script>
+
+</head>
+
+
+<body class="dashBody">
+    <section class="dashboard_Wraper">
+        <div class="dashboard_Topbar">
+            <div class="userName"><a id="accountDD" href="#">@Convert.ToString(KRF.Web.SessionManager.UserFullName)</a></div>
+        </div>
+        <div class="dashboard_head">
+            <div class="dashboard_logo"></div>
+            @*<div class="dashboard_Search_holder">
+                    <div class="dashboard_Search_holder_row1">
+                        <div class="dashboard_Search_holder_row1_searchAll">
+                            Search All
+                            <div class="btn"></div>
+                        </div>
+                        <div class="dashboard_Search_holder_row1_searchAll_search">
+                            <input type="text" />
+                            <div class="btnS"></div>
+                        </div>
+                    </div>
+                    <div class="dashboard_Search_holder_row2">
+                        <a class="check" href="#"></a><span class="check_Lable">My Items</span>
+                        <a class="check" href="#"></a><span class="check_Lable">Exact</span>
+                    </div>
+                </div>*@
+        </div>
+        <div class="navBar">
+            @*<a href="dashboard.html" class="">Dashboard</a>
+                <a href="#">Calendar</a>
+                <a href="#">Reports</a>*@
+        </div>
+        <div class="left_Nav">
+            <div class="headings">
+                <span class="span1">
+                    <img src="@Url.Content("~/Content/assets/images/ico1.png")" />
+                </span><span>SALES</span><a class="help_icon" href="#"></a>
+            </div>
+            <div class="clear_fix"></div>
+            <div class="btnHolders">
+                @* Hidden after Bill's request from 21-Jun-2018
+                @if (KRF.Web.Common.Common.IsUserHasBothViewAndEditPermission(KRF.Web.SessionManager.RoleId, (int)KRF.Core.Enums.PageType.Prospect))
+                {
+                    @Html.ActionLink("Prospect", "Index", "Prospect", null, new { id = "prospect-link", @class = "linkBtn" })
+                } *@
+                @if (KRF.Web.Common.Common.IsUserHasBothViewAndEditPermission(KRF.Web.SessionManager.RoleId, (int)KRF.Core.Enums.PageType.Lead))
+                {
+                    @Html.ActionLink("Lead", "Index", "Lead", null, new { id = "lead-link", @class = "linkBtn" })
+                }
+                @if (KRF.Web.Common.Common.IsUserHasBothViewAndEditPermission(KRF.Web.SessionManager.RoleId, (int)KRF.Core.Enums.PageType.Customer))
+                {
+                    @Html.ActionLink("Customer", "Index", "Customer", null, new { id = "customer-link", @class = "linkBtn" })
+                }
+                @if (KRF.Web.Common.Common.IsUserHasBothViewAndEditPermission(KRF.Web.SessionManager.RoleId, (int)KRF.Core.Enums.PageType.Estimate))
+                {
+                    @Html.ActionLink("Estimates / Proposal", "EstimateIndex", "Estimate", null, new { id = "estimate-link", @class = "linkBtn" })
+                }
+            </div>
+            <div class="clear_fix"></div>
+            <div class="devider"></div>
+            <div class="deviderBlank"></div>
+            <div class="headings">
+                <span class="span1">
+                    <img src="@Url.Content("~/Content/assets/images/ico2.png")" />
+                </span><span>MANAGE</span><a class="help_icon" href="#"></a>
+            </div>
+            <div class="clear_fix"></div>
+            <div class="btnHolders">
+                @if (KRF.Web.Common.Common.IsUserHasBothViewAndEditPermission(KRF.Web.SessionManager.RoleId, (int)KRF.Core.Enums.PageType.Job))
+                {
+                    @Html.ActionLink("Jobs", "Index", "Job", null, new { id = "jobs-link", @class = "linkBtn" })
+                }
+                @if (KRF.Web.Common.Common.IsUserHasBothViewAndEditPermission(KRF.Web.SessionManager.RoleId, (int)KRF.Core.Enums.PageType.Item) || KRF.Web.Common.Common.IsUserHasBothViewAndEditPermission(KRF.Web.SessionManager.RoleId, (int)KRF.Core.Enums.PageType.Assembly))
+                {
+                    @Html.ActionLink("Items List", "Index", "Product", null, new { id = "products-link", @class = "linkBtn" })
+                }
+                @if (KRF.Web.Common.Common.IsUserHasBothViewAndEditPermission(KRF.Web.SessionManager.RoleId, (int)KRF.Core.Enums.PageType.Inventory))
+                {
+                    @Html.ActionLink("Inventory", "Index", "Inventory", null, new { id = "inventory-link", @class = "linkBtn" })
+                }
+                @if (KRF.Web.Common.Common.IsUserHasBothViewAndEditPermission(KRF.Web.SessionManager.RoleId, (int)KRF.Core.Enums.PageType.Employee))
+                {
+                    @Html.ActionLink("Employees", "Index", "Employee", null, new { id = "employes-link", @class = "linkBtn" })
+                }
+                @if (KRF.Web.Common.Common.IsUserHasBothViewAndEditPermission(KRF.Web.SessionManager.RoleId, (int)KRF.Core.Enums.PageType.Vendor))
+                {
+                    @Html.ActionLink("Vendors", "Index", "Vendor", null, new { id = "vendors-link", @class = "linkBtn" })
+                }
+                @if (KRF.Web.Common.Common.IsUserHasBothViewAndEditPermission(KRF.Web.SessionManager.RoleId, (int)KRF.Core.Enums.PageType.Fleet))
+                {
+                    @Html.ActionLink("Fleets", "Index", "Fleet", null, new { id = "fleets-link", @class = "linkBtn" })
+                }
+                @if (KRF.Web.Common.Common.IsUserHasBothViewAndEditPermission(KRF.Web.SessionManager.RoleId, (int)KRF.Core.Enums.PageType.Crew))
+                {
+                    @Html.ActionLink("Crews", "Index", "Crew", null, new { id = "crews-link", @class = "linkBtn" })
+                }
+                @if (KRF.Web.Common.Common.IsUserHasBothViewAndEditPermission(KRF.Web.SessionManager.RoleId, (int)KRF.Core.Enums.PageType.Equipment))
+                {
+                    @Html.ActionLink("Equipments", "Index", "Equipment", null, new { id = "equipments-link", @class = "linkBtn" })
+                }
+                @if (KRF.Web.Common.Common.IsUserHasBothViewAndEditPermission(KRF.Web.SessionManager.RoleId, (int)KRF.Core.Enums.PageType.Administration))
+                {
+                    @Html.ActionLink("Administration", "Index", "Administration", null, new { id = "administrations-link", @class = "linkBtn" })
+                }
+                @if (KRF.Web.SessionManager.RoleId == (int)KRF.Core.Enums.RoleType.AdminManager)
+                {
+                    @Html.ActionLink("Permissions", "Index", "RolePermission", null, new { id = "rolepermission-link", @class = "linkBtn" })
+                }
+                
+            </div>
+            <div class="clear_fix"></div>
+            @*<div class="deviderBlank"></div>
+                <div class="deviderBlank"></div>
+                <div class="headings devider_right">
+                    <span class="span1">
+                        <img src="@Url.Content("~/Content/assets/images/ico3.png")" />
+                    </span><span>REPORTS</span><a class="help_icon" href="#"></a>
+                </div>
+                <div class="clear_fix"></div>
+                <div class="btnHolders">
+                    <a class="linkBtn" href="#">Reporting</a>
+                    <a class="linkBtn" href="#">Employee Payment</a>
+                </div>*@
+            <div class="clear_fix"></div>
+            <div class="devider"></div>
+            <div class="deviderBlank"></div>
+            <div class="headings">
+                <span class="span1">
+                    <img src="@Url.Content("~/Content/assets/images/ico4.png")" />
+                </span><span>QUICK LINKS</span><a class="help_icon" href="#"></a>
+            </div>
+            <div class="clear_fix"></div>
+            <div class="btnHolders">
+                @if (KRF.Web.Common.Common.IsUserHasBothViewAndEditPermission(KRF.Web.SessionManager.RoleId, (int)KRF.Core.Enums.PageType.Lead))
+                {
+                    <a class="linkBtnAdd" href="@Url.Action("Index","Lead")?ID=0">Add a Lead</a>
+                }
+                    @*<a class="linkBtnAdd" href="#">Add a Task</a>*@
+                @if (KRF.Web.Common.Common.IsUserHasBothViewAndEditPermission(KRF.Web.SessionManager.RoleId, (int)KRF.Core.Enums.PageType.Job))
+                {
+                    <a class="linkBtnAdd" href="@Url.Action("Add","Job")?ID=0">Add a Job</a>
+                    @*@Html.ActionLink("Add a Job", "Add", "Job", "?ID=0", new { id = "jobs-add-link", @class = "linkBtnAdd" })*@
+                }
+            </div>
+            <div class="clear_fix"></div>
+            <div class="deviderBlank"></div>
+
+            <div class="deviderBlank"></div>
+            <div class="clear_fix"></div>
+        </div>
+        <div id="main-content">
+            @RenderBody()
+        </div>
+    </section>
+    <div id="searchPopup" class="searchPopup">
+        <div class="headerTip"></div>
+        <div class="searchPopupContHolder">
+            <div class="row">
+                <table>
+                    <tr>
+                        <td class="colLeft">Customer ID:</td>
+                        <td class="colRight">
+                            <input type="text" class="inputText" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="colLeft">Name:</td>
+                        <td class="colRight">
+                            <input type="text" class="inputText" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="colLeft">Location:</td>
+                        <td class="colRight">
+                            <input type="text" class="inputText" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="colLeft"></td>
+                        <td class="colRight"><a href="#" class="btn" style="width: 50px">Search</a><a href="#" class="btn">Reset</a></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+    </div>
+    <!--account -->
+    <div id="accountPopup" class="accountPopup">
+        <div class="accountheaderTip"></div>
+        <div class="accountContHolder">
+            <a id="MyAccount" data-id="@KRF.Web.SessionManager.UserID" href="#">My Account</a>
+            <br />
+            <a href="#">Change Password</a>
+            <br />
+            @Html.ActionLink("Logout", "Login", "Account")
+        </div>
+
+    </div>
+    <div id="fade"></div>
+    <div id="modal">
+        <img id="loader" src="../Content/assets/images/loading.gif" />
+    </div>
+
+    <!-- MyAccount popup start-->
+    <div id="my_account_form_popup" class="form_popup">
+        <div class="gridBlockLarge_btnHolder_head">
+            My Account
+        </div>
+
+        <div class="headSpacer"></div>
+        <div id="dvEmployeeAccount"></div>
+        <div class="clear_fix"></div>
+
+        <div class="popup-footer">
+            <a id="Cancel_MyAccount" class="addLead_saveCancel" href="#">Close</a>
+        </div>
+
+    </div>
+    <div id="MyAccountModals" class="madals"></div>
+    <!-- modals and popup end-->
+    @RenderSection("scripts", required: false)
+
+</body>
+</html>

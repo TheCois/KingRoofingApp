@@ -1,0 +1,52 @@
+﻿<style>
+    #job-INV .row .row-input {
+        height: 30px;
+        line-height: 30px;
+        vertical-align: middle;
+        color: #333;
+        font-size: 13px;
+    }
+
+    #job-INV .table-container {
+        font-size: 0.75em;
+    }
+</style>
+<form id="job-INV" name="job-INV" enctype="multipart/form-data">
+    <input id="job-inv-id" type="hidden" />
+    <div style="width:100%;" id="dvINVList">
+        @Html.Partial("_JobInvoiceList")
+    </div>
+    <div style="width:100%; display:none" id="dvINVAdd">
+        @Html.Partial("_JobInvoiceAdd")
+    </div>
+</form>
+<script>
+    $('#grid-items-inv').dataTable({
+        "bFilter": true,
+        "bInfo": false,
+        "bPaginate": true,
+        "bSort": false,
+        "columnDefs": [
+            { className: "dt-left", targets: [0, 2, 4, 5, 6] },
+            { className: "dt-right", targets: [1, 3] },
+            { defaultContent: "", render: $.fn.dataTable.render.number(',', '.', 2), targets: [3] }
+        ],
+        "iDisplayLength": 10
+    });
+    $('#grid-items-inv-estimates').dataTable({
+        "bFilter": false,
+        "bInfo": false,
+        "bPaginate": false,
+        "bSort": false,
+        "iDisplayLength": 10
+    });
+    jQuery('#invoicedate').datetimepicker(
+        {
+            lang: 'en',
+            timepicker: false,
+            format: 'm/d/Y',
+            formatDate: 'm/d/Y',
+            closeOnDateSelect: true
+        }
+    );
+</script>

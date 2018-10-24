@@ -1,0 +1,190 @@
+﻿@model KRF.Web.Models.EmployeeData
+<input id="fleet-id" type="hidden" value="0" name="employee-id">
+<div id="employeeadd" class="gridBlock inventory_page">
+    <div class="head">
+        Add/Edit Fleet
+        <a id="save-fleet" class="addLead_saveCancel" href="#">Save & Close</a>
+        <a id="update-fleet" class="addLead_saveCancel" href="#">Update</a>
+        <a id="Cancel_PopAss" class="addLead_saveCancel" href="#">Cancel</a>
+    </div>
+    <div class="headSpacer"></div>
+    <div id="errorMessages" style="width: 95%; margin-left: 20px; margin-right: 10px;">
+        <div class="alert alert-success alert-dismissable" style="display:none;">
+            <i class="fa fa-check"></i>
+            <button class="close" onclick="$('.alert-success').hide()" type="button">×</button>
+            <div id="dvSuccess"></div>
+        </div>
+        <div class="alert alert-danger alert-dismissable" style="display: none;">
+            <i class="fa fa-ban"></i>
+            <button class="close" onclick="$('.alert-danger').hide()" type="button">×</button>
+            <div id="dvError"></div>
+        </div>
+    </div>
+    <div id="fleet-form" class="formHolder">
+        <div class="m_block">
+            <div class="row">
+                <div class="colLeft">Make</div>
+                <div class="colRight">
+                    <input id="make" type="text" class="inputText" maxlength="30">
+                </div>
+            </div>
+            <div class="row">
+                <div class="colLeft">Model</div>
+                <div class="colRight">
+                    <input id="model" type="text" class="inputText" maxlength="30">
+                </div>
+            </div>
+            <div class="row">
+                <hr />
+            </div>
+            <div class="row">
+                <h6>
+                    Service History
+                </h6>
+            </div>
+            <div class="row">
+                <div class="fleetMergeCol">
+                    <table width="100%" cellpadding="0" cellspacing="0">
+                        <tr>
+                            <td>Date:&nbsp;</td>
+                            <td><input id="service-date" type="text" class="inputText" style="width:80px" placeholder="Select date"></td>
+                            <td>&nbsp;</td>
+                            <td>Notes:&nbsp;</td>
+                            <td><textarea id="notes" class="inputText" style="height:96px; width:150px;"> </textarea></td>
+                            <td><input type="button" id="add-service" value="Add" class="addBtn" /></td>
+                        </tr>
+                        <tr>
+                            <td colspan="6">&nbsp;</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <div class="row">
+                <div class="fleetMergeCol">
+                    <div style="width:100%">
+                        <div id="list-skill" class="gridBlock" style="width: 100%; margin: 0 0px 25px">
+                            <div class="table-container" style="border-color: black; border-width:1px">
+                                <table id="grid-items-services" class="display" width="100%" cellspacing="0">
+                                    <thead>
+                                        <tr>
+                                            <th width="50%">Date</th>
+                                            <th>Notes</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="clear_fix"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="m_block">
+            <div class="row">
+                <div class="colLeft">Year</div>
+                <div class="colRight">
+                    <input id="year" type="text" class="inputText" maxlength="20">
+                </div>
+            </div>
+            <div class="row">
+                <div class="colLeft">Status</div>
+                <div class="colRight">
+                    <select id="status" class="inputText">
+                        <option value="volvo">Please select</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row">
+                <hr />
+            </div>
+            <div class="row">
+                <h6>
+                    Assignments
+                </h6>
+            </div>
+            <br />
+            <div class="row">
+                <div class="fleetMergeCol">
+                    Employee:
+                    <select id="employees" class="inputText" style="width:150px">
+                        <option value="volvo">Please select</option>
+                    </select>
+                    &nbsp;
+                    Date:&nbsp;<input id="assignment-date" type="text" class="inputText" style="width:80px" placeholder="Select date">
+                    &nbsp;
+                    Is Current?<input type="checkbox" id="IsCurrent" />
+                    <input type="button" id="add-assignment" value="Add" class="addBtn" />
+                </div>
+            </div>
+            <br /><br/>
+            <div class="row">
+                <div class="fleetMergeCol">
+                    <div style="width:100%">
+                        <div id="list-skill" class="gridBlock" style="width: 100%; margin: 0 0px 25px">
+                            <div class="table-container" style="border-color: black; border-width:1px">
+                                <table id="grid-items-assignments" class="display" width="100%" cellspacing="0">
+                                    <thead>
+                                        <tr>
+                                            <th width="50%">Employee Name</th>
+                                            <th>Date</th>
+                                            <th>Is Current?</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="clear_fix"></div>
+        </div>
+    </div>
+    <input type="hidden" id="DateCreated" />
+    <input type="hidden" id="DateUpdated" />
+    <input type="hidden" id="Active" />
+    <div class="clear_fix"></div>
+</div>
+<script>
+    $('#grid-items-services').dataTable({
+        "bFilter": false,
+        "bInfo": false,
+        "bPaginate": true,
+        "bSort": false,
+        "columnDefs": [
+            { className: "dt-left", targets: [1, 2] },
+            { className: "dt-right", targets: [0] }
+        ],
+        "iDisplayLength": 5
+    });
+    $('#grid-items-assignments').dataTable({
+        "bFilter": false,
+        "bInfo": false,
+        "bPaginate": true,
+        "bSort": false,
+        "columnDefs": [
+            { className: "dt-left", targets: [0, 2, 3] },
+            { className: "dt-right", targets: [1] }
+        ],
+        "iDisplayLength": 5
+    });
+    var token = $('[name=__RequestVerificationToken]').val();
+    jQuery('#service-date').datetimepicker(
+        {
+            lang: 'en',
+            timepicker: false,
+            format: 'm/d/Y',
+            formatDate: 'm/d/Y'
+        }
+    );
+    jQuery('#assignment-date').datetimepicker(
+        {
+            lang: 'en',
+            timepicker: false,
+            format: 'm/d/Y',
+            formatDate: 'm/d/Y'
+        }
+    );
+</script>

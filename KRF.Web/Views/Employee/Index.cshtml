@@ -1,0 +1,140 @@
+﻿@{
+    ViewBag.Title = "Employee";
+    Layout = "~/Views/Shared/_LayoutPage2.cshtml";
+}
+@Html.AntiForgeryToken()
+<style>
+    .alignRight {
+        text-align: right;
+    }
+
+    .formHolder {
+        height: 500px;
+    }
+
+        .formHolder .m_block {
+            width: 440px;
+        }
+
+    fieldset.upcommingsession-border {
+        border: 1px groove #ddd !important;
+        /*padding: 0 0 0 0 !important;*/
+        padding: 0 0 1.4em 0 !important;
+        /*margin: 0 0 1.5em 0 !important;*/
+        border-bottom: none;
+    }
+
+    legend.upcommingsession-border {
+        border-bottom: none;
+        width: 150px;
+        margin-bottom: 0px;
+    }
+</style>
+<div id="content_block" class="content_block">
+    <!-- content block -->
+    <br />
+    <div id="list-employee" class="gridBlock inventory_page">
+        <div class="head">Employees
+        @if (Convert.ToBoolean(ViewBag.AllowEdit))
+        {
+            <a id="add-employee" class="addLead_saveCancel" href="#">Add Employee</a>
+        }
+        </div>
+        <div class="table-container">
+            <table id="grid-employee" class="display" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        @if (Convert.ToBoolean(ViewBag.AllowEdit))
+                        {
+                            <th></th>
+                        }
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Type</th>
+                        <th>Phone 1</th>
+                        <th>Phone 2</th>
+                        <th>Emergency Contact</th>
+                        <th>Hourly Rate</th>
+                        <th style="text-align:left">Role</th>
+                        @if (Convert.ToBoolean(ViewBag.AllowEdit))
+                        {
+                            <th></th>
+                        }
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+    <div id="cust-estimate"></div>
+
+</div>
+
+<script type="text/javascript">
+    var data;
+    $(document).ready(function () {
+        var token = $('[name=__RequestVerificationToken]').val();
+
+        var keyValue = {};
+        var custAddresses = [];
+
+        $("#add-employee").click(function () {
+            window.location.href = '@Url.Action("Add", "Employee")?ID=0';
+        });
+
+        $('#grid-employee').dataTable({
+            "order": [[1, "asc"]],
+            columnDefs: [
+                { className: "dt-left", targets: [0, 1, 2, 3, 4, 5, 6, 8, 9] },
+                { className: "dt-right", targets: [7] },
+                { defaultContent: "", render: $.fn.dataTable.render.number(',', '.', 2), targets: [6] }
+            ],
+            "iDisplayLength": 100,
+            //"columns": [null, null, null, null, null, { "sClass": "alignRight" },null,null],
+            "sAjaxSource": '@Url.Action("GetEmployes", "Employee")',
+            //"aLengthMenu": [[5, 10, 25, 50, 100, -1], [5, 10, 25, 50, 100, "All"]],
+            "fnServerData": function (sSource, aoData, fnCallback) {
+                aoData.push({ "name": "ID", "value": 5 });
+                $.getJSON(sSource, aoData, function (json) {
+                    keyValue = json.keyValue;
+                    fnCallback(json);
+                });
+            }
+        });
+
+        $(document).on("click", "#grid-employee .edit-customer", function () {
+            var id = $(this).attr("data-val");
+            window.location.href = '@Url.Action("Add", "Employee")?ID=' + id;
+        });
+
+        function search(nameKey, myArray) {
+            for (var i = 0; i < myArray.length; i++) {
+                if (myArray[i].ID == nameKey) {
+                    return myArray[i].Description;
+                }
+            }
+
+            return "";
+        }
+
+        $(document).on("click", "#grid-employee .delete-customer", function () {
+            var id = $(this).attr("data-val");
+            BootstrapDialog.confirm('Are you sure you want to delete?', function (result) {
+                if (result) {
+                    openModal();
+                    $.ajax({
+                        url: '@Url.Action("ToggleEmployeeStatus", "Employee")',
+                        type: 'POST',
+                        data: { empId: id, tobeEnabled: false, __RequestVerificationToken: token },
+                        success: function (data) {
+                            closeModal();
+                            window.location.href = '@Url.Action("Index", "Employee")';
+                        }
+                    });
+                } else {
+                    //alert('Nope.');
+                }
+            });
+        });
+        $("#employes-link").addClass("linkBtn linkBtnAdd_Selected");
+    });
+</script>

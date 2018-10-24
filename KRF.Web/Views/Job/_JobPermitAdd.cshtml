@@ -1,0 +1,139 @@
+﻿<style>
+    #permit-form .btn .caret {
+        margin-left: 0;
+    }
+
+    #permit-form .caret {
+        border-left: 4px solid transparent;
+        border-right: 4px solid transparent;
+        border-top: 4px solid;
+        display: inline-block;
+        height: 0;
+        margin-left: 2px;
+        vertical-align: middle;
+        width: 0;
+    }
+    #permit-form .dropdown-menu > li > a {
+        clear: both;
+        color: #333;
+        display: block;
+        font-weight: 400;
+        line-height: 1.42857;
+        padding: 3px 20px;
+        white-space: nowrap;
+    }
+</style>
+<div class="clear_fix"></div>
+<div class="form-footer">
+    <a id="cancel-permit" class="addLead_saveCancel" href="javascript:void(0)">Cancel</a>
+    <a id="save-permit" class="addLead_saveCancel" href="javascript:void(0)">Save</a>
+</div>
+<div class="clear_fix"></div>
+<hr />
+<div class="m_block">
+    <div class="row" style="width:500px">
+        <div class="colLeft" style="width:150px">Job Number</div>
+        <div class="colRight">
+            <input id="jobnumber" type="text" class="inputTextReadOnly" readonly maxlength="50" />
+        </div>
+    </div>
+    <div class="row" style="width:500px">
+        <div class="colLeft" style="width:150px">Name</div>
+        <div class="colRight">
+            <select id="employees" class="inputText">
+                <option value="volvo">Please select</option>
+            </select>
+        </div>
+    </div>
+    <div class="row" style="width:500px">
+        <div class="colLeft" style="width:150px">Permit</div>
+        <div class="colRight">
+            <select id="permits" class="inputText">
+                <option value="volvo">Please select</option>
+            </select>
+        </div>
+    </div>
+    <div class="row" style="width: 500px; ">
+        <div class="colLeft" style="width:150px">Number</div>
+        <div class="colRight">
+            <input id="number" type="text" class="inputText" maxlength="20">
+        </div>
+    </div>
+    <div class="row" style="width:500px">
+        <div class="colLeft" style="width:150px">Inspector</div>
+        <div class="colRight">
+            <select id="inspectors" class="inputText">
+                <option value="volvo">Please select</option>
+            </select>
+        </div>
+    </div>
+    <div class="row" style="width:500px">
+        <div class="colLeft" style="width:150px">Notes</div>
+        <div class="colRight">
+            <textarea id="notes" class="inputTextArea" style="height: 50px; width:90%"> </textarea>
+        </div>
+    </div>
+</div>
+<div class="m_block" style="width:500px; margin-left:30px">
+    <div class="row" style="width:500px">
+        <div class="colLeft" style="width:150px">
+            <button id="btn-permit-address" type="button" class="googleMapsButton"></button>&nbsp;&nbsp;Address
+        </div>
+        <div class="colRight">
+            <textarea id="jobaddress" readonly class="inputTextReadOnly" style="height: 70px; width:92%"> </textarea>
+        </div>
+    </div>
+    <div class="row" style="width:500px; margin-top: 50px">
+        <div class="colLeft" style="width:150px">Inspections</div>
+        <div class="colRight">
+            <select id="inspections" class="inputText">
+                <option value="volvo">Please select</option>
+            </select>
+        </div>
+    </div>
+    <div class="row" style="width:500px">
+        <div class="colLeft" style="width:150px">Status</div>
+        <div class="colRight">
+            <select id="status" class="inputText">
+                <option value="volvo">Please select</option>
+            </select>
+        </div>
+    </div>
+    <div class="row" style="width: 500px; ">
+        <div class="colLeft" style="width:150px">Called Date</div>
+        <div class="colRight">
+            <input id="calleddate" type="text" class="inputText qty" placeholder="Select date">
+        </div>
+    </div>
+    <div class="row" style="width: 500px; ">
+        <div class="colLeft" style="width:150px">Result Date</div>
+        <div class="colRight">
+            <input id="resultdate" type="text" class="inputText qty" placeholder="Select date">
+        </div>
+    </div>
+</div>
+<div class="clear_fix"></div><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+<div id="list-permit-item" class="gridBlock" style="margin: 0px; width: 100%">
+    <div class="table-container" style="border-color: black; border-width:1px">
+        <table id="grid-permits" class="display" width="100%" cellspacing="0">
+            <thead>
+                <tr>
+                    <th width="50px">Job Number</th>
+                    @*<th width="130px">Address</th>*@
+                    <th width="100px">Name</th>
+                    <th width="80px">Permit</th>
+                    @*<th width="80px">Number</th>*@
+                    <th width="80px">Called</th>
+                    <th width="80px">Inspections</th>
+                    <th width="100px">Status</th>
+                    <th width="80px">Result Date</th>
+                    <th width="100px">Inspector</th>
+                    @*<th width="150px">Notes</th>*@
+                    <th width="20px"></th>
+                    <th width="20px"></th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+    <br />
+</div>

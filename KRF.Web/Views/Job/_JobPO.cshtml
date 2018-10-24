@@ -1,0 +1,52 @@
+﻿<style>
+    #job-PO .row .row-input {
+        height: 30px;
+        line-height: 30px;
+        vertical-align: middle;
+        color: #333;
+        font-size: 13px;
+    }
+
+    #job-PO .table-container {
+        font-size: 0.75em;
+    }
+</style>
+<form id="job-PO" name="job-PO" enctype="multipart/form-data">
+    <input id="job-po-id" type="hidden" />
+    <div style="width:100%;" id="dvPOList">
+        @Html.Partial("_JobPOList")
+    </div>
+    <div style="width:100%; display:none" id="dvPOAdd">
+        @Html.Partial("_JobPOAdd")
+    </div>
+</form>
+<script>
+    $('#grid-items-po').dataTable({
+        "bFilter": true,
+        "bInfo": false,
+        "bPaginate": true,
+        "bSort": false,
+        "columnDefs": [
+            { className: "dt-left", targets: [0, 1, 2, 5, 6, 7] },
+            { className: "dt-right", targets: [3, 4] },
+            { defaultContent: "", render: $.fn.dataTable.render.number(',', '.', 2), targets: [4] }
+        ],
+        "iDisplayLength": 10
+    });
+    $('#grid-items-po-estimates').dataTable({
+        "bFilter": false,
+        "bInfo": false,
+        "bPaginate": false,
+        "bSort": false,
+        "iDisplayLength": 10
+    });
+    jQuery('#deliverydate').datetimepicker(
+        {
+            lang: 'en',
+            timepicker: false,
+            format: 'm/d/Y',
+            formatDate: 'm/d/Y',
+            closeOnDateSelect: true
+        }
+    );
+</script>

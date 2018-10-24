@@ -1,0 +1,21 @@
+﻿@model KRF.Web.Models.ErrorModel
+
+@{
+    ViewBag.Title = "Error";
+    Layout = "~/Views/Shared/_LayoutPage2.cshtml";
+}
+
+<div class="content_block">
+    <br />
+    <div class="gridBlock inventory_page">
+        <div class="head">
+            @ViewBag.Title
+        </div>
+        <div class="table-container">
+            <hgroup class="title">
+                <h5 class="error">@Model.Title</h5>
+                <h5 class="error">@Model.Description</h5>
+            </hgroup>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,226 @@
+﻿@{
+    ViewBag.Title = "Equipment";
+    Layout = "~/Views/Shared/_LayoutPage2.cshtml";
+}
+@Html.AntiForgeryToken()
+@*<link href="~/Content/themes/base/bootstrap.min.css" rel="stylesheet" />*@
+<style>
+    .alignRight {
+        text-align: right;
+    }
+
+    .formHolder {
+        height: 200px;
+    }
+    .inputText {
+        width: calc(100% - 25px);
+        height: 30px;
+        background: #DBE4E9;
+        border: none;
+        padding: 0px 0px 0px 10px;
+    }
+
+        .formHolder .m_block {
+            width: 540px;
+        }
+
+    .formHolder {
+        width:100%;
+    }
+    .dataTables_length
+    {
+        display:none;
+    }
+    .formHolder .m_block .row {
+        width: 600px;
+    }
+    .formHolder .m_block .row .colLeft {
+        width:150px;
+    }
+    .xdsoft_datetimepicker {
+        width: 315px !important;
+    }
+</style>
+
+<div id="content_block" class="content_block">
+    <br/>
+    @Html.Partial("_Add")
+</div>
+
+<script type="text/javascript">
+    var data;
+    $(document).ready(function () {
+
+        $("#equipments-link").addClass("linkBtn linkBtnAdd_Selected");
+
+        var ID = parseInt(@ViewBag.ID);
+
+        getEquipment(ID);
+
+        var keyValue = {}
+
+        jQuery('#purchasedate').datetimepicker(
+            {
+                lang: 'en',
+                timepicker: false,
+                format: 'm/d/Y',
+                formatDate: 'm/d/Y',
+                closeOnDateSelect: true
+            }
+        );
+
+        $("#Cancel_PopAss").click(function () {
+            window.location.href = '@Url.Action("Index", "Equipment")';
+        });
+
+        $(document).keyup(function (e) {
+            if (e.keyCode === 27) $("#Cancel_PopAss").click();   // esc
+        });
+
+        function Save(close)
+        {
+            $('.alert-danger').hide();
+            $('.alert-danger').find('#dvError').text('');
+            $('.alert-success').hide();
+            $('.alert-success').find('#dvSuccess').text('');
+
+            var createdDate = new Date();
+            $("#createdDate").val(createdDate);
+            var valid = true;
+            $('.alert-danger').find('#dvError').html("");
+            if ($("#equipmentname").val() == "") {
+                $('.alert-danger').show();
+                $('.alert-danger').find('#dvError').append('Please enter equipment name.<br/>');
+                valid = false;
+            }
+            if ($("#modelno").val() == "") {
+                $('.alert-danger').show();
+                $('.alert-danger').find('#dvError').append('Please enter model no.<br/>');
+                valid = false;
+            }
+            if ($("#snno").val() == "") {
+                $('.alert-danger').show();
+                $('.alert-danger').find('#dvError').append('Please enter S/N.<br/>');
+                valid = false;
+            }
+            if (parseInt($("#status option:selected").val()) == 0) {
+                $('.alert-danger').show();
+                $('.alert-danger').find('#dvError').append('Please select equipment status.<br/>');
+                valid = false;
+            }
+            if (valid == false) {
+                return;
+            }
+            var equipment = {
+                ID: parseInt($("#equipment-id").val()),
+                SNNo: $("#snno").val(),
+                ModelNumber: $("#modelno").val(),
+                EquipmentName: $("#equipmentname").val(),
+                EquipmentID: parseInt($("#equipment-equipmentid").val()),
+                PurchasePrice: $("#purchaseprice").val(),
+                PurchaseLocation: $("#purchaselocation").val(),
+                PurchaseDate: $("#purchasedate").val(),
+                EquipmentStatusID: parseInt($("#status option:selected").val()),
+                Vendor: $("#vendor").val()
+            }
+
+            openModal();
+            $.ajax({
+                url: '@Url.Action("Save", "Equipment")',
+                type: 'POST',
+                dataType: 'json',
+                contentType: 'application/json; charset=utf-8',
+                data: JSON.stringify(equipment),
+                success: function (data) {
+                    if (data.hasSaved) {
+                        if(close)
+                            window.location.href = '@Url.Action("Index", "Equipment")';
+                        else {
+                            $("#equipment-id").val(data.ID);
+                            $('.alert-success').show();
+                            $('.alert-success').find('#dvSuccess').text(data.message);
+                        }
+                    }
+                    else {
+                        $('.alert-success').hide();
+                        $('.alert-danger').show();
+                        $('.alert-danger').find('#dvError').text(data.message);
+                    }
+                    closeModal();
+                }
+            });
+        }
+
+        $("#save-equipment").on("click", function () {
+            Save(true);
+        });
+        $("#update-equipment").on("click", function () {
+            Save(false);
+        });
+
+        function search(nameKey, myArray) {
+            for (var i = 0; i < myArray.length; i++) {
+                if (myArray[i].ID == nameKey) {
+                    return myArray[i].Description;
+                }
+            }
+
+            return "";
+        }
+    });
+
+    function getEquipment(ID) {
+        openModal();
+        var token = $('[name=__RequestVerificationToken]').val();
+        $.ajax({
+            url: '@Url.Action("GetEquipment", "Equipment")',
+            type: 'POST',
+            data: { equipmentID: ID, tobeEnabled: false, __RequestVerificationToken: token },
+            success: function (data) {
+                if (ID == 0) {
+                    emptyEquipmentForm(data);
+                } else {
+                    populateEquipmentForm(data);
+                    $('#update-equipment').show();
+                }
+                closeModal();
+            }
+        });
+    }
+
+    function emptyEquipmentForm(data) {
+        $("#equipment-id").val("0");
+        $("#snno").val("");
+        $("#equipmentname").val("");
+        $("#equipment-equipmentid").val("");
+        $("#modelno").val("");
+        $("#purchaseprice").val("");
+        $("#purchaselocation").val("");
+        $("#purchasedate").val("");
+        $("#vendor").val("");
+        $("#status").populateDropDownList(data.keyValue.equipmentStatus, 0);
+        $('#status').find("option:selected").prop("selected", false)
+        $("#equipmentname").focus();
+    }
+
+    function populateEquipmentForm(data) {
+        $("#equipment-id").val(data.equipment.ID);
+        $("#snno").val(data.equipment.SNNo);
+        $("#modelno").val(data.equipment.ModelNumber);
+        $("#equipmentname").val(data.equipment.EquipmentName);
+        $("#equipment-equipmentid").val(data.equipment.EquipmentID);
+        $("#quantity").val(data.equipment.Quantity);
+        $("#purchaseprice").val(data.equipment.PurchasePrice.toFixed(2));
+        $("#purchaselocation").val(data.equipment.PurchaseLocation);
+        $("#vendor").val(data.equipment.Vendor);
+        if (data.equipment.PurchaseDate != null || data.equipment.PurchaseDate != undefined) {
+            var purchaseDate = new Date(parseInt(data.equipment.PurchaseDate.substr(6)));
+            var jsPurchaseDate = new Date(purchaseDate); //Date object
+            $("#purchasedate").val(jsPurchaseDate.toLocaleDateString());
+        }
+        else {
+            $("#purchasedate").val("");
+        }
+        $("#status").populateDropDownList(data.keyValue.equipmentStatus, data.equipment.EquipmentStatusID);
+    }
+</script>

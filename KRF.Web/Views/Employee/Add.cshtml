@@ -1,0 +1,614 @@
+﻿@{
+    ViewBag.Title = "Employee";
+    Layout = "~/Views/Shared/_LayoutPage2.cshtml";
+}
+@Html.AntiForgeryToken()
+@*<link href="~/Content/themes/base/bootstrap.min.css" rel="stylesheet" />*@
+<style>
+    .alignRight {
+        text-align: right;
+    }
+
+    .formHolder {
+        height: 800px;
+    }
+        .formHolder .m_block .row {
+            width: 500px;
+        }
+
+            .formHolder .m_block .row .colLeft {
+                width: 110px;
+            }
+
+    .inputText {
+        width: calc(100% - 30px);
+        height: 30px;
+        background: #DBE4E9;
+        border: none;
+        padding: 0px 0px 0px 10px;
+    }
+
+    .formHolder .m_block {
+        width: 540px;
+    }
+
+    fieldset.upcommingsession-border {
+        border: 1px groove #ddd !important;
+        /*padding: 0 0 0 0 !important;*/
+        padding: 0.2em 0 1.4em 1em !important;
+        /*margin: 0 0 1.5em 0 !important;*/
+        border-bottom: none;
+    }
+
+    fieldset {
+        width: 400px;
+    }
+
+    legend.upcommingsession-border {
+        border-bottom: none;
+        width: 150px;
+        margin-bottom: 0px;
+    }
+
+    legend {
+        font-size: 15px;
+    }
+
+    .formHolder {
+        width: 100%;
+        margin-left: 50px;
+    }
+
+    .dataTables_length {
+        display: none;
+    }
+
+    #list-crew {
+        background: none repeat scroll 0 0 #fff;
+        border: 1px solid #d4d4d4;
+        border-radius: 3px 3px 0 0;
+        height: 100%;
+        margin: 0 0px 0px;
+        width: 100%;
+    }
+
+    #list-skill {
+        background: none repeat scroll 0 0 #fff;
+        border: 1px solid #d4d4d4;
+        border-radius: 3px 3px 0 0;
+        height: 100%;
+        margin: 0 0px 0px;
+        width: 100%;
+    }
+</style>
+
+<div id="content_block" class="content_block">
+    <br />
+    @Html.Partial("_Add")
+</div>
+
+<script type="text/javascript">
+    var data;
+    var EmployeeNS = {
+        employes: {},
+        territories: {},
+        state: {},
+        city: {},
+        skillItems: {},
+        crewItems: {}
+    };
+
+
+
+    $(document).ready(function () {
+
+
+        $("#zipcode").on("input propertychange paste", function () {
+            var currentZipCode = $("#zipcode").val();
+            if (currentZipCode.length < 5)
+                return;
+            if (currentZipCode.length > 5)
+                currentZipCode = currentZipCode.substring(0, 5);
+
+            $.ajax({
+                url: "@(Url.Action("GetCityAndState", "Base"))",
+                type: "GET",
+                dataType: "json",
+                data: { zipCode: currentZipCode },
+                success: function (obj) {
+                    var cityId = obj['city'];
+                    if (cityId != undefined && cityId != null)
+                        $("#city-id").val(cityId);
+                    cityId--;
+                    var cityName = EmployeeNS.city[cityId].Description;
+                    if (cityName != undefined && cityName != null)
+                        $("#city").val(cityName);
+
+                    var stateId = states[obj['state']];
+                    if (stateId > 0) {
+                        $("#state option")
+                            .prop("selected", false);
+                        $("#state option:eq('" + stateId + "')")
+                            .prop("selected", true);
+                    }
+                }
+            });
+        });
+
+        $("#employes-link").addClass("linkBtn linkBtnAdd_Selected");
+
+        $("#Cancel_PopAss").click(function () {
+            $("#madals").hide();
+            $("#employee-form-popup").hide();
+        });
+
+        var token = $('[name=__RequestVerificationToken]').val();
+
+        var ID = parseInt(@ViewBag.ID);
+
+        getEmployee(ID);
+
+        var keyValue = {};
+        var custAddresses = [];
+
+        $("#Cancel_PopAss").click(function () {
+            window.location.href = '@Url.Action("Index", "Employee")';
+        });
+
+        function Save(close)
+        {
+            $('.alert-danger').hide();
+            $('.alert-danger').find('#dvError').text('');
+            $('.alert-success').hide();
+            $('.alert-success').find('#dvSuccess').text('');
+
+            var createdDate = new Date();
+            $("#createdDate").val(createdDate);
+            var valid = true;
+            if ($("#first-name").val() == "") {
+                $('.alert-danger').show();
+                $('.alert-danger').find('#dvError').append('Please enter first name.<br/>');
+                valid = false;
+            }
+            if ($("#last-name").val() == "") {
+                $('.alert-danger').show();
+                $('.alert-danger').find('#dvError').append('Please enter last name.<br/>');
+                valid = false;
+            }
+            //if ($("#EmailID").val() == "") {
+            //    $('.alert-danger').show();
+            //    $('.alert-danger').find('#dvError').append('Please enter email address.<br/>');
+            //    valid = false;
+            //}
+            //if ($("#Password").val() == "") {
+            //    $('.alert-danger').show();
+            //    $('.alert-danger').find('#dvError').append('Please enter password.<br/>');
+            //    valid = false;
+            //}
+            //if ($("#ConfirmPassword").val() == "") {
+            //    $('.alert-danger').show();
+            //    $('.alert-danger').find('#dvError').append('Please enter confirm password.<br/>');
+            //    valid = false;
+            //}
+            if (($("#Password").val() != "" || $("#ConfirmPassword").val() != "") && $("#Password").val() != $("#ConfirmPassword").val()) {
+                $('.alert-danger').show();
+                $('.alert-danger').find('#dvError').append('Confirm password not matched.<br/>');
+                valid = false;
+            }
+            if (parseInt($("#roleList option:selected").val()) == 0) {
+                $('.alert-danger').show();
+                $('.alert-danger').find('#dvError').append('Please select role.<br/>');
+                valid = false;
+            }
+            if (valid == false) {
+                return;
+            }
+            var employee = {
+                EmpId: parseInt($("#employee-id").val()),
+                FirstName: $("#first-name").val(),
+                LastName: $("#last-name").val(),
+                Title: $("#title").val(),
+                EmpType: $("#type").val(),
+                AddressLine1: $("#home-address").val(),
+                EmpPhNo1: $("#phone-1").val(),
+                EmpPhNo2: $("#phone-2").val(),
+                TerritoryID: parseInt($("#territories option:selected").val()),
+                EmergencyCName: $("#emergency-contact-name").val(),
+                EmergencyCPhNo: $("#emergency-phone1").val(),
+                EmergencyCPhNo2: $("#emergency-phone2").val(),
+                DLNo: $("#dl").val(),
+                HourlyRate: $("#hourly-rate").val(),
+                //RoleId: parseInt($("#roleList option:selected").val()),
+
+                MiddleName: $("#middle-name").val(),
+                AddressLine2: $("#address-line2").val(),
+                City: $("#city-id").val(),
+                State: $("#state option:selected").val(),
+                ZipCode: $("#zipcode").val(),
+                EmpPhone2: $("#EmpPhone2").val(),
+                EmpPhone3: $("#EmpPhone3").val(),
+                EmailID: $("#EmailID").val(),
+                DateCreated: $("#DateCreated").val(),
+                DateUpdated: $("#DateUpdated").val(),
+                UserID: $("#UserID").val(),
+                AppAccess: $("#AppAccess").val(),
+                Status: $("#Status").val(),
+                Password: $("#Password").val(),
+                RoleId: parseInt($("#roleList option:selected").val())
+            }
+
+            var employeeData = {
+            };
+
+            employeeData.Employee = employee;
+            employeeData.SkillItems = EmployeeNS.skillItems;
+            employeeData.CrewItems = EmployeeNS.crewItems;
+            openModal();
+            $.ajax({
+                url: '@Url.Action("Save", "Employee")',
+                type: 'POST',
+                dataType: 'json',
+                contentType: 'application/json; charset=utf-8',
+                data: JSON.stringify(employeeData),
+                success: function (data) {
+                    if (data.hasSaved) {
+                        if(close)
+                            window.location.href = '@Url.Action("Index", "Employee")';
+                        else
+                        {
+                            $("#employee-id").val(data.ID);
+                            $("#Status").val(true);
+                            $('.alert-success').show();
+                            $('.alert-success').find('#dvSuccess').text(data.message);
+                        }
+                    }
+                    else {
+                        $('.alert-danger').show();
+                        $('.alert-danger').find('#dvError').text(data.message);
+                    }
+                    closeModal();
+                }
+            });
+        }
+
+        $("#save-employee").on("click", function () {
+            Save(true);
+        });
+        $("#update-employee").on("click", function () {
+            Save(false);
+        });
+
+        function search(nameKey, myArray) {
+            for (var i = 0; i < myArray.length; i++) {
+                if (myArray[i].ID == nameKey) {
+                    return myArray[i].Description;
+                }
+            }
+
+            return "";
+        }
+
+        $("#employee-link").addClass("linkBtn linkBtnAdd_Selected");
+
+        $.mask.definitions['~'] = "[+-]";
+
+        $("#phone-1").mask("(999) 999-9999");
+        $("#phone-2").mask("(999) 999-9999");
+        $("#emergency-phone1").mask("(999) 999-9999");
+        $("#emergency-phone2").mask("(999) 999-9999");
+    });
+
+    function getEmployee(ID) {
+        openModal();
+        $.ajax({
+            url: '@Url.Action("GetEmployee", "Employee")',
+            type: 'POST',
+            data: { empId: ID },
+            success: function (data) {
+                EmployeeNS.employee = data.employee;
+                EmployeeNS.territories = data.keyValue.territories;
+                EmployeeNS.city = data.keyValue.city;
+                EmployeeNS.state = data.keyValue.state;
+                //EmployeeNS.roles = data.keyValue.roles;
+                if (ID == 0) {
+                    emptyEmployeeForm(data);
+                    EmployeeNS.skillItems = [];
+                    EmployeeNS.crewItems = [];
+                } else {
+                    populateEmployeeForm(data);
+                    EmployeeNS.territories = data.keyValue.territories;
+                    //EmployeeNS.roles = data.keyValue.roles;
+                    EmployeeNS.skillItems = data.skillItems;
+                    EmployeeNS.crewItems = data.crewDetails;
+                    var aSkillItems = transformSkillItems(EmployeeNS.skillItems);
+                    createEmployeeSkillTable(aSkillItems);
+                    var aCrewItems = transformCrewItems(EmployeeNS.crewItems);
+                    createEmployeeCrewTable(aCrewItems);
+                    $('#update-employee').show();
+                }
+                closeModal();
+            }
+        });
+    }
+
+    $(document).on("click", "#grid-items-skills .delete-skill", function () {
+        var skillName = $(this).attr("data-val");
+        var skillDetails = {};
+        var index = searchObjectSkillIndex(skillName, EmployeeNS.skillItems);
+        if (index != null)
+            EmployeeNS.skillItems.splice(index, 1);
+
+        var aSkillDetails = transformSkillItems(EmployeeNS.skillItems);
+        createEmployeeSkillTable(aSkillDetails);
+    })
+
+    $(document).on("click", "#grid-items-crews .delete-crew", function () {
+        var crewID = $(this).attr("data-val");
+        var crewDetails = {};
+        var index = searchObjectCrewIndex(crewID, EmployeeNS.crewItems);
+        if (index != null)
+            EmployeeNS.crewItems.splice(index, 1);
+
+        var aCrewDetails = transformCrewItems(EmployeeNS.crewItems);
+        createEmployeeCrewTable(aCrewDetails);
+    })
+
+    function transformSkillItems(skillItems) {
+        return skillItems.map(function (item) {
+            //var skillItem = {};
+            //skillItem = searchObjectByEmpID(item.EmpId, EmployeeNS.skillItems);
+
+            var skillName = item.SkillDesc;
+            var experienceLevel = item.SkillLevel;
+
+            return [
+               "<span data-val = " + item.SkillID + " class='name'>" + skillName + "</span>",
+               "<span>" + experienceLevel + "</span>",
+               "<span class='delete-skill delete' data-val=" + item['SkillDesc'].replace(/ /g, '') + "><ul><li class='delete'><a href='#non'>Delete</a></li></ul></span>"
+            ];
+        });
+    }
+    function transformCrewItems(crewItems) {
+        return crewItems.map(function (item) {
+
+            var crewName = item.CrewName;
+            var isLead = item.IsLead;
+
+            return [
+               "<span data-val = " + item.CrewID + " class='name'>" + crewName + "</span>",
+               "<span>" + (isLead == true ? 'Yes' : 'No') + "</span>",
+               "<span class='delete-crew delete' data-val=" + item['CrewID'] + "><ul><li class='delete'><a href='#non'>Delete</a></li></ul></span>"
+            ];
+        });
+    }
+
+    function createEmployeeSkillTable(aSkillItems) {
+        $('#grid-items-skills').dataTable().fnDestroy();
+
+        $('#grid-items-skills').dataTable({
+            "bPaginate": true,
+            "iDisplayLength": 5,
+            "bLengthChange": false,
+            "bFilter": false,
+            "bInfo": false,
+            "bSort": false,
+            "bAutoWidth": false,
+            "aaData": aSkillItems
+        });
+    }
+
+    function createEmployeeCrewTable(aCrewItems) {
+        $('#grid-items-crews').dataTable().fnDestroy();
+
+        $('#grid-items-crews').dataTable({
+            "bPaginate": true,
+            "iDisplayLength": 5,
+            "bLengthChange": false,
+            "bFilter": false,
+            "bInfo": false,
+            "bSort": false,
+            "bAutoWidth": false,
+            "aaData": aCrewItems
+        });
+    }
+
+    function emptyEmployeeForm(data) {
+        $("#territories").populateDropDownList(data.keyValue.territories, 0);
+        $("#roleList").populateDropDownList(data.keyValue.roles, 0);
+        $("#skillLevels").populateDropDownList(data.keyValue.skilllevels, 0);
+        $("#crewList").populateDropDownList(data.keyValue.crews, 0);
+        $("#state").populateDropDownList(keyValue.state, 0);
+
+        $("#employee-id").val(0);
+        $("#first-name").val("");
+        $("#last-name").val("");
+        $("#title").val("");
+        $("#type").val("");
+        $("#home-address").val("");
+        $("#phone-1").val("");
+        $("#phone-2").val("");
+        $("#hourly-rate").val("0.00");
+
+        $("#emergency-contact-name").val("");
+        $("#emergency-phone1").val("");
+        $("#emergency-phone2").val("");
+        $("#dl").val("");
+
+
+        $("#middle-name").val("");
+        $("#address-line2").val("");
+        $("#city").val("");
+        $("#city-id").val(0);
+        $("#state").val("");
+        $("#zipcode").val("");
+        $("#EmpPhone2").val("");
+        $("#EmpPhone3").val("");
+        $("#EmailID").val("");
+        $("#DateCreated").val("");
+        $("#DateUpdated").val("");
+        $("#UserID").val("");
+        $("#AppAccess").val("");
+        $("#Status").val("");
+        //$("#IsAdmin").attr("checked", false);
+        $("#Password").val("");
+        $("#ConfirmPassword").val("");
+        $("#roleList").prop('disabled', false);
+        $("#EmailID").prop('disabled', false);
+    }
+
+    function populateEmployeeForm(data) {
+        $("#territories").populateDropDownList(data.keyValue.territories, data.employee.TerritoryID);
+        $("#roleList").populateDropDownList(data.keyValue.roles, data.employee.RoleId);
+        $("#skillLevels").populateDropDownList(data.keyValue.skilllevels, 0);
+        $("#crewList").populateDropDownList(data.keyValue.crews, 0);
+        $("#state").populateDropDownList(data.keyValue.state, data.employee.State);
+
+
+        $("#employee-id").val(data.employee.EmpId);
+        //var createdDate = new Date(parseInt(data.estimate.CreatedDate.substr(6)));
+        //$("#createdDate").val(createdDate);
+        $("#first-name").val(data.employee.FirstName);
+        $("#last-name").val(data.employee.LastName);
+        $("#title").val(data.employee.Title);
+        $("#type").val(data.employee.EmpType);
+        $("#home-address").val(data.employee.AddressLine1);
+        $("#phone-1").val(data.employee.EmpPhNo1);
+        $("#phone-2").val(data.employee.EmpPhNo2);
+        $("#hourly-rate").val(data.employee.HourlyRate);
+
+        $("#emergency-contact-name").val(data.employee.EmergencyCName);
+        $("#emergency-phone1").val(data.employee.EmergencyCPhNo);
+        $("#emergency-phone2").val(data.employee.EmergencyCPhNo2);
+
+        $("#dl").val(data.employee.DLNo);
+
+        $("#middle-name").val(data.employee.MiddleName);
+        $("#address-line2").val(data.employee.AddressLine2);
+        $("#city-id").val(data.employee.City);
+        if (data.employee.City > 0)
+            $("#city").val(data.keyValue.city[(data.employee.City - 1)].Description);
+        $("#state").val(data.employee.State);
+        $("#zipcode").val(data.employee.ZipCode);
+        $("#EmpPhone2").val(data.employee.EmpPhone2);
+        $("#EmpPhone3").val(data.employee.EmpPhone3);
+        $("#EmailID").val(data.employee.EmailID);
+        $("#DateCreated").val(data.employee.DateCreated);
+        $("#DateUpdated").val(data.employee.DateUpdated);
+        $("#UserID").val(data.employee.UserID);
+        $("#AppAccess").val(data.employee.AppAccess);
+        $("#Status").val(data.employee.Status);
+
+        //$("#IsAdmin").attr("checked", data.employee.IsAdmin);
+        $("#Password").val(data.employee.Password);
+        $("#ConfirmPassword").val(data.employee.Password);
+
+        if(data.employee.EmailID == "adminmanager")
+        {
+            $("#roleList").prop('disabled', true);
+            $("#EmailID").prop('disabled', true);
+        }
+    }
+
+    function searchObjectSkillIndex(nameKey, myArray) {
+        for (var i = 0; i < myArray.length; i++) {
+            if (myArray[i].SkillDesc.replace(/ /g, '') == nameKey.replace(/ /g, '')) {
+                return i;
+            }
+        }
+        return null;
+    }
+
+    function searchObjectCrewIndex(nameKey, myArray) {
+        for (var i = 0; i < myArray.length; i++) {
+            if (myArray[i].CrewID == nameKey) {
+                return i;
+            }
+        }
+        return null;
+    }
+
+    function searchObjectByEmpID(nameKey, myArray) {
+        for (var i = 0; i < myArray.length; i++) {
+            if (myArray[i].EmpId == nameKey) {
+                return i;
+            }
+        }
+        return null;
+    }
+
+
+    $(document).on("click", "#employee-form #add-skill", function () {
+        $('.alert-danger').hide();
+        $('.alert-danger').find('#dvError').text('');
+
+        var SkillLevelID = parseInt($("#skillLevels option:selected").val())
+        var SkillLevel = $("#skillLevels option:selected").text();
+        var skillName = $("#skillname").val();
+        if (skillName == "")
+        {
+            $('.alert-danger').show();
+            $('.alert-danger').find('#dvError').text('Please enter skill name.');
+            return;
+        }
+        if (SkillLevelID == 0) {
+            $('.alert-danger').show();
+            $('.alert-danger').find('#dvError').text('Please select experience level.');
+            return;
+        }
+        if (EmployeeNS.skillItems.length > 0) {
+            var index = searchObjectSkillIndex(skillName, EmployeeNS.skillItems);
+            if (index != null) {
+                $('.alert-danger').show();
+                $('.alert-danger').find('#dvError').text('Skill Name already added.');
+                return;
+            }
+        }
+
+        // Create crew item object
+        SkillItem = {
+            SkillID: 0,
+            SkillDesc: skillName,
+            SkillLevelID: SkillLevelID,
+            SkillLevel: SkillLevel,
+            EmpId: $('employee-id').val()
+        };
+
+        EmployeeNS.skillItems.push(SkillItem);
+
+        // Refresh table with data source
+        var aSkillDetails = transformSkillItems(EmployeeNS.skillItems);
+        createEmployeeSkillTable(aSkillDetails);
+    });
+
+    $(document).on("click", "#employee-form #add-crew", function () {
+        var crewID = parseInt($("#crewList option:selected").val())
+        var crewName = $("#crewList option:selected").text();
+        var isLead = $("#isLead").is(":checked");
+        if (crewID == 0) {
+            $('.alert-danger').show();
+            $('.alert-danger').find('#dvError').text('Please select crew name.');
+            return;
+        }
+        if (EmployeeNS.crewItems.length > 0) {
+            var index = searchObjectCrewIndex(crewID, EmployeeNS.crewItems);
+            if (index != null) {
+                $('.alert-danger').show();
+                $('.alert-danger').find('#dvError').text('Crew Name already added.');
+                return;
+            }
+        }
+
+        CrewItem = {
+            CrewID: crewID,
+            CrewName: crewName,
+            EmpId: $('employee-id').val(),
+            IsLead: isLead
+        };
+
+        EmployeeNS.crewItems.push(CrewItem);
+
+        // Refresh table with data source
+        var aCrewDetails = transformCrewItems(EmployeeNS.crewItems);
+        createEmployeeCrewTable(aCrewDetails);
+    });
+</script>

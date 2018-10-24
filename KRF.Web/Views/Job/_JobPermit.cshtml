@@ -1,0 +1,53 @@
+﻿<style>
+    #job-permit .row .row-input {
+        height: 30px;
+        line-height: 30px;
+        vertical-align: middle;
+        color: #333;
+        font-size: 13px;
+    }
+
+    #job-permit .table-container {
+        font-size: 0.75em;
+    }
+</style>
+<form id="job-permit" name="job-permit" enctype="multipart/form-data">
+    <input id="job-insp-id" type="hidden" />
+    <div style="width:100%; display:none;" id="dvPermitList">
+        @*@Html.Partial("_JobWOList")*@
+    </div>
+    <div style="width:100%;" id="dvPermitAdd">
+        @Html.Partial("_JobPermitAdd")
+    </div>
+</form>
+<script>
+    $('#grid-permits').dataTable({
+        "bFilter": false,
+        "bInfo": false,
+        "bPaginate": false,
+        "bSort": false,
+        "columnDefs": [
+            { className: "dt-left", targets: [0, 1, 2, 4, 5, 7, 8, 9] },
+            { className: "dt-right", targets: [3, 6] }
+        ],
+        "iDisplayLength": 10
+    });
+    jQuery('#calleddate').datetimepicker(
+        {
+            lang: 'en',
+            timepicker: false,
+            format: 'm/d/Y',
+            formatDate: 'm/d/Y',
+            closeOnDateSelect: true
+        }
+    );
+    jQuery('#resultdate').datetimepicker(
+        {
+            lang: 'en',
+            timepicker: false,
+            format: 'm/d/Y',
+            formatDate: 'm/d/Y',
+            closeOnDateSelect: true
+        }
+    );
+</script>

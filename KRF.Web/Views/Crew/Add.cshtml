@@ -1,0 +1,367 @@
+﻿@{
+    ViewBag.Title = "Crew";
+    Layout = "~/Views/Shared/_LayoutPage2.cshtml";
+}
+@Html.AntiForgeryToken()
+@*<link href="~/Content/themes/base/bootstrap.min.css" rel="stylesheet" />*@
+<style>
+    #grid-estimate-docs .open-estimate-doc {
+        display: block;
+        width: 100%;
+    }
+
+    .alignRight {
+        text-align: right;
+    }
+
+    .formHolder {
+        height: 500px;
+    }
+
+        .formHolder .m_block {
+            width: 440px;
+        }
+    .content_block .gridBlock {
+        background: none repeat scroll 0 0 #fff;
+        border: 1px solid #d4d4d4;
+        border-radius: 3px 3px 0 0;
+        height: 100%;
+        margin: 0 20px 25px;
+        width: calc(100% - 40px);
+    }
+</style>
+<div id="content_block" class="content_block">
+    <br />
+    <div id="crewdd" class="gridBlock inventory_page">
+        <div class="head">
+            Add/Edit Crew
+            <a id="save-crew" class="addLead_saveCancel" href="#">Save & Close</a>
+            <a id="update-crew" class="addLead_saveCancel" href="#">Update</a>
+            <a id="cancel-crew" class="addLead_saveCancel" href="#">Cancel</a>
+        </div>
+        <div class="headSpacer"></div>
+        <div id="errorMessages" style="width: 95%; margin-left: 20px; margin-right: 10px;">
+            <div class="alert alert-success alert-dismissable" style="display:none;">
+                <i class="fa fa-check"></i>
+                <button class="close" onclick="$('.alert-success').hide()" type="button">×</button>
+                <div id="dvSuccess"></div>
+            </div>
+            <div class="alert alert-danger alert-dismissable" style="display: none;">
+                <i class="fa fa-ban"></i>
+                <button class="close" onclick="$('.alert-danger').hide()" type="button">×</button>
+                <div id="dvError"></div>
+            </div>
+        </div>
+        <form id="frmCrew">
+            <div id="crew-form" class="formHolder" style="width:95%; height:700px;">
+                <input type="hidden" id="id" />
+                <input type="hidden" id="createdDate" />
+                <div>
+                    <div>
+                        <div class="m_block">
+                            <div class="row">
+                                <div class="colLeft">Name</div>
+                                <div class="colRight">
+                                    <input type="text" id="crewname" class="inputText" maxlength="50" />
+                                </div>
+                            </div>
+                            <div class="row"></div>
+                            <div class="row">
+                                <div class="colLeft">
+                                    Employee
+                                </div>
+                                <div class="colRight">
+                                    <select id="employees" class="inputText">
+                                        <option value="volvo">Please select</option>
+                                        <option value="saab">State1</option>
+                                        <option value="mercedes">State2</option>
+                                        <option value="audi">State3</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="m_block">
+                            <div class="row">
+                            </div>
+                            <div class="row"></div>
+                            <div class="row">
+                                <div class="colLeft" style="text-align:right">
+                                    Foreman?
+                                </div>
+                                <div class="colRight">
+                                    <input type="checkbox" id="isLead" />&nbsp;&nbsp;&nbsp;
+                                    <input type="button" id="add-employee" value="Add Employee" class="addBtn" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="clear_fix"></div>
+                        <div id="list-skill" class="gridBlock" style="width: 100%;">
+                            <div class="table-container" style="border-color: black; border-width:1px; margin-left:30px;">
+                                <table id="grid-items" class="display" width="100%" cellspacing="0">
+                                    <thead>
+                                        <tr>
+                                            <th width="60%">Employee Name</th>
+                                            <th width="30%">Foreman?</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="clear_fix"></div>
+                    </div>
+
+                </div>
+
+                @*<div class="form-footer">
+                        <a id="save-estimate" class="addLead_saveCancel" href="#">Save</a>
+                        <a id="cancel-estimate" class="addLead_saveCancel" href="#">Cancel</a>
+                    </div>*@
+            </div>
+        </form>
+    </div>
+</div>
+<input type="hidden" id="crew-id" />
+<script type="text/javascript">
+    var data;
+    var CrewNS = {
+        crew: {},
+        crewdetails: {},
+        employees: {}
+    };
+
+    $(document).ready(function () {
+
+        $("#crews-link").addClass("linkBtn linkBtnAdd_Selected");
+
+        $('#grid-items').dataTable({
+            "columnDefs": [
+                { className: "dt-left", targets: [0, 1, 2] }
+            ]
+        });
+
+        var ID = parseInt(@ViewBag.ID);
+
+        getCrew(ID);
+
+        $("#cancel-crew").click(function () {
+            window.location.href = '@Url.Action("Index", "Crew")';
+        });
+
+        $(document).on("click", "#crew-form #add-employee", function () {
+            var empID = parseInt($("#employees option:selected").val())
+            var empName = $("#employees option:selected").text();
+            var isLead = $("#isLead").is(":checked");
+
+            if (CrewNS.crewdetails.length > 0) {
+                var index = searchObjectIndex(empID, CrewNS.crewdetails);
+                if (index != null) {
+                    $('.alert-danger').show();
+                    $('.alert-danger').find('#dvError').text('Employee already added.');
+                    return;
+                }
+                if (isLead == true) {
+                    index = searchObjectIndexIfChecked(true, CrewNS.crewdetails);
+                    if (index != null) {
+                        $('.alert-danger').show();
+                        $('.alert-danger').find('#dvError').text('Foreman already added.');
+                        return;
+                    }
+                }
+            }
+
+            // Create crew item object
+            CrewItem = {
+                ID: empID,
+                EmpId: empID,
+                CrewDetailID: 0,
+                CrewID: 0,
+                EmployeeName: empName,
+                IsLead: isLead,
+                Active: true
+            };
+
+            // Add crew item to the data source
+            CrewNS.crewdetails.push(CrewItem);
+
+            // Refresh table with data source
+            var aCrewDetails = transformCrewDetailItems(CrewNS.crewdetails);
+            createCrewDetailTable(aCrewDetails);
+        });
+
+        function getCrew(ID) {
+            openModal();
+            $.ajax({
+                url: '@Url.Action("GetCrew", "Crew")',
+                type: 'POST',
+                data: { crewID: ID },
+                success: function (data) {
+                    CrewNS.crew = data.crew;
+                    CrewNS.crewdetails = data.crewdetails;
+                    CrewNS.employees = data.employees;
+                    if (ID == 0) {
+                        emptyCrewForm(data);
+                        CrewNS.crewdetails = [];
+                    } else {
+                        populateCrewForm(data);
+                        CrewNS.crewdetails = data.crewDetails;
+                        CrewNS.employees = data.employees;
+                        var aCrewDetails = transformCrewDetailItems(CrewNS.crewdetails);
+                        createCrewDetailTable(aCrewDetails);
+                        $('#update-crew').show();
+                    }
+                    closeModal();
+                }
+            });
+        }
+
+        function emptyCrewForm(data) {
+            $("#employees").populateDropDownList(data.employees, 0);
+
+            $("#crew-id").val(0);
+            $("#name").val("");
+        }
+
+        function populateCrewForm(data) {
+            $("#employees").populateDropDownList(data.employees, 0);
+
+            $("#crew-id").val(data.crew.CrewID);
+            $("#crewname").val(data.crew.CrewName);
+            $("#createdDate").val(data.crew.DateCreated);
+        }
+
+        function transformCrewDetailItems(crewDetails) {
+            return crewDetails.map(function (item) {
+                var employeeName;
+                var isLead;
+
+                var crewDetail = {};
+                crewDetail = searchObject(item.ID, CrewNS.crewdetails);
+                if (crewDetail != undefined) {
+                    employeeName = crewDetail.EmployeeName;
+                    isLead = crewDetail.IsLead;
+                }
+                else {
+                    employeeName = CrewNS.crewdetails[CrewNS.crewdetails - 1].EmployeeName;
+                    isLead = CrewNS.crewdetails[CrewNS.crewdetails - 1].IsLead;
+                }
+
+                return [
+                   "<span data-val = " + item.CrewDetailID + " class='name'>" + employeeName + "</span>",
+                   "<span>" + (isLead == true ? 'Yes' : 'No') + "</span>",
+                   "<span class='delete-cust-addr delete' data-val=" + item['ID'] + "><ul><li class='delete'><a href='#non'>Delete</a></li></ul></span>"
+                ];
+            });
+        }
+
+        function searchObjectIndex(nameKey, myArray) {
+            for (var i = 0; i < myArray.length; i++) {
+                if (myArray[i].ID == nameKey) {
+                    return i;
+                }
+            }
+            return null;
+        }
+
+        function searchObjectIndexIfChecked(nameKey, myArray) {
+            for (var i = 0; i < myArray.length; i++) {
+                if (myArray[i].IsLead == nameKey) {
+                    return i;
+                }
+            }
+            return null;
+        }
+
+        $(document).on("click", "#grid-items .delete-cust-addr", function () {
+            var empID = $(this).attr("data-val");
+            var crewDetail = {};
+            var index = searchObjectIndex(empID, CrewNS.crewdetails);
+            if (index != null)
+                CrewNS.crewdetails.splice(index, 1);
+
+            var aCrewDetails = transformCrewDetailItems(CrewNS.crewdetails);
+            createCrewDetailTable(aCrewDetails);
+        })
+
+        function createCrewDetailTable(aCrewDetails) {
+            $('#grid-items').dataTable().fnDestroy();
+
+            $('#grid-items').dataTable({
+                "bPaginate": true,
+                "iDisplayLength": 5,
+                "bLengthChange": false,
+                "bFilter": false,
+                "bInfo": false,
+                "bSort": false,
+                "bAutoWidth": false,
+                "aaData": aCrewDetails
+            });
+        }
+
+        function validateForm() {
+            var validate = true;
+            if ($("#crewname").val() == "") {
+                validate = false;
+                $('.alert-danger').find('#dvError').text('Please enter crew name.');
+            }
+            if (!validate) {
+                $('.alert-danger').show();
+            }
+            return validate;
+        }
+
+        function Save(close)
+        {
+            $('.alert-danger').hide();
+            $('.alert-danger').find('#dvError').text('');
+            $('.alert-success').hide();
+            $('.alert-success').find('#dvSuccess').text('');
+
+            if (!validateForm()) {
+                return;
+            }
+            var crew = {
+                CrewID: parseInt($("#crew-id").val()),
+                CrewName: $("#crewname").val(),
+                DateCreated: $("#createdDate").val()
+            }
+
+            var crewData = {
+            };
+
+            crewData.crew = crew;
+            crewData.crewDetails = CrewNS.crewdetails;
+            openModal();
+            $.ajax({
+                url: '@Url.Action("Save", "Crew")',
+                type: 'POST',
+                dataType: 'json',
+                contentType: 'application/json; charset=utf-8',
+                data: JSON.stringify(crewData),
+                success: function (data) {
+                    if (data.hasSaved) {
+                        if(close)
+                            window.location.href = '@Url.Action("Index", "Crew")';
+                        else {
+                            $("#crew-id").val(data.ID);
+                            $('.alert-success').show();
+                            $('.alert-success').find('#dvSuccess').text(data.message);
+                        }
+                    }
+                    else {
+                        $('.alert-danger').show();
+                        $('.alert-danger').find('#dvError').text(data.message);
+                    }
+                    closeModal();
+                }
+            });
+        }
+
+        $("#save-crew").on("click", function () {
+            Save(true);
+        });
+        $("#update-crew").on("click", function () {
+            Save(false);
+        });
+    });
+</script>

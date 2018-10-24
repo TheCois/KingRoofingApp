@@ -1,0 +1,52 @@
+﻿<style>
+    #job-WO .row .row-input {
+        height: 30px;
+        line-height: 30px;
+        vertical-align: middle;
+        color: #333;
+        font-size: 13px;
+    }
+
+    #job-WO .table-container {
+        font-size: 0.75em;
+    }
+</style>
+<form id="job-WO" name="job-WO" enctype="multipart/form-data">
+    <input id="job-wo-id" type="hidden" />
+    <div style="width:100%; display:none;" id="dvWOList">
+        @*@Html.Partial("_JobWOList")*@
+    </div>
+    <div style="width:100%;" id="dvWOAdd">
+        @Html.Partial("_JobWOAdd")
+    </div>
+</form>
+<script>
+    $('#grid-items-wo').dataTable({
+        "bFilter": true,
+        "bInfo": false,
+        "bPaginate": true,
+        "bSort": false,
+        "iDisplayLength": 10
+    });
+    $('#grid-items-wo-estimates').dataTable({
+        "bFilter": false,
+        "bInfo": false,
+        "bPaginate": false,
+        "bSort": false,
+        "columnDefs": [
+            { className: "dt-left", targets: [0, 1, 2, 8] },
+            { className: "dt-right", targets: [3, 4, 5, 6, 7] },
+            { defaultContent: "", render: $.fn.dataTable.render.number(',', '.', 2), targets: [3, 4, 5, 6, 7] }
+        ],
+        "iDisplayLength": 10
+    });
+    jQuery('#weekendingdate').datetimepicker(
+        {
+            lang: 'en',
+            timepicker: false,
+            format: 'm/d/Y',
+            formatDate: 'm/d/Y',
+            closeOnDateSelect: true
+        }
+    );
+</script>

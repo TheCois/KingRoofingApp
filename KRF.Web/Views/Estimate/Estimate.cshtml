@@ -1,0 +1,535 @@
+﻿<style>
+    #grid-estimate-docs .open-estimate-doc {
+        display: block;
+        width: 100%;
+        text-decoration: underline;
+        cursor: pointer;
+    }
+</style>
+<div id="form-estimate" style=" margin-right:20px; margin-left:20px; background-color:white;">
+    <div class="headSpacer"></div>
+    <div id="errorMessages" style="width: 95%; margin-left: 20px; margin-right: 10px;">
+        <div class="alert alert-success alert-dismissable" style="display:none;">
+            <i class="fa fa-check"></i>
+            <button class="close" onclick="$('.alert-success').hide()" type="button">×</button>
+            <div id="dvSuccess"></div>
+        </div>
+        <div class="alert alert-danger alert-dismissable" style="display: none;">
+            <i class="fa fa-ban"></i>
+            <button class="close" onclick="$('.alert-danger').hide()" type="button">×</button>
+            <div id="dvError"></div>
+        </div>
+    </div>
+    <div id="tabs">
+        <ul>
+            <li><a href="#estimate-form">Estimate</a></li>
+            <li><a href="#estimate-doc-form">Documents</a></li>
+        </ul>
+
+        <div id="estimate-form" class="formHolder" style="width: 95%; height: 100%; margin-bottom: -100px">
+            <input type="hidden" id="createdDate" />
+            <div>
+                <div>
+                    <div class="m_block">
+                        <div class="row">
+                            <div class="colLeft" style="width:200px">ID</div>
+                            <div class="colRight" style="width:260px">
+                                <input type="text" id="id" class="inputText inputTextReadOnly" readonly>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="colLeft" style="width:200px">Estimate Name</div>
+                            <div class="colRight" style="width:260px">
+                                <input id="name" type="text" class="inputText">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="colLeft" style="width:200px">
+                                <div style="display: inline-block">Lead<input type="radio" name="rdbLeadCustomer" id="rdbLead" value="1" checked="checked"  /></div>
+                                <div style="display: inline-block">Customer<input type="radio" name="rdbLeadCustomer" id="rdbCustomer" value="2" /></div>
+                            </div>
+                            <div class="colRight" style="width:260px" id="leadDdlDiv">
+                                <select id="lead" class="inputText">
+                                    <option value="volvo">Please select</option>
+                                    <option value="saab">State1</option>
+                                    <option value="mercedes">State2</option>
+                                    <option value="audi">State3</option>
+                                </select>
+                            </div>
+                            <div class="colRight" style="display: none; width:260px" id="customerDdlDiv">
+                                <select id="customer" class="inputText">
+                                    <option value="volvo">Please select</option>
+                                    <option value="saab">State1</option>
+                                    <option value="mercedes">State2</option>
+                                    <option value="audi">State3</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="m_block">
+                        <div class="row">
+                            <div class="colLeft" style="width:200px">Estimate Status</div>
+                            <div class="colRight" style="width:260px">
+                                <select id="status" class="inputText">
+                                    <option value="volvo">Please select</option>
+                                    <option value="saab">State1</option>
+                                    <option value="mercedes">State2</option>
+                                    <option value="audi">State3</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="colLeft" style="width:200px">Roof Type</div>
+                            <div class="colRight" style="width:260px">
+                                <select id="roof-type" class="inputText">
+                                    <option value="volvo">Please select</option>
+                                    <option value="saab">Saab</option>
+                                    <option value="mercedes">Mercedes</option>
+                                    <option value="audi">Audi</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="colLeft" style="width:200px">Job Address</div>
+                            <div class="colRight" style="width:260px">
+                                <select id="address" class="inputText"></select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="clear_fix"></div><br />
+                <div style="border-style: solid; border-width: medium; border-color: #DBE4E9">
+                    <div>
+                        <div class="m_block">
+                            <div class="row">
+                                <div class="colLeft">
+                                    Select Category
+                                </div>
+                                <div class="colRight">
+                                    <select id="assemblyCategories" class="inputText">
+                                        <option value="volvo">All Assemblies</option>
+                                        <option value="saab">State1</option>
+                                        <option value="mercedes">State2</option>
+                                        <option value="audi">State3</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="colLeft">
+                                    Select Assembly
+                                </div>
+                                <div class="colRight">
+                                    <select id="assemblies" class="inputText">
+                                        <option value="volvo">Please select</option>
+                                        <option value="saab">State1</option>
+                                        <option value="mercedes">State2</option>
+                                        <option value="audi">State3</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="m_block">
+                            <div class="row">
+                            </div>
+                            <div class="row">
+                                <div class="colLeft" style="text-align:left">
+                                    <input type="button" id="add-assembly" value="Add Assembly" class="addBtn" />
+                                </div>
+                                <div class="colRight">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="clear_fix"></div>
+                    <div class="table-container" style="border-color: black; border-width:1px">
+                        <table id="grid-items" class="display" width="100%" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th width="10%">Code</th>
+                                    <th width="20%">Name</th>
+                                    <th width="10%">Units</th>
+                                    <th width="12%">Material Cost</th>
+                                    <th width="12%">Labor Cost</th>
+                                    <th width="10%">Item Price</th>
+                                    <th width="10%">Qty</th>
+                                    <th>Total</th>
+                                    @*<th></th>*@
+                                    <th></th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                    <div class="clear_fix"></div>
+                </div>
+
+                <div class="table-container">
+                    <div class="m_block">
+                        <div class="row">
+                            <div class="colLeft" style="width:150px">Material Cost</div>
+                            <div class="colRight" style="width:300px">
+                                <input id="totalMaterialCostDisplay" type="text" class="inputTextReadOnly qty" readonly>
+                                <input id="totalMaterialCost" type="hidden" class="inputText" readonly>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="colLeft" style="width:150px">Labor Cost</div>
+                            <div class="colRight" style="width:300px">
+                                <input id="totalLabourCostDisplay" type="text" class="inputTextReadOnly qty" readonly>
+                                <input id="totalLabourCost" type="hidden" class="inputText" readonly>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="colLeft" style="width:150px">Total</div>
+                            <div class="colRight" style="width:300px">
+                                <input id="totalCostDisplay" type="text" class="inputTextReadOnly qty" readonly>
+                                <input id="totalCost" type="hidden" class="inputText" readonly>
+                            </div>
+                        </div>
+                        @*<div class="row">
+                                <div class="colLeft">Sales Tax</div>
+                                <div class="colRight">
+                                    <input id="last-name" type="text" class="inputText">
+                                </div>
+                            </div>*@
+                        <div class="row">
+                            <div class="colLeft" style="width:150px">Price Adjustment</div>
+                            <div class="colRight" style="width:300px">
+                                <input id="priceAdjDisplay" type="text" class="inputText qty">
+                                <input id="priceAdj" type="hidden" class="inputText">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="colLeft" style="width:150px">Contract Price</div>
+                            <div class="colRight" style="width:300px">
+                                <input id="contractPriceDisplay" type="text" class="inputTextReadOnly qty" readonly>
+                                <input id="contractPrice" type="hidden" class="inputText" readonly>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="m_block">
+                        <div class="row">
+                        </div>
+                        <div class="row">
+                        </div>
+                        <div class="row">
+                        </div>
+                        <div class="row">
+                            <div class="colLeft">Reason</div>
+                            <div class="colRight">
+                                <textarea id="reasonForAdj" class="inputText" style="height: 68px"> </textarea>
+                            </div>
+                        </div>
+                        <div class="row">
+                        </div>
+                    </div>
+                    <div class="clear_fix"></div><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+                    <div>
+                        @*<div class="form-footer">*@
+                        <a id="save-estimate" class="addLead_saveCancel" href="#">Save & Close</a>
+                        <a id="update-estimate" class="addLead_saveCancel" href="#">Update</a>
+                        <a id="cancel-estimate" class="addLead_saveCancel" href="#">Cancel</a>
+                        <a id="create-proposal" class="addLead_saveCancel" href="#">Create Proposal</a>
+                        @*</div>*@
+                    </div>
+                </div>
+            </div>
+            <div class="clear_fix"></div><br /><br /><br /><br /><br /><br />
+        </div>
+
+        <div id="estimate-doc-form" class="formHolder" style="width:95%; height:100%">
+            <form id="estimate-document" name="estimate-document" enctype="multipart/form-data" style="border: 2px solid #eeeeee; height:50px;">
+                <input type="hidden" name="estimateID" id="estimateID" />
+                <input type="hidden" name="id" id="id" value="0" />
+                <input type="hidden" name="uploaddatetime" id="uploaddatetime" class="inputText" />
+                <div class="clear_fix"></div>
+                <div class="form-footer">
+                    <a id="save-estimate-doc" class="addLead_saveCancel" href="#">Save</a>
+                    <input type="text" name="description" id="description" class="inputText" style="width: 250px; float: right; margin-top: 10px;" />
+                    <span id="custname" class="check_Lable" style="margin-top:15px;"></span>
+                    <input type="file" name="file" id="file" class="uploadBtn" style="font-family: Verdana,Arial,sans-serif; font-size: 15px; float: right; margin-top: 10px;" />
+                </div>
+                <div class="clear_fix"></div>
+            </form>
+
+            <div class="table-container">
+                <table id="grid-estimate-docs" class="display" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th width="35%">Name</th>
+                            <th>Description</th>
+                            <th width="20%">Upload Date & Time</th>
+                            <th width="10%"></th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(document).prop('title', 'Estimates');
+        $("#tabs").tabs();
+        $('#grid-items').dataTable({
+            columnDefs: [
+                { className: "dt-left", targets: [0, 1, 2, 8] },
+                { className: "dt-right", targets: [3, 4, 5, 6, 7] },
+                { defaultContent: "", render: $.fn.dataTable.render.number(',', '.', 2), targets: [3, 4, 5, 7] }
+            ],
+        });
+        //$('#grid-estimate-docs').dataTable();
+
+        var ID = parseInt(@ViewBag.ID);
+
+        getEstimate(ID);
+
+        $("#cancel-estimate").on("click", function () {
+            $("#form-estimate").hide();
+            $("#list-estimate").show();
+            $("#list-customer").show();
+            window.location = '@Url.Action("EstimateIndex", "Estimate")';
+        });
+
+        $("#form-estimate").on("click", "#save-estimate", function () {
+            $("#form-estimate").show();
+            $("#list-estimate").hide();
+
+            $('.alert-danger').hide();
+            $('.alert-danger').find('#dvError').text('');
+
+            var token = $('[name=__RequestVerificationToken]').val();
+
+            var estimateData = {};
+            estimateData.Estimate = populateEstimateViewModel();
+            estimateData.EstimateItem = EstimateNS.estimateItems;
+            var itemsWithZeroQty = $.grep(EstimateNS.estimateItems, function (v) { return v.Quantity == 0 });
+            if (itemsWithZeroQty.length > 0) {
+                $('.alert-danger').show();
+                $('.alert-danger').find('#dvError').text('Items with 0 quantity is not allowed. Please enter at least one quantity for item.');
+                return;
+            }
+            openModal();
+            $.ajax({
+                url: '@Url.Action("Save", "Estimate")',
+                type: 'POST',
+                data: { "estimateData": JSON.stringify(estimateData), "updateClicked": false, "__RequestVerificationToken": token },
+                success: function (data) {
+                    $("#main-content").html(data);
+                    closeModal();
+                }
+            });
+        });
+
+        $("#form-estimate").on("click", "#update-estimate", function () {
+            $('.alert-danger').hide();
+            $('.alert-danger').find('#dvError').text('');
+            $('.alert-success').hide();
+            $('.alert-success').find('#dvSuccess').text('');
+
+            $("#form-estimate").show();
+            $("#list-estimate").hide();
+
+            $('.alert-danger').hide();
+            $('.alert-danger').find('#dvError').text('');
+
+            var token = $('[name=__RequestVerificationToken]').val();
+
+            var estimateData = {};
+            estimateData.Estimate = populateEstimateViewModel();
+            estimateData.EstimateItem = EstimateNS.estimateItems;
+            var itemsWithZeroQty = $.grep(EstimateNS.estimateItems, function (v) { return v.Quantity == 0 });
+            if (itemsWithZeroQty.length > 0) {
+                $('.alert-danger').show();
+                $('.alert-danger').find('#dvError').text('Items with 0 quantity is not allowed. Please enter at least one quantity for item.');
+                return;
+            }
+            openModal();
+            $.ajax({
+                url: '@Url.Action("Save", "Estimate")',
+                type: 'POST',
+                data: { "estimateData": JSON.stringify(estimateData), "updateClicked": true, "__RequestVerificationToken": token },
+                success: function (data) {
+                    //$("#main-content").html(data);
+                    $("#id").val(data.ID);
+                    $('.alert-success').show();
+                    $('.alert-success').find('#dvSuccess').text(data.message);
+                    var estimateStatus = $("#status option:selected").val();
+                    if (estimateStatus == 6)// Completed = 6
+                    {
+                        $("#status").prop('disabled', true);
+                    }
+                    closeModal();
+                }
+            });
+        });
+
+        $("#form-estimate").on("change", "#customer", function () {
+            var optionSelected = $("option:selected", this);
+            var valueSelected = this.value;
+            $('#custname').text(optionSelected.text());
+            var addresses = $.grep(EstimateNS.addresses, function (v) { return valueSelected == v.CustomerID });
+            $("#address").populateDropDownList(addresses, 0);
+        })
+
+        $("#form-estimate").on("change", "#lead", function () {
+            var optionSelected = $("option:selected", this);
+            var valueSelected = this.value;
+            $('#custname').text(optionSelected.text());
+            var addresses = $.grep(EstimateNS.addresses, function (v) { return valueSelected == v.CustomerID });
+            $("#address").populateDropDownList(addresses, 0);
+        })
+
+        $("#form-estimate").on("change", "#assemblyCategories", function () {
+            var valueSelected = this.value;
+            var availableAssemblies = new Array();
+            if (valueSelected == 0)
+                availableAssemblies = assembliesList;
+            else
+                availableAssemblies = $.grep(assembliesList, function (v) { return v.Code.lastIndexOf(valueSelected, 0) === 0 });
+
+            $("#assemblies").populateDropDownList(availableAssemblies, 0);
+        })
+
+        $('#grid-estimate-docs').dataTable({
+            "bPaginate": true,
+            "iDisplayLength": 10,
+            "bLengthChange": false,
+            "bFilter": true,
+            "bInfo": false,
+            "bSort": true,
+            "bAutoWidth": false,
+            columnDefs: [
+                { className: "dt-left", targets: [0, 1, 3] },
+                { className: "dt-right", targets: [2] }
+            ],
+            "ajax": {
+                'type': 'GET',
+                'url': '@Url.Action("EstimateDocument", "Estimate")',
+                'data': {
+                    estimateID: ID
+                }
+            }
+        });
+
+
+        function renderEstimateDocTable(ID) {
+            $('#grid-estimate-docs').dataTable().fnDestroy();
+            $('#grid-estimate-docs').dataTable({
+                "bPaginate": true,
+                "iDisplayLength": 10,
+                "bLengthChange": false,
+                "bFilter": true,
+                "bInfo": false,
+                "bSort": true,
+                "bAutoWidth": false,
+                "ajax": {
+                    'type': 'GET',
+                    'url': '@Url.Action("EstimateDocument", "Estimate")',
+                    'data': {
+                        estimateID: ID
+                    }
+                }
+            });
+        }
+
+        $("#save-estimate-doc").on("click", function () {
+            var formElement = $('#estimate-document');
+            var upload_data = new FormData(formElement[0]);
+            openModal();
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("Upload", "Estimate")',
+                data: upload_data,
+                contentType: false,
+                processData: false,
+                success: function () {
+                    renderEstimateDocTable(ID);
+                    closeModal();
+                },
+                error: function () {
+                    closeModal();
+                    alert("failure");
+                }
+            });
+
+            $("#estimate-document .create").show();
+            $("#estimate-document .edit").hide();
+            $("#estimate-document #description").val("");
+            $("#estimate-document #uploaddatetime").val("");
+            $("#estimate-document #id").val("0");
+        });
+
+        $(document).on("click", "#grid-estimate-docs .edit-estimate-doc", function () {
+            $("#estimate-document .create").hide();
+            $("#estimate-document .edit").show();
+
+            var id = $(this).attr("data-val");
+            var description = $(this).parent().prev().html();
+            var name = $(this).parent().prev().prev().html();
+            var d = new Date();
+
+            var month = d.getMonth() + 1;
+            var day = d.getDate();
+
+            var output = d.getFullYear() + '/' +
+                (month < 10 ? '0' : '') + month + '/' +
+                (day < 10 ? '0' : '') + day;
+
+            var uploaddatetime = output;
+
+            //alert(uploaddatetime);
+
+            $("#estimate-document #id").val(id);
+            $("#estimate-document #description").val(description.trim());
+            $("#estimate-document #uploaddatetime").val(uploaddatetime.trim());
+            $("#estimate-document #fileName").html(name.trim());
+        })
+
+        $(document).on("click", "#grid-estimate-docs .delete-estimate-doc", function () {
+            var estimateDocId = $(this).attr("data-val");
+            openModal();
+            $.ajax({
+                url: '@Url.Action("DeleteEstimateDocument", "Estimate")',
+                type: 'POST',
+                data: { estimateDocumentID: estimateDocId },
+                success: function (data) {
+                    renderEstimateDocTable(ID);
+                    closeModal();
+                }
+            });
+        })
+
+        $("#estimate-document .edit").hide();
+
+        $("#cancel-estimate-doc").on("click", function () {
+            $("#estimate-document .create").show();
+            $("#estimate-document .edit").hide();
+            $("#estimate-document #uploaddatetime").val("");
+            $("#estimate-document #description").val("");
+            $("#estimate-document #id").val("0");
+        });
+
+        $("#grid-estimate-docs").on("click", ".open-estimate-doc", function () {
+            var id = $(this).attr("data-val");
+            window.location = '@Url.Action("Download", "Estimate")?id=' + id;
+        });
+
+        $("#estimate-form").on("click", "#create-proposal", function() {
+            window.location = '@Url.Action("CreateProposalDocument", "Estimate")?estimateID=' + ID;
+        });
+
+        $("input[name$='rdbLeadCustomer']").click(function () {
+            var value = $(this).val();
+
+            if (value == 1) {
+                $("#customerDdlDiv").hide();
+                $("#leadDdlDiv").show();
+            }
+            else {
+                $("#leadDdlDiv").hide();
+                $("#customerDdlDiv").show();
+            }
+        });
+    });
+</script>

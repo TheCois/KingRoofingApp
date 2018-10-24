@@ -1,0 +1,886 @@
+﻿@{
+    ViewBag.Title = "Customer";
+    Layout = "~/Views/Shared/_LayoutPage2.cshtml";
+}
+@Html.AntiForgeryToken()
+<style>
+    .alignRight {
+        text-align: right;
+    }
+</style>
+<div id="content_block" class="content_block">
+    <!-- content block -->
+    <br />
+    <div id="list-customer" class="gridBlock inventory_page">
+        <div class="head">Customers 
+        @*@if (KRF.Web.Common.Common.IsUserAuthorizeToPerformThisAction(KRF.Web.SessionManager.RoleId, (int)KRF.Core.Enums.PageType.Customer, (int)KRF.Core.Enums.PermissionType.Edit))
+        {
+            <a id="add-customer" style="display: none" class="addLead_saveCancel">Add Customer</a>
+        }*@
+        </div>
+        <div id="errorMessages" style="width: 95%; margin-left: 20px; margin-right: 10px;">
+            <div class="alert alert-success alert-dismissable" style="display:none;">
+                <i class="fa fa-check"></i>
+                <button class="close" onclick="$('.alert-success').hide()" type="button">×</button>
+                <div id="dvSuccess"></div>
+            </div>
+            <div class="alert alert-danger alert-dismissable" style="display: none;">
+                <i class="fa fa-ban"></i>
+                <button class="close" onclick="$('.alert-danger').hide()" type="button">×</button>
+                <div id="dvError"></div>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table id="grid-customer" class="display" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        @if (Convert.ToBoolean(ViewBag.AllowEdit))
+                        {
+                            <th></th>
+                        }
+                        <th>ID</th>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Email</th>
+                        <th>Home Phone</th>
+                        <th>Cell Phone</th>
+                        <th>Office Phone</th>
+                        <th>No. Of Estimates</th>
+                        @if (Convert.ToBoolean(ViewBag.AllowEdit))
+                        {
+                            <th></th>
+                        }
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+    <div id="cust-estimate"></div>
+
+</div>
+<!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx  -->
+<div id="customer-form-popup" class="form_popup" style="height: 800px !important;">
+    <input id="customer-id" type="hidden" value="0" name="customer-id">
+    <input id="lead-id" type="hidden" value="0" name="lead-id">
+    <div class="gridBlockLarge_btnHolder_head">
+        Add Customer
+    </div>
+    <div class="headSpacer"></div>
+    <div id="customer-form" class="formHolder">
+        <div id="tabs">
+            <ul>
+                <li><a href="#tabs-1">Contact Information</a></li>
+                <li><a href="#tabs-2">Job Addresses</a></li>
+                <li><a href="#tabs-3">Estimates</a></li>
+                <li><a href="#tabs-4">Proposals</a></li>
+            </ul>
+            <div id="tabs-1" style="height: 100% !important;">
+                <div class="m_block" style="height: 85% !important;">
+                    <fieldset style="border: 1px solid #dcdcdc; height: inherit;">
+                        <legend>Customer Info</legend>
+                        <div class="row">
+                            <div class="colLeft">Company Name</div>
+                            <div class="colRight">
+                                <input id="business-name" type="text" class="inputText">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="colLeft">First Name</div>
+                            <div class="colRight">
+                                <input id="first-name" type="text" class="inputText">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="colLeft">Last Name</div>
+                            <div class="colRight">
+                                <input type="text" id="last-name" class="inputText">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="colLeft">Contact Name</div>
+                            <div class="colRight">
+                                <input type="text" id="contact-name" class="inputText">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="colLeft">Home Phone</div>
+                            <div class="colRight">
+                                <input type="text" id="telephone" class="inputText">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="colLeft">Cell Phone</div>
+                            <div class="colRight">
+                                <input type="text" id="cell" class="inputText">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="colLeft">Office Phone</div>
+                            <div class="colRight">
+                                <input type="text" id="office" class="inputText">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="colLeft">Email</div>
+                            <div class="colRight">
+                                <input type="text" id="email" class="inputText">
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="m_block" style="height: 52% !important;">
+                    <fieldset style="border: 1px solid #dcdcdc; height: inherit;">
+                        <legend>Billing Address</legend>
+                        <div class="row">
+                            <div class="colLeft">
+                                <button id="btn-bill-address" type="button" class="googleMapsButton"></button>&nbsp;&nbsp;Address 1
+                            </div>
+                            <div class="colRight">
+                                <input id="bill-address1" type="text" class="inputText">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="colLeft">
+                                Address 2
+                            </div>
+                            <div class="colRight">
+                                <input id="bill-address2" type="text" class="inputText">
+                            </div>
+                        </div>
+                        @*<div class="row">
+                    <div class="colLeft">Country</div>
+                    <div class="colRight">
+                        <select id ="bill-country" class="inputText">
+                            <option value="volvo">Please select</option>
+                            <option value="saab">State1</option>
+                            <option value="mercedes">State2</option>
+                            <option value="audi">State3</option>
+                        </select>
+                    </div>
+                </div>*@
+                        <div class="row">
+                            <div class="colLeft">Zip Code</div>
+                            <div class="colRight">
+                                <input type="text" id="bill-zipcode" class="inputText">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="colLeft">City</div>
+                            <div class="colRight">
+                                <input type="text" id="bill-city" class="inputText inputTextReadOnly" readonly>
+                                <input type="text" id="bill-city-id" style="display: none">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="colLeft">State</div>
+                            <div class="colRight">
+                                <select id="bill-state" class="inputText">
+                                    <option value="volvo">Please select</option>
+                                    <option value="saab">State1</option>
+                                    <option value="mercedes">State2</option>
+                                    <option value="audi">State3</option>
+                                </select>
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="m_block" style="height: 30% !important;">
+                    <div class="row" style="height: inherit;">
+                        <div class="colLeft">Note</div>
+                        <div class="colRight">
+                            <textarea id="note" class="inputText" style="height: 70px"> </textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tabs-2" style="height: 100% !important;">
+                <div class="m_block" style="height: 60% !important;">
+                    <fieldset>
+                        <input type="hidden" id="jobAddrID" />
+                        <div class="row">
+                            <div class="colLeft">
+                                <button id="btn-job-address" type="button" class="googleMapsButton"></button>&nbsp;&nbsp;Address 1
+                            </div>
+                            <div class="colRight">
+                                <input id="job-address1" type="text" class="inputText">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="colLeft">Address 2</div>
+                            <div class="colRight">
+                                <input id="job-address2" type="text" class="inputText">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="colLeft">Zip Code</div>
+                            <div class="colRight">
+                                <input type="text" id="job-zipcode" class="inputText">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="colLeft">City</div>
+                            <div class="colRight">
+                                <input type="text" id="job-city" class="inputText inputTextReadOnly" readonly>
+                                <input type="text" id="job-city-id" style="display: none">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="colLeft">State</div>
+                            <div class="colRight">
+                                <select id="job-state" class="inputText">
+                                    <option value="volvo">Please select</option>
+                                    <option value="saab">State1</option>
+                                    <option value="mercedes">State2</option>
+                                    <option value="audi">State3</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="popup-footer">
+                            <a id="new-address" class="addLead_saveCancel" href="#">New</a>
+                            <a id="save-address" class="addLead_saveCancel" href="#">Save</a>
+                        </div>
+                    </fieldset>
+                </div>
+
+                <div class="table-container">
+                    <table id="grid-address" class="display" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>Address1</th>
+                                <th>Address2</th>
+                                <th>City</th>
+                                <th>State</th>
+                                <th>Zip Code</th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+
+                <div class="clear_fix"></div><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+            </div>
+
+            <div id="tabs-3" style="height: 100% !important;">
+                @if (true || Convert.ToBoolean(ViewBag.AllowEdit))
+                {
+                    <a id="add-estimate" class="addLead_saveCancel" href="#">New Estimate</a><br /><br />
+                }
+                <div class="table-container" style="height: 90% !important;">
+                    <table id="grid-customer-estimates" class="display" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                @if (Convert.ToBoolean(ViewBag.AllowEdit))
+                                {
+                                    <th></th>
+                                }
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Roof Type</th>
+                                <th>Created Date</th>
+                                <th>Contract Price</th>
+                                <th>Status</th>
+                                @if (Convert.ToBoolean(ViewBag.AllowEdit))
+                                {
+                                    <th></th>
+                                }
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+
+                <div class="clear_fix"></div><br />
+            </div>
+        </div>
+    </div>
+
+
+    <div class="clear_fix"></div>
+
+    <div class="popup-footer">
+        <a id="save-customer" class="addLead_saveCancel" href="#" style="position:relative; z-index:2;">Save & Close</a>
+        <a id="update-customer" class="addLead_saveCancel" href="#" style="display:none;position:relative; z-index:2;">Update</a>
+        <a id="Cancel_PopAss" class="addLead_saveCancel" href="#" style="position:relative; z-index:2;">Cancel</a>
+    </div>
+    <div id="errorMessages" style="width: 95%; margin-top: 70px; margin-left: 20px; margin-right: 10px;">
+        <div class="alert alert-success alert-dismissable" style="display:none;">
+            <i class="fa fa-check"></i>
+            <button class="close" onclick="$('.alert-success').hide()" type="button">×</button>
+            <div id="dvSuccess"></div>
+        </div>
+        <div class="alert alert-danger alert-dismissable" style="display: none;">
+            <i class="fa fa-ban"></i>
+            <button class="close" onclick="$('.alert-danger').hide()" type="button">×</button>
+            <div id="dvError"></div>
+        </div>
+    </div>
+</div>
+
+<div id="madals" class="madals"></div>
+
+<script type="text/javascript">
+    var data;
+    var jobAddrID = 0;
+
+    $(document).ready(function () {
+
+        $("#Cancel_PopAss").click(function () {
+            $("#madals").hide();
+            $("#customer-form-popup").hide();
+            window.location.href = '@Url.Action("Index", "Customer")';
+        });
+
+        var token = $('[name=__RequestVerificationToken]').val();
+
+        var keyValue = {};
+        var custAddresses = [];
+
+        $("#tabs").tabs();
+
+
+        $("#add-customer").click(function () {
+            $("#status").populateDropDownList(keyValue.status, 0);
+            $("#bill-state").populateDropDownList(keyValue.state, 0);
+            $("#job-state").populateDropDownList(keyValue.state, 0);
+            $("#bill-country").populateDropDownList(keyValue.countries, 0);
+            $("#job-country").populateDropDownList(keyValue.countries, 0);
+
+            $("#customer-form-popup").show();
+
+            $("#madals").css({ "height": $(document).height(), "width": $(document).width() });
+            $("#madals").show();
+        });
+
+        $("#Cancel_PopAss").click(function () {
+            $("#madals").hide();
+            $("#customer-form-popup").hide();
+            $("#customer-form-popup input[type=text]").val("");
+            $("#customer-form-popup textarea").val("");
+        });
+
+        $(document).keyup(function (e) {
+            if (e.keyCode === 27) $("#Cancel_PopAss").click();   // esc
+        });
+
+        $('#grid-customer').dataTable({
+            "order": [[1, "desc"]],
+            columnDefs: [
+                { className: "dt-left", targets: [0, 1, 2, 3, 4, 5, 6, 7, 9] },
+                { className: "dt-right", targets: [8] }
+            ],
+            "iDisplayLength": 100,
+            //"columns": [null, null, null, null, null, { "sClass": "alignRight" },null,null],
+            "sAjaxSource": '@Url.Action("GetCustomers", "Customer")',
+            //"aLengthMenu": [[5, 10, 25, 50, 100, -1], [5, 10, 25, 50, 100, "All"]],
+            "fnServerData": function (sSource, aoData, fnCallback) {
+                aoData.push({ "name": "ID", "value": 5 });
+                $.getJSON(sSource, aoData, function (json) {
+                    keyValue = json.keyValue;
+                    fnCallback(json);
+                });
+            }
+        });
+
+
+        $("#tabs").tabs({
+            "activate": function (event, ui) {
+                $($.fn.dataTable.tables(true)).DataTable().columns.adjust();
+            }
+        });
+
+        $("#new-address").on("click", function () {
+            clearCustAddressForm();
+        });
+
+        $("#save-address").on("click", function () {
+            $('.alert-danger').hide();
+            $('.alert-danger').find('#dvError').html('');
+
+
+            var customer = {
+                ID: $("#jobAddrID").val(),
+                CustomerID: $("#customer-id").val(),
+                Address1: $("#job-address1").val(),
+                Address2: $("#job-address2").val(),
+                State: $("#job-state option:selected").val(),
+                City: $("#job-city-id").val(),
+                Country: $("#job-country option:selected").val(),
+                ZipCode: $("#job-zipcode").val(),
+            }
+
+            //if (customer.ID == "0") {
+            //    //customer.ID = "tmp" + jobAddrID;
+            //    custAddresses.push(customer);
+            //}
+            //else {
+            //    for (i = 0; i < custAddresses.length; i++) {
+            //        var addr = custAddresses[i]
+            //        if (addr.ID == customer.ID) {
+            //            custAddresses[i] = customer;
+            //        }
+            //    }
+            //}
+
+            var custAdd = [];
+            custAdd.push(customer);
+
+            var customerAddress = custAdd;
+            var customerData = {};
+            customerData.Customer = {};
+            customerData.CustomerAddress = customerAddress;
+
+            openModal();
+            $.ajax({
+                url: '@Url.Action("SaveJobAddress", "Customer")',
+                type: 'POST',
+                data: { "customerData": JSON.stringify(customerData), "__RequestVerificationToken": token },
+                success: function (data) {
+                    var customerAddressTable = data.customerAddress.map(function (item) {
+                        return [item['Address1'], item['Address2'],
+                            search(item['City'], keyValue.city),
+                            search(item['State'], keyValue.state),
+                            item['ZipCode'],
+                             "<span class='edit-cust-addr' data-val=" + item['ID'] + "><ul><li class='edit'><a href='#non'>Edit</a></li></ul></span>",
+                            "<span class='delete-cust-addr' data-val=" + item['ID'] + "><ul><li class='delete'><a href='#non'>Delete</a></li></ul></span>"
+                        ];
+                    });
+                    custAddresses = data.customerAddress;
+                    createCustAddrTable(customerAddressTable);
+
+                    clearCustAddressForm();
+                    closeModal();
+
+                }
+            });
+
+
+        });
+
+
+        function Save(close)
+        {
+            var customer = {
+                ID: parseInt($("#customer-id").val()),
+                LeadID: parseInt($("#lead-id").val()),
+                FirstName: $("#first-name").val(),
+                LastName: $("#last-name").val(),
+                BusinessName: $("#business-name").val(),
+                ContactName: $("#contact-name").val(),
+                Email: $("#email").val(),
+                Telephone: $("#telephone").val(),
+                Cell: $("#cell").val(),
+                Office: $("#office").val(),
+                Note: $("#note").val(),
+
+                BillAddress1: $("#bill-address1").val(),
+                BillAddress2: $("#bill-address2").val(),
+                BillState: $("#bill-state option:selected").val(),
+                BillCity: $("#bill-city-id").val(),
+                BillCountry: $("#bill-country option:selected").val(),
+                BillZipCode: $("#bill-zipcode").val()
+            }
+            alert(JSON.stringify(customer));
+            var customerAddress = custAddresses;
+            var customerData = {};
+            customerData.Customer = customer;
+            customerData.CustomerAddress = customerAddress;
+            alert(JSON.stringify(customerData));
+
+            $.each(customerData.CustomerAddress, function (k, v) {
+                var id = v.ID.toString();
+                alert(id);
+                if (id.indexOf("tmp") >= 0)
+                    v.ID = 0
+            });
+                                                                                                               alert(1);
+            openModal();
+            $.ajax({
+                url: '@Url.Action("Save", "Customer")',
+                type: 'POST',
+                data: { "customerData": JSON.stringify(customerData), "__RequestVerificationToken": token },
+                success: function (data) {
+                                                                                                               alert(2);
+                    $("#customer-id").val(data.id);
+                    closeModal();
+                    if (close) {
+                        $("#madals").hide();
+                        $("#customer-form-popup").hide();
+                        window.location.href = '@Url.Action("Index", "Customer")';
+                    } else {
+                        $('.alert-success').show();
+                        $('.alert-success').find('#dvSuccess').text('Record successfully updated!');
+                    }
+                },
+                error: function () {
+                    closeModal();
+
+                    $("#madals").hide();
+                    $("#customer-form-popup").hide();
+                    window.location.href = '@Url.Action("Index", "Customer")';
+                }
+            });
+        }
+        $("#save-customer").on("click", function () {
+            Save(true);
+        });
+        $("#update-customer").on("click", function () {
+            Save(false);
+        });
+
+        $(document).on("click", "#grid-customer .edit-customer", function () {
+            $("#tabs").tabs("option", "active", 0);
+            var id = $(this).attr("data-val");
+            openModal();
+            $.ajax({
+                url: '@Url.Action("GetCustomer", "Customer")',
+                type: 'POST',
+                data: { id: id, __RequestVerificationToken: token },
+                success: function (data) {
+                    $("#customer-id").val(data.customer.ID);
+                    $("#lead-id").val(data.customer.LeadID);
+                    $("#first-name").val(data.customer.FirstName);
+                    $("#last-name").val(data.customer.LastName);
+                    $("#business-name").val(data.customer.BusinessName);
+                    $("#contact-name").val(data.customer.ContactName);
+                    $("#email").val(data.customer.Email);
+                    $("#telephone").val(data.customer.Telephone);
+                    $("#cell").val(data.customer.Cell);
+                    $("#office").val(data.customer.Office);
+                    $("#note").val(data.customer.Note);
+
+                    $("#status").populateDropDownList(keyValue.status, data.customer.Status);
+                    $("#bill-city-id").val(data.customer.BillCity);
+                    if (data.customer.BillCity > 0)
+                        $("#bill-city").val(keyValue.city[(data.customer.BillCity - 1)].Description);
+                    $("#job-city-id").val(data.customer.City);
+                    if (data.customer.City > 0)
+                        $("#job-city").val(keyValue.city[(data.customer.City - 1)].Description);
+
+                    $("#bill-country").populateDropDownList(keyValue.countries, data.customer.BillCountry);
+                    $("#job-country").populateDropDownList(keyValue.countries, data.customer.JobCountry);
+                    $("#bill-state").populateDropDownList(keyValue.state, data.customer.BillState);
+
+
+                    $("#bill-address1").val(data.customer.BillAddress1);
+                    $("#bill-address2").val(data.customer.BillAddress2);
+                    $("#bill-zipcode").val(data.customer.BillZipCode);
+
+                    $("#job-state").populateDropDownList(keyValue.state, 0);
+                    $("#job-city-id").val(0);
+                    $("#job-city").val("");                    $("#jobAddrID").val("0");
+
+                    custAddresses = data.customerAddress;
+
+                    var customerAddressTable = custAddresses.map(function (item) {
+                        return [item['Address1'], item['Address2'],
+                            search(item['City'], keyValue.city),
+                            search(item['State'], keyValue.state),
+                            item['ZipCode'],
+                             "<span class='edit-cust-addr' data-val=" + item['ID'] + "><li class='edit'><a href='#non'>Edit</a></li></ul></span>",
+                            "<span class='delete-cust-addr' data-val=" + item['ID'] + "><ul><li class='delete'><a href='#non'>Delete</a></li></ul></span>"
+                        ];
+                    });
+
+                    createCustAddrTable(customerAddressTable);
+                    createCustEstimatesTable(data.customer.ID);
+                    closeModal();
+
+                    $("#customer-form-popup").show();
+                    $('#customer-form-popup').css(
+                    { "top": (window.pageYOffset+10)+'px' });
+                    $("#madals").css({ "height": $(document).height(), "width": $(document).width() });
+                    $("#madals").show();
+                    $('#update-customer').show();
+                }
+            });
+        });
+
+        function search(nameKey, myArray) {
+            for (var i = 0; i < myArray.length; i++) {
+                if (myArray[i].ID == nameKey) {
+                    return myArray[i].Description;
+                }
+            }
+
+            return "";
+        }
+
+        function createCustAddrTable(customerAddressTable) {
+            $('#grid-address').dataTable().fnDestroy();
+            $('#grid-address').dataTable({
+                "columnDefs": [
+                    { className: "dt-left", targets: [0, 1, 2, 3, 4, 5, 6] }
+                ],
+                "scrollY": "100px",
+                "scrollCollapse": true,
+                "paging": false,
+                "iDisplayLength": 5,
+                "bLengthChange": false,
+                "bFilter": false,
+                "bInfo": false,
+                "bSort": false,
+                "bAutoWidth": false,
+                "aaData": customerAddressTable
+            });
+        }
+
+        function createCustEstimatesTable(customerID) {
+            $('#grid-customer-estimates').dataTable({
+                "order": [[1, "desc"]],
+                "iDisplayLength": 10,
+                "scrollY": "360px",
+                "scrollCollapse": true,
+                "paging": false,
+                columnDefs: [
+                    { className: "dt-left", targets: [0, 2, 3, 6] },
+                    { className: "dt-right", targets: [1, 4, 5] }
+                ],
+                "ajax": {
+                    'type': 'GET',
+                    'url': '@Url.Action("GetEstimates", "Estimate")',
+                    'data': {
+                        customerID: customerID
+                    }
+                }
+            });
+        }
+
+
+        $("#grid-customer-estimates").on("click", ".edit-estimate", function () {
+            var id = $(this).attr("data-val");
+            openModal();
+            $.ajax({
+                url: '@Url.Action("Estimate", "Estimate")',
+                type: 'POST',
+                data: { id: id },
+                success: function (data) {
+                    $("#cust-estimate").html(data);
+                    $("#list-customer").hide();
+                    $("#madals").hide();
+                    //$("#customer-form-popup").hide();
+                    //$("#list-estimate").hide();
+                    closeModal();
+                }
+            });
+
+        });
+
+        $("#tabs-3").on("click", "#add-estimate", function () {
+            openModal();
+            $.ajax({
+                url: '@Url.Action("Estimate", "Estimate")',
+                type: 'POST',
+                data: { id: 0 },
+                success: function (data) {
+                    var customerID = parseInt($("#customer-id").val());
+                    createCustEstimatesTable(customerID);
+                    closeModal();
+                }
+            });
+        });
+
+        $(document).on("click", "#grid-customer-estimates .delete-estimate", function () {
+            var id = $(this).attr("data-val");
+            BootstrapDialog.confirm('Are you sure you want to delete?', function (result) {
+                if (result) {
+                    openModal();
+                    $.ajax({
+                        url: '@Url.Action("DeleteEstimate", "Estimate")',
+                        type: 'POST',
+                        data: { id: id },
+                        success: function (data) {
+                            $("#cust-estimate").html(data);
+                            $("#list-customer").hide();
+                            $("#madals").hide();
+                            //$("#customer-form-popup").hide();
+                            //$("#list-estimate").hide();
+                            closeModal();
+                        }
+                    });
+                } else {
+                    //alert('Nope.');
+                }
+            });
+        });
+
+        $(document).on("click", "#grid-customer .delete-customer", function () {
+            var id = $(this).attr("data-val");
+
+            BootstrapDialog.confirm('Are you sure you want to delete?', function (result) {
+                if (result) {
+                    openModal();
+                    $.ajax({
+                        url: '@Url.Action("DeleteCustomer", "Customer")',
+                        type: 'POST',
+                        data: { id: id, __RequestVerificationToken: token },
+                        success: function (data) {
+                            //$("#prospect-id").val(data.id);
+                            closeModal();
+                            if (data.hasDeleted) {
+                                window.location.href = '@Url.Action("Index", "Customer")';
+                            }else
+                            {
+                                BootstrapDialog.alert('Some error occured while deleting.');
+                            }
+                        }
+                    });
+                } else {
+
+                }
+            });
+        });
+
+        $(document).on("click", ".edit-cust-addr", function () {
+            var id = $(this).attr("data-val");
+            $('.alert-danger').hide();
+            $('.alert-danger').find('#dvError').html('');
+
+
+            for (i = 0; i < custAddresses.length; i++) {
+                var addr = custAddresses[i]
+                if (addr.ID == id) {
+                    $("#jobAddrID").val(addr.ID);
+                    $("#job-address1").val(addr.Address1);
+                    $("#job-address2").val(addr.Address2);
+                    $("#job-city-id").val(addr.City);
+                    if (addr.City > 0)
+                        $("#job-city").val(keyValue.city[(addr.City - 1)].Description);
+                    $("#job-zipcode").val(addr.ZipCode);
+                    $("#job-state").populateDropDownList(keyValue.state, addr.State);
+                }
+            }
+        });
+
+
+        $(document).on("click", ".delete-cust-addr", function () {
+            var id = $(this).attr("data-val");
+            $('.alert-danger').hide();
+            $('.alert-danger').find('#dvError').html('');
+
+
+            BootstrapDialog.confirm('Are you sure you want to delete?', function (result) {
+                if (result) {
+                    openModal();
+                    $.ajax({
+                        url: '@Url.Action("DeleteJobAddress", "Customer")',
+                        type: 'POST',
+                        data: { "id": id, "__RequestVerificationToken": token },
+                        success: function (data) {
+                            if (data.hasDeleted == true) {
+                                var tmp = [];
+                                for (var i = 0; i < custAddresses.length; i++) {
+                                    var item = custAddresses[i];
+
+                                    if (item.ID != id) {
+                                        tmp.push(item)
+                                    }
+                                }
+
+                                custAddresses = tmp;
+
+                                var customerAddressTable = custAddresses.map(function (item) {
+                                    return [item['Address1'], item['Address2'],
+                                        search(item['City'], keyValue.city),
+                                        search(item['State'], keyValue.state),
+                                        item['ZipCode'],
+                                         "<span class='edit-cust-addr' data-val=" + item['ID'] + "><li class='edit'><a href='#non'>Edit</a></li></ul></span>",
+                                        "<span class='delete-cust-addr' data-val=" + item['ID'] + "><ul><li class='delete'><a href='#non'>Delete</a></li></ul></span>"
+                                    ];
+                                });
+
+                                createCustAddrTable(customerAddressTable);
+                            }
+                            else {
+                                $('.alert-danger').show();
+                                $('.alert-danger').find('#dvError').html('Job address is in use. It cannot be deleted.');
+                            }
+                            closeModal();
+                        }
+                    });
+                } else {
+                    //alert('Nope.');
+                }
+            });
+
+        });
+
+        function clearCustAddressForm() {
+            $('.alert-danger').hide();
+            $('.alert-danger').find('#dvError').html('');
+
+
+            $("#job-address1").val(""),
+            $("#job-address2").val(""),
+            $("#job-zipcode").val(""),
+
+            $("#job-state").populateDropDownList(keyValue.state, 0);
+            $("#job-city-id").val(0);
+            $("#job-city").val("");            jobAddrID = jobAddrID + 1;
+            $("#jobAddrID").val("0");
+        }
+
+        $("#customer-link").addClass("linkBtn linkBtnAdd_Selected");
+
+        function getCityAndState(addressType) {
+            var currentZipCode = $("#" + addressType + "-zipcode").val();
+            if (currentZipCode.length < 5)
+                return;
+            if (currentZipCode.length > 5)
+                currentZipCode = currentZipCode.substring(0, 5);
+
+            $.ajax({
+                url: "@(Url.Action("GetCityAndState", "Base"))",
+                type: "GET",
+                dataType: "json",
+                data: { zipCode: currentZipCode },
+                success: function (obj) {
+                    var cityId = obj['city'];
+                    if (cityId != undefined && cityId != null)
+                        $("#" + addressType + "-city-id").val(cityId);
+                    cityId--;
+                    var cityName = keyValue.city[cityId].Description;
+                    if (cityName != undefined && cityName != null)
+                        $("#" + addressType + "-city").val(cityName);
+
+                    var stateId = states[obj['state']];
+                    if (stateId > 0) {
+                        $("#" + addressType + "-state option")
+                            .prop("selected", false);
+                        $("#" + addressType + "-state option:eq('" + stateId + "')")
+                            .prop("selected", true);
+                    }
+                }
+            });
+        }
+
+        $("#bill-zipcode").on("input propertychange paste", function () {
+            getCityAndState("bill");
+        });
+
+        $("#job-zipcode").on("input propertychange paste", function () {
+            getCityAndState("job");
+        });
+
+        $("#btn-bill-address").click(function () {
+            var url = 'http://maps.google.com/maps?daddr=' + $("#bill-address1").val() + "+" + $("#bill-address2").val() + "+" + $("#bill-zipcode").val() + "+" + $("#bill-city").val();
+            var redirectWindow = window.open(url, '_blank');
+            redirectWindow.location;
+        });
+
+        $("#btn-job-address").click(function () {
+            var url = 'http://maps.google.com/maps?daddr=' + $("#job-address1").val() + "+" + $("#job-address2").val() + "+" + $("#job-zipcode").val() + "+" + $("#job-city").val();
+            var redirectWindow = window.open(url, '_blank');
+            redirectWindow.location;
+        });
+
+        $.mask.definitions['~'] = "[+-]";
+
+        $("#telephone").mask("(999) 999-9999");
+        $("#cell").mask("(999) 999-9999");
+
+        $("#office").mask("(999) 999-9999? x99999");
+    });
+</script>

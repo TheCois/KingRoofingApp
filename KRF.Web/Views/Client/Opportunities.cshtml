@@ -1,0 +1,514 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutPage2.cshtml";
+}
+
+<div id="content_block" class="content_block">
+    <!-- content block -->
+    <div class="head">Opportunities</div>
+    <div class="totOpp">
+        <div class="gridBlockLarge_btnHolder_head">Saved Opportunities </div>
+        <div class="clear_fix"></div>
+        <div class="oppRowHead">
+            <div class="inventoryColumn1">Customer Name</div>
+            <div class="inventoryColumn2">Contact Name</div>
+            <div class="inventoryColumn3">Assigned to</div>
+            <div class="inventoryColumn4">Appointment Date</div>
+            <div class="inventoryColumn5">
+                <span id="Span2">Lead Source</span>
+            </div>
+            <div class="inventoryColumn6">
+                <a href="#" id="A3" class="edit_class inventoryColumn_linkBtn"></a>
+            </div>
+            <div class="inventoryColumn7"></div>
+        </div>
+        <div class="clear_fix"></div>
+        <div id="oppRowGridHolder" class="oppRowGridHolder scrollbox">
+        </div>
+
+
+        <div class="clear_fix"></div>
+    </div>
+
+    <!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx  -->
+    <div class="headSpacer"></div>
+
+    <div class="gridBlockLarge">
+        <div class="head">Customer Information</div>
+        <div class="clear_fix"></div>
+        <div id="">
+            <div class="topBlock">
+                <div class="ColumnA">
+                    <div class="row">Customer Name:</div>
+                    <div class="row">Address:</div>
+                    <div class="row">Contact Name:</div>
+                </div>
+                <div class="ColumnB">
+
+                    <div class="row">
+                        <input id="Customer_Name" type="text" class="InputText" />
+                    </div>
+                    <div class="row">
+                        <input id="Address" type="text" class="InputText" />
+                    </div>
+                    <div class="row">
+                        <input id="Contact_Name" type="text" class="InputText" />
+                    </div>
+                </div>
+            </div>
+            <div class="topBlock">
+                <div class="ColumnA">
+                    <div class="row">Phone #:</div>
+                    <div class="row">Company URL:</div>
+
+                </div>
+                <div class="ColumnB">
+                    <div class="row">
+                        <input id="Phone" type="text" class="InputText" />
+                    </div>
+                    <div class="row">
+                        <input id="Company_URL" type="text" class="InputText" />
+                    </div>
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+    <!-- block 2 -->
+    <div class="gridBlock_small">
+        <div class="tabHolder">
+            <a href="#" class="selected">Job Site Information</a>
+
+        </div>
+        <div class="clear_fix"></div>
+        <div id="Div2" class="contentarea">
+            <div class="headSpacer">
+            </div>
+
+            <div class="clear_fix"></div>
+
+            <div class="topBlockSM">
+                <div class="ColumnA">
+                    <div class="row">Name:</div>
+                    <div class="row">Address 1:</div>
+                    <div class="row">Address 2:</div>
+                    <div class="row">Lead Source:</div>
+                    <div class="row">Assigned to:</div>
+                    <div class="row">Appointment Date:</div>
+                </div>
+                <div class="ColumnB">
+                    <div class="row">
+                        <input id="Name" type="text" class="InputText" />
+                    </div>
+                    <div class="row">
+                        <input id="Address1" type="text" class="InputText" />
+                    </div>
+                    <div class="row">
+                        <input id="Address2" type="text" class="InputText" />
+                    </div>
+                    <div class="row">
+                        <input id="Lead_Source" type="text" class="InputText" />
+                    </div>
+                    <div class="row">
+                        <!-- dropdown component -->
+                        <div id="territory" class="abcDropDown" tabindex="2">
+                            <span id="Assigned_to">Select Assigned Person...</span>
+                            <ul class="dropdown">
+                                <li><a href="#">Person 1</a></li>
+                                <li><a href="#">Person 2</a></li>
+                                <li><a href="#">Person 3</a></li>
+                                <li><a href="#">Person 4</a></li>
+                                <li><a href="#">Person 5</a></li>
+                                <li><a href="#">Person 6</a></li>
+                            </ul>
+                        </div>
+                        <div class="spacer"></div>
+                        <!-- dropdown component end -->
+
+                    </div>
+
+                    <div class="row">
+                        <input type="text" class="InputText_date" id="datepicker" />
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
+    </div>
+
+    <!-- block 2 end -->
+
+    <!-- block 3 -->
+    <div class="gridBlock_small">
+        <div class="tabHolder">
+            <a class="selected" href="#">Building Ingormation</a>
+
+        </div>
+        <div class="clear_fix"></div>
+        <div id="Div3" class="contentarea">
+            <div class="headSpacer">
+            </div>
+            <div class="clear_fix"></div>
+
+            <div class="topBlockSM">
+                <div class="ColumnA">
+                    <div class="row">Roof Type:</div>
+                    <div class="row"># of Stories:</div>
+                    <div class="row">Age (In Years):</div>
+                    <div class="row">Notes:</div>
+
+                </div>
+                <div class="ColumnB">
+                    <div class="row">
+                        <!-- dropdown component -->
+                        <div id="Address_Type" class="abcDropDown" tabindex="2">
+                            <span id="Roof_Type">Roof Type...</span>
+                            <ul class="dropdown">
+                                <li><a href="#">Permanent</a></li>
+                                <li><a href="#">Rented</a></li>
+                                <li><a href="#">etc 3</a></li>
+                                <li><a href="#">etc 4</a></li>
+                                <li><a href="#">etc 5</a></li>
+                                <li><a href="#">etc 6</a></li>
+                            </ul>
+                        </div>
+
+                        <!-- dropdown component end -->
+                    </div>
+                    <div class="row">
+
+                        <input id="Stories" type="text" class="InputText" />
+                    </div>
+                    <div class="row">
+                        <input id="Age" type="text" class="InputText" />
+                    </div>
+                    <div class="row">
+                        <div class="noteSpec"></div>
+                        <textarea id="Notes" class="Notes" rows="10" cols="10" style="width: 274px; padding-right: 8px; outline: medium none; overflow: hidden; height: 114px;" tabindex="0"></textarea>
+                    </div>
+
+
+                </div>
+
+            </div>
+
+        </div>
+        <div class="headSpacer"></div>
+        <!-- block 3 end -->
+        <!-- content block -->
+
+    </div>
+    <div class="clear_fix"></div>
+
+
+    <div class="clear_fix"></div>
+
+    <div class="gridBlockLarge_btnHolder">
+        <a id="save_Opp" class="addLead_saveCancel" href="#">Save</a>
+        <a class="addLead_saveCancel" href="#">Print</a>
+
+    </div>
+    <!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx -->
+</div>
+
+<script type="text/javascript">
+    var data;
+    $(document).ready(function () {
+
+        $('a.check').click(function () {
+            $(this).toggleClass("down");
+        });
+
+        //--------------------------global
+        $("#searchPopup").on("click", function (e) {
+            e.stopPropagation();
+        });
+        $("#glbsearch").on("click", function (e) {
+            e.stopPropagation();
+            $("#searchPopup").show("fast");
+            var ele = document.getElementById("glbsearch");
+            var top = 0;
+            var left = 0;
+            var ele = document.getElementById("glbsearch");
+
+            while (ele.tagName != "BODY") {
+                top += ele.offsetTop;
+                left += ele.offsetLeft;
+                ele = ele.offsetParent;
+            }
+            document.getElementById("searchPopup").style.top = (top + 10) + "px";
+            document.getElementById("searchPopup").style.left = (left - 310) + "px";
+        });
+        $("#accountPopup").on("click", function (e) {
+            e.stopPropagation();
+        });
+        $("#accountDD").on("click", function (e) {
+            e.stopPropagation();
+            $("#accountPopup").show("fast");
+            var ele = document.getElementById("accountDD");
+            var top = 0;
+            var left = 0;
+            var ele = document.getElementById("accountDD");
+            while (ele.tagName != "BODY") {
+                top += ele.offsetTop;
+                left += ele.offsetLeft;
+                ele = ele.offsetParent;
+            }
+            document.getElementById("accountPopup").style.top = (top + 10) + "px";
+            document.getElementById("accountPopup").style.left = (left - 106) + "px";
+        });
+        $(document).on("click", function () {
+            $("#searchPopup, #accountPopup ").hide("fast");
+        });
+        //--------------------------global end
+
+
+
+        $("#datepicker").datepicker({
+            showOn: "button",
+            buttonImage: "assets/images/calendar.png",
+            buttonImageOnly: true
+        });
+
+
+
+        $("#Select_Source").abcDropDown({
+            ddwidth: '100%'
+
+        });
+        $("#division").abcDropDown({
+            ddwidth: '100%'
+
+        });
+        $("#Salesperson").abcDropDown({
+            ddwidth: '100%'
+
+        });
+        $("#Status").abcDropDown({
+            ddwidth: '100%'
+
+        });
+        $("#territory").abcDropDown({
+            ddwidth: '100%'
+
+        });
+        $("#Address").abcDropDown({
+            ddwidth: '100%'
+
+        });
+        $("#Address_Type").abcDropDown({
+            ddwidth: '100%'
+
+        });
+        $("#state").abcDropDown({
+            ddwidth: '30%',
+            ddOptWidth: '40%'
+
+
+        });
+
+
+
+        $("#Roof_Type").abcDropDown({
+            ddwidth: '100%'
+
+        });
+        $("#Category").abcDropDown({
+            ddwidth: '100%'
+
+        });
+        $("#Roof_Pitch").abcDropDown({
+            ddwidth: '100%'
+
+        });
+        $("#Style").abcDropDown({
+            ddwidth: '100%'
+
+        });
+        $("#Color").abcDropDown({
+            ddwidth: '100%'
+
+        });
+
+
+
+        $('.scrollbox').enscroll({
+            showOnHover: true,
+            verticalTrackClass: 'track3',
+            verticalHandleClass: 'handle3'
+        });
+
+        $('#myNotes').enscroll({
+            showOnHover: true,
+            verticalTrackClass: 'track3',
+            verticalHandleClass: 'handle3'
+        });
+
+        data = {
+            "opportunities": [{
+                "Customer Name": "Jhon Merry",
+                "Address": "497/5A USA",
+                "Contact Name": "Joel",
+                "Phone #": "123456789",
+                "Company URL": "yahoo.com",
+                "Name": "Mickal",
+                "Address 1": "123 Ansari USA",
+                "Address 2": "999 Ansari USA",
+                "Lead Source": "HGFD",
+                "Assigned to": "Mr Bill",
+                "Appointment Date": "20/06/2014",
+                "Roof Type": "Circle",
+                "# of Stories": "Double",
+                "Age (In Years)": "10",
+                "Notes": "Special Case"
+            },
+
+            {
+                "Customer Name": "Bill",
+                "Address": "5A USA",
+                "Contact Name": "Josef",
+                "Phone #": "654852158",
+                "Company URL": "google.com",
+                "Name": "John",
+                "Address 1": "3 Ansal Street USA",
+                "Address 2": "10 Anri USA",
+                "Lead Source": "HGFR",
+                "Assigned to": "Mr Call",
+                "Appointment Date": "01/12/2014",
+                "Roof Type": "squarl",
+                "# of Stories": "Multi",
+                "Age (In Years)": "02",
+                "Notes": "Normal"
+            },
+            {
+                "Customer Name": "Jass Gil",
+                "Address": "2 Apartment USA",
+                "Contact Name": "Dash",
+                "Phone #": "785245963",
+                "Company URL": "gmail.com",
+                "Name": "Mic",
+                "Address 1": "1 sari USA",
+                "Address 2": "9/AS Exari USA",
+                "Lead Source": "KLJU",
+                "Assigned to": "Mr Spinn",
+                "Appointment Date": "25/06/2014",
+                "Roof Type": "Circle",
+                "# of Stories": "Double",
+                "Age (In Years)": "08",
+                "Notes": "Special Case"
+            }
+
+            ]
+        };
+
+        var b = 1;
+        for (var i = 0; i < data.opportunities.length; i++) {
+            var opp = data.opportunities[i];
+            $("<div id='opportunitiesRow_" + b + "'  class='oppRow'><div class='inventoryColumn1'><a href='#' class='inventoryColumn_linkBtn'>" + opp['Customer Name'] + "</a></div><div class='inventoryColumn2'><a href='#' class='inventoryColumn_linkBtn'>" + opp['Contact Name'] + " </a></div><div class='inventoryColumn3'>" + opp['Assigned to'] + "</div><div class='inventoryColumn4'>" + opp['Appointment Date'] + "</div><div class='inventoryColumn5'><span id='myval'>" + opp['Lead Source'] + "</span><input type='text' class='inpTextInv' /></div><div class='inventoryColumn6'><a href='#' id='edit_" + b + "' class='edit_class inventoryColumn_linkBtn' onclick='view_class(this.id)'> View </a></div><div class='inventoryColumn7'><a id='delete_" + b + "' href='#' class='delete_class inventoryColumn_linkBtn' onclick='delete_class(this.id)'></a></div></div>").appendTo($("#oppRowGridHolder"));
+            b++;
+        }
+
+        $("#save_Opp").click(function () {
+            var Customer_Name = $("#Customer_Name").val();
+            var Address = $("#Address").val();
+            var Contact_Name = $("#Contact_Name").val();
+            var Phone = $("#Phone").val();
+            var Company_URL = $("#Company_URL").val();
+            var Name = $("#Name").val();
+            var Address1 = $("#Address1").val();
+            var Address2 = $("#Address2").val();
+            var Lead_Source = $("#Lead_Source").val();
+            var Assigned_to = $("#Assigned_to").text();
+            var datepicker = $("#datepicker").val();
+            var Roof_Type = $("#Roof_Type").text();
+            var Stories = $("#Stories").val();
+            var Age = $("#Age").val();
+            var Notes = $("#Notes").val();
+
+
+
+
+            // data.opportunities.push('{"Customer Name":' + '"' + Customer_Name + '"' + ',""Address": ' + '"' + Address + '"' + ',""Contact Name":' + '"' + Contact_Name + '"' + ',"Phone #":' + '"' + Phone + '"' + ',"Company URL":' + '"' + Company_URL + '"' + ',"Name":' + '"' + Name + '"' + ',"Address 1":' + '"' + Address1 + '"' + ',"Address 2":' + '"' + Address2 + '"' + ',"Lead Source":' + '"' + Lead_Source + '"' + ',"Assigned to":' + '"' + Assigned_to + '"' + ',"Appointment Date":' + '"' + datepicker + '"' + ',"Roof Type":' + '"' + Roof_Type + '"' + ',"# of Stories":' + '"' + Stories + '"' + ',"Age":' + '"' + Age + '"' + ',"Notes":' + '"' + Notes + '"' + '}');
+            //  data[opportunities] = { "Customer Name": Customer_Name, "Address": Address };
+            var obj = new Object();
+            obj['Customer Name'] = Customer_Name;
+            obj['Address'] = Address;
+            obj['Contact Name'] = Contact_Name;
+            obj['Phone #'] = Phone;
+            obj['Company URL'] = Company_URL;
+            obj['Name'] = Name;
+            obj['Address 1'] = Address1;
+            obj['Address 2'] = Address2;
+            obj['Lead Source'] = Lead_Source;
+            obj['Assigned to'] = Assigned_to;
+            obj['Appointment Date'] = datepicker;
+            obj['Roof Type'] = Roof_Type;
+            obj['# of Stories'] = Stories;
+            obj['Age (In Years)'] = Age;
+            obj['Notes'] = Notes;
+            data.opportunities.push(obj);
+
+
+            var opp = data.opportunities[b - 1];
+            $("<div id='opportunitiesRow_" + b + "'  class='oppRow'><div class='inventoryColumn1'><a href='#' class='inventoryColumn_linkBtn'>" + opp['Customer Name'] + "</a></div><div class='inventoryColumn2'><a href='#' class='inventoryColumn_linkBtn'>" + opp['Contact Name'] + " </a></div><div class='inventoryColumn3'>" + opp['Assigned to'] + "</div><div class='inventoryColumn4'>" + opp['Appointment Date'] + "</div><div class='inventoryColumn5'><span id='myval'>" + opp['Lead Source'] + "</span><input type='text' class='inpTextInv' /></div><div class='inventoryColumn6'><a href='#' id='edit_" + b + "' class='edit_class inventoryColumn_linkBtn' onclick='view_class(this.id)'> View </a></div><div class='inventoryColumn7'><a id='delete_" + b + "' href='#' class='delete_class inventoryColumn_linkBtn' onclick='delete_class(this.id)'></a></div></div>").appendTo($("#oppRowGridHolder"));
+            b++;
+
+        });
+
+
+
+        $('.scrollbox').enscroll({
+            showOnHover: true,
+            verticalTrackClass: 'track3',
+            verticalHandleClass: 'handle3'
+        });
+
+
+
+
+
+        //-----
+    });
+
+    function delete_class(id) {
+        var myId = id;
+        var indexIng = $("#" + myId).parent().parent().attr("data-index")
+        var actVal = $("#" + myId).parent().prev().find("input").val();
+        $("#" + myId).parent().parent().remove();
+        //alert();
+    };
+
+
+    function view_class(id) {
+
+        var myId = id;
+        var mainId = $("#" + myId).parent().parent().attr("id");
+        var getId = mainId.split("_");
+        var showId = getId[1];
+        var test = showId - 1;
+        var opp = data.opportunities[test];
+        $("#Customer_Name").val(opp["Customer Name"]);
+        $("#Address").val(opp["Address"]);
+        $("#Contact_Name").val(opp["Contact Name"]);
+        $("#Phone").val(opp["Phone #"]);
+        $("#Company_URL").val(opp["Company URL"]);
+        $("#Name").val(opp["Name"]);
+        $("#Address1").val(opp["Address 1"]);
+        $("#Address2").val(opp["Address 2"]);
+        $("#Lead_Source").val(opp["Lead Source"]);
+        $("#Assigned_to").text(opp["Assigned to"]);
+        $("#datepicker").val(opp["Appointment Date"]);
+        $("#Roof_Type").text(opp["Roof Type"]);
+        $("#Stories").val(opp["# of Stories"]);
+        $("#Age").val(opp["Age (In Years)"]);
+        $("#Notes").val(opp["Notes"]);
+    };
+
+
+</script>

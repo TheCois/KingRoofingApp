@@ -1,0 +1,116 @@
+﻿@{
+    ViewBag.Title = "Add/Edit Job";
+    Layout = "~/Views/Shared/_LayoutPage2.cshtml";
+}
+@Html.AntiForgeryToken()
+<link rel="stylesheet" href="~/Content/themes/base/bootstrap-multiselect.css" type="text/css" />
+@Scripts.Render("~/bundles/Job")
+<div id="content_block" class="content_block">
+    <br />
+    <input id="job-id" type="hidden" value="0" name="job-id">
+    <div id="jobadd" class="gridBlock inventory_page">
+        <div class="head">
+                Job Detail
+                <a id="Cancel_PopAss" class="addLead_saveCancel" href="#">Cancel</a>
+            </div>
+        @*<div class="headSpacer"></div>*@
+        <div id="errorMessages" style="width: 95%; margin-left: 20px; margin-right: 10px; margin-top:10px">
+            <div class="alert alert-success alert-dismissable" style="display:none;">
+                <i class="fa fa-check"></i>
+                <button class="close" onclick="$('.alert-success').hide()" type="button">×</button>
+                <div id="dvSuccess"></div>
+            </div>
+            <div class="alert alert-danger alert-dismissable" style="display: none;">
+                <i class="fa fa-ban"></i>
+                <button class="close" onclick="$('.alert-danger').hide()" type="button">×</button>
+                <div id="dvError"></div>
+            </div>
+        </div>
+        @Html.Partial("_JobTab")
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(document).prop('title', 'Job Detail');
+        var jobID = 0;
+
+        var token = $('[name=__RequestVerificationToken]').val();
+
+        var ID = parseInt(@ViewBag.ID);
+
+        getJobInformation(ID);
+
+        if (Number(ID) > 0) {
+            getJobSummary(ID);
+        }
+
+        SetTabVisibility(ID);
+
+        $.urls = {
+            indexUrl: '@Url.Action("Index", "Job")'
+        };
+
+        $("#Cancel_PopAss").on("click", function () {
+            ClearUnusedObject();
+            window.location.href = $.urls.indexUrl;
+        })
+
+        $(document).keyup(function (e) {
+            if (e.keyCode === 27) $("#Cancel_PopAss").click();   // esc
+        });
+
+        $(document).on("click", ".multiselect", function () {
+            if($(this).parent().hasClass("open"))
+            {
+                $(this).parent().removeClass("open")
+            }
+            else
+            {
+                $(this).parent().addClass("open")
+            }
+        });
+        
+
+        $("#jobs-link").addClass("linkBtn linkBtnAdd_Selected");
+
+        $("#btn-job-address").click(function () {
+            var url = 'http://maps.google.com/maps?daddr=' + $("#address1").val() + "+" + $("#address2").val() + "+" + $("#zipcode").val() + "+" + $("#city").val();
+            var redirectWindow = window.open(url, '_blank');
+            redirectWindow.location;
+        });
+
+        $("#btn-permit-address").click(function () {
+            var url = 'http://maps.google.com/maps?daddr=' + $("#jobaddress").val();
+            var redirectWindow = window.open(url, '_blank');
+            redirectWindow.location;
+        });
+
+        $("#btn-job-site-address").click(function () {
+            var url = 'http://maps.google.com/maps?daddr=' + $("#jobsiteaddress").val();
+            var redirectWindow = window.open(url, '_blank');
+            redirectWindow.location;
+        });
+    });
+    
+    function SetTabVisibility(ID)
+    {
+        if(ID == 0)
+        {
+            $('#liSummary').hide();
+            $('#liAssignment').hide();
+            $('#liMilestone').hide();
+            $('#liPO').hide();
+            $('#liCO').hide();
+            $('#liWO').hide();
+            $('#liINV').hide();
+            $('#liDocument').hide();
+            $('#liPermit').hide();
+            $("#tabs").tabs({active:1});
+        }
+        else
+        {
+            $("#tabs").tabs();
+        }
+    }
+
+</script>

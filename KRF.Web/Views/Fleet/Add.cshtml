@@ -1,0 +1,416 @@
+﻿@{
+    ViewBag.Title = "Add/Edit Fleet";
+    Layout = "~/Views/Shared/_LayoutPage2.cshtml";
+}
+@Html.AntiForgeryToken()
+<style>
+    .alignRight {
+        text-align: right;
+    }
+
+    .formHolder {
+        height: 700px;
+    }
+
+        .formHolder .m_block {
+            width: 540px;
+        }
+    .formHolder {
+        width:100%;
+        margin-left:50px;
+    }
+    .dataTables_length
+    {
+        display:none;
+    }
+    .formHolder .m_block .row .fleetMergeCol {
+        width: 500px;
+        vertical-align: top;
+        float: left;
+        color: #333;
+        font-size: 13px;
+    }
+    .xdsoft_datetimepicker {
+        width: 315px !important;
+    }
+</style>
+
+<div id="content_block" class="content_block">
+    <br/>
+    @Html.Partial("_Add")
+</div>
+
+<script type="text/javascript">
+    var data;
+    var FleetNS = {
+        fleets: {},
+        employees: {},
+        fleetstatus: {},
+        serviceDetails: {},
+        assignmentDetails: {}
+    };
+
+
+
+    $(document).ready(function () {
+
+        $("#fleets-link").addClass("linkBtn linkBtnAdd_Selected");
+
+        var token = $('[name=__RequestVerificationToken]').val();
+
+        var ID = parseInt(@ViewBag.ID);
+
+        getFleet(ID);
+
+        var keyValue = {};
+
+        $("#Cancel_PopAss").click(function () {
+            window.location.href = '@Url.Action("Index", "Fleet")';
+        });
+
+        function Save(close)
+        {
+            $('.alert-danger').hide();
+            $('.alert-danger').find('#dvError').text('');
+            $('.alert-success').hide();
+            $('.alert-success').find('#dvSuccess').text('');
+
+            var createdDate = new Date();
+            $("#createdDate").val(createdDate);
+            var valid = true;
+            $('.alert-danger').find('#dvError').html("");
+            if ($("#make").val() == "") {
+                $('.alert-danger').show();
+                $('.alert-danger').find('#dvError').append('Please enter make.<br/>');
+                valid = false;
+            }
+            if ($("#model").val() == "") {
+                $('.alert-danger').show();
+                $('.alert-danger').find('#dvError').append('Please enter model.<br/>');
+                valid = false;
+            }
+            if ($("#year").val() == "") {
+                $('.alert-danger').show();
+                $('.alert-danger').find('#dvError').append('Please enter year.<br/>');
+                valid = false;
+            }
+            if (parseInt($("#status option:selected").val()) == 0) {
+                $('.alert-danger').show();
+                $('.alert-danger').find('#dvError').append('Please select fleet status.<br/>');
+                valid = false;
+            }
+            if (valid == false) {
+                return;
+            }
+            var fleet = {
+                FleetID: parseInt($("#fleet-id").val()),
+                Make: $("#make").val(),
+                Model: $("#model").val(),
+                Year: $("#year").val(),
+                FleetStatusID: parseInt($("#status option:selected").val()),
+                DateCreated: $("#DateCreated").val(),
+                Active: $("#Active").val()
+            }
+
+            var fleetData = {
+            };
+
+            fleetData.Fleet = fleet;
+            fleetData.FleetServices = FleetNS.serviceDetails;
+            fleetData.FleetAssignments = FleetNS.assignmentDetails;
+            openModal();
+            $.ajax({
+                url: '@Url.Action("Save", "Fleet")',
+                type: 'POST',
+                dataType: 'json',
+                contentType: 'application/json; charset=utf-8',
+                data: JSON.stringify(fleetData),
+                success: function (data) {
+                    if (data.hasSaved) {
+                        if(close)
+                            window.location.href = '@Url.Action("Index", "Fleet")';
+                        else {
+                            $("#fleet-id").val(data.ID);
+                            $('.alert-success').show();
+                            $('.alert-success').find('#dvSuccess').text(data.message);
+                        }
+                    }
+                    else {
+                        $('.alert-danger').show();
+                        $('.alert-danger').find('#dvError').text(data.message);
+                    }
+                    closeModal();
+                }
+            });
+        }
+
+        $("#save-fleet").on("click", function () {
+            Save(true);
+        });
+        $("#update-fleet").on("click", function () {
+            Save(false);
+        });
+
+        function search(nameKey, myArray) {
+            for (var i = 0; i < myArray.length; i++) {
+                if (myArray[i].ID == nameKey) {
+                    return myArray[i].Description;
+                }
+            }
+
+            return "";
+        }
+    });
+
+    function getFleet(ID) {
+        openModal();
+        $.ajax({
+            url: '@Url.Action("GetFleet", "Fleet")',
+            type: 'POST',
+            data: { fleetID: ID },
+            success: function (data) {
+                FleetNS.employees = data.keyValue.employees;
+                FleetNS.fleetstatus = data.keyValue.fleetstatus;
+                if (ID == 0) {
+                    emptyFleetForm(data);
+                    FleetNS.serviceDetails = [];
+                    FleetNS.assignmentDetails = [];
+                } else {
+                    populateFleetForm(data);
+                    FleetNS.employees = data.keyValue.employees;
+                    FleetNS.fleetstatus = data.keyValue.fleetstatus;
+                    FleetNS.serviceDetails = data.serviceDetails;
+                    FleetNS.assignmentDetails = data.assignmentDetails;
+                    var aServiceDetails = transformServicedetails(FleetNS.serviceDetails);
+                    createFleetServiceTable(aServiceDetails);
+                    var aAssignmentDetails = transformAssignmentDetails(FleetNS.assignmentDetails);
+                    createFleetAssignmentTable(aAssignmentDetails);
+                    $('#update-fleet').show();
+                }
+                closeModal();
+            }
+        });
+    }
+
+    $(document).on("click", "#grid-items-services .delete-service", function () {
+        var serviceDate = $(this).attr("data-val");
+        var srvDetails = {};
+        var index = searchObjectServiceIndex(serviceDate, FleetNS.serviceDetails);
+        if (index != null)
+            FleetNS.serviceDetails.splice(index, 1);
+
+        var aServiceDetails = transformServicedetails(FleetNS.serviceDetails);
+        createFleetServiceTable(aServiceDetails);
+    })
+
+    $(document).on("click", "#grid-items-assignments .delete-assignment", function () {
+        var empID = $(this).attr("data-val");
+        var asgmtDetails = {};
+        var index = searchObjectAssignmentIndex(empID, FleetNS.assignmentDetails);
+        if (index != null)
+            FleetNS.assignmentDetails.splice(index, 1);
+
+        var aAssignmentDetails = transformAssignmentDetails(FleetNS.assignmentDetails);
+        createFleetAssignmentTable(aAssignmentDetails);
+    })
+
+    function transformServicedetails(serviceDetails) {
+        return serviceDetails.map(function (item) {
+            var serviceDate = item.ServiceDate;
+            var notes = item.Notes;
+
+            return [
+               "<span data-val = " + item.ServiceDetailID + " class='name'>" + serviceDate + "</span>",
+               "<span>" + notes + "</span>",
+               "<span class='delete-service delete' data-val=" + item['ServiceDate'].replace(/ /g, '') + "><ul><li class='delete'><a href='#non'>Delete</a></li></ul></span>"
+            ];
+        });
+    }
+    function transformAssignmentDetails(assignmentDetails) {
+        return assignmentDetails.map(function (item) {
+            var empName = item.EmployeeName;
+            var empID = item.EmployeeID;
+            var assignmentDate = item.AssignmentDate;
+            var isCurrent = item.IsCurrent;
+
+            return [
+               "<span data-val = " + item.EmployeeID + " class='name'>" + empName + "</span>",
+               "<span>" + assignmentDate + "</span>",
+               "<span>" + (isCurrent == true ? 'Yes' : 'No') + "</span>",
+               "<span class='delete-assignment delete' data-val=" + item['EmployeeID'] + "><ul><li class='delete'><a href='#non'>Delete</a></li></ul></span>"
+            ];
+        });
+    }
+
+    function createFleetServiceTable(aServiceDetails) {
+        $('#grid-items-services').dataTable().fnDestroy();
+
+        $('#grid-items-services').dataTable({
+            "bPaginate": true,
+            "iDisplayLength": 5,
+            "bLengthChange": false,
+            "bFilter": false,
+            "bInfo": false,
+            "bSort": false,
+            "columnDefs": [
+                { className: "dt-left", targets: [1, 2] },
+                { className: "dt-right", targets: [0] }
+            ],
+            "bAutoWidth": false,
+            "aaData": aServiceDetails
+        });
+    }
+
+    function createFleetAssignmentTable(aAssignmentDetails) {
+        $('#grid-items-assignments').dataTable().fnDestroy();
+
+        $('#grid-items-assignments').dataTable({
+            "bPaginate": true,
+            "iDisplayLength": 5,
+            "bLengthChange": false,
+            "bFilter": false,
+            "bInfo": false,
+            "bSort": false, "columnDefs": [
+                { className: "dt-left", targets: [0, 2, 3] },
+                { className: "dt-right", targets: [1] }
+            ],
+            "bAutoWidth": false,
+            "aaData": aAssignmentDetails
+        });
+    }
+
+    function emptyFleetForm(data) {
+        $("#employees").populateDropDownList(data.keyValue.employees, 0);
+        $("#status").populateDropDownList(data.keyValue.fleetstatus, 0);
+
+        $("#fleet-id").val(0);
+        $("#make").val("");
+        $("#model").val("");
+        $("#year").val("");
+    }
+
+    function populateFleetForm(data) {
+        $("#employees").populateDropDownList(data.keyValue.employees, 0);
+        $("#status").populateDropDownList(data.keyValue.fleetstatus, data.fleet.FleetStatusID);
+
+
+        $("#fleet-id").val(data.fleet.FleetID);
+        $("#make").val(data.fleet.Make);
+        $("#model").val(data.fleet.Model);
+        $("#year").val(data.fleet.Year);
+        $("#DateCreated").val(data.fleet.DateCreated);
+        $("#Active").val(data.fleet.Active);
+    }
+
+    function searchObjectServiceIndex(nameKey, myArray) {
+        for (var i = 0; i < myArray.length; i++) {
+            if (myArray[i].ServiceDate.replace(/ /g, '') == nameKey.replace(/ /g, '')) {
+                return i;
+            }
+        }
+        return null;
+    }
+
+    function searchObjectAssignmentIndex(nameKey, myArray) {
+        for (var i = 0; i < myArray.length; i++) {
+            if (myArray[i].EmployeeID == nameKey) {
+                return i;
+            }
+        }
+        return null;
+    }
+    function searchObjectAssignmentIndexByCurrent(nameKey, myArray) {
+        for (var i = 0; i < myArray.length; i++) {
+            if (myArray[i].IsCurrent == nameKey) {
+                return i;
+            }
+        }
+        return null;
+    }
+
+
+    $(document).on("click", "#fleet-form #add-service", function () {
+        var serviceDate = $("#service-date").val();
+        var notes = $("#notes").val();
+        if (serviceDate == "")
+        {
+            $('.alert-danger').show();
+            $('.alert-danger').find('#dvError').text('Please select service date.');
+            return;
+        }
+        if (FleetNS.serviceDetails.length > 0) {
+            var index = searchObjectServiceIndex(serviceDate, FleetNS.serviceDetails);
+            if (index != null) {
+                $('.alert-danger').show();
+                $('.alert-danger').find('#dvError').text('Service date already added.');
+                return;
+            }
+        }
+        $("#service-date").val("");
+        $("#notes").val("");
+        ServiceItem = {
+            ServiceDetailID: 0,
+            FleetID: $('fleet-id').val(),
+            ServiceDate: serviceDate,
+            Notes: notes,
+            Active: true
+        };
+
+        FleetNS.serviceDetails.push(ServiceItem);
+
+        // Refresh table with data source
+        var aServiceDetails = transformServicedetails(FleetNS.serviceDetails);
+        createFleetServiceTable(aServiceDetails);
+    });
+
+    $(document).on("click", "#fleet-form #add-assignment", function () {
+        var empID = parseInt($("#employees option:selected").val())
+        var empName = $("#employees option:selected").text();
+        var assignmentDate = $("#assignment-date").val();
+        var isCurrent = $("#IsCurrent").is(":checked");
+        if (empID == 0) {
+            $('.alert-danger').show();
+            $('.alert-danger').find('#dvError').text('Please select employee name.');
+            return;
+        }
+        if (assignmentDate == "") {
+            $('.alert-danger').show();
+            $('.alert-danger').find('#dvError').text('Please select assignment date.');
+            return;
+        }
+        if (FleetNS.assignmentDetails.length > 0) {
+            var index = searchObjectAssignmentIndex(empID, FleetNS.assignmentDetails);
+            if (index != null) {
+                $('.alert-danger').show();
+                $('.alert-danger').find('#dvError').text('Employee Name already added.');
+                return;
+            }
+        }
+        if (FleetNS.assignmentDetails.length > 0 && isCurrent) {
+            var index = searchObjectAssignmentIndexByCurrent(isCurrent, FleetNS.assignmentDetails);
+            if (index != null) {
+                $('.alert-danger').show();
+                $('.alert-danger').find('#dvError').text('Current employee already added.');
+                return;
+            }
+        }
+        $("#employees").val("");
+        $("#assignment-date").val("");
+        $("#IsCurrent").attr("checked", false);
+        AssignmentItem = {
+            FleetAssignmentID: 0,
+            FleetID: $('fleet-id').val(),
+            EmployeeID: empID,
+            EmployeeName: empName,
+            AssignmentDate: assignmentDate,
+            IsCurrent: isCurrent,
+            Active: true
+        };
+
+        FleetNS.assignmentDetails.push(AssignmentItem);
+
+        // Refresh table with data source
+        var aAssignmentDetails = transformAssignmentDetails(FleetNS.assignmentDetails);
+        createFleetAssignmentTable(aAssignmentDetails);
+    });
+</script>

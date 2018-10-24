@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<MailSettings>
+  <TemplateFolderPath>~\MailTemplates</TemplateFolderPath>
+  <DefaultMailSettings>
+    <host>mail.myprogrammer.com</host>
+    <userName>my.programmer</userName>
+    <password>netprojects123</password>
+    <networkenableSsl>false</networkenableSsl>
+    <port>25</port>
+    <MailFrom>my.programmer@myprogrammer.com</MailFrom>
+    <MailTo></MailTo>
+    <MailCC></MailCC>
+    <MailBCC>arun.prasath@myprogrammer.com</MailBCC>
+  </DefaultMailSettings>
+</MailSettings>
+

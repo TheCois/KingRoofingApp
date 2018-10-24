@@ -1,0 +1,434 @@
+﻿@{
+    ViewBag.Title = "Items List";
+    Layout = "~/Views/Shared/_LayoutPage2.cshtml";
+}
+@Html.AntiForgeryToken()
+<div class="content_block">
+    <!-- content block -->
+    @*<div class="head">Inventory</div>*@
+    <br />
+    @*<div class="gridBlockLarge_btnHolder">
+
+        </div>*@
+    <div class="gridBlock inventory_page">
+        <div class="head">
+            Items List
+            @if (Convert.ToBoolean(ViewBag.ItemAllowEdit))
+            {
+                <a id="addItem" class="addLead_saveCancel" href="#">Add Item</a>
+            }
+            @if (Convert.ToBoolean(ViewBag.AssemblyAllowEdit))
+            {
+                <a id="addAssembly" class="addLead_saveCancel" href="#" style="display: none;">Add Assembly</a>
+            }
+        </div>
+
+        <div class="tabHolder">
+            @if (Convert.ToBoolean(ViewBag.ItemAllowView) || Convert.ToBoolean(ViewBag.ItemAllowEdit))
+            {
+                <a id="tab01" href="#">Items</a>
+            }
+            @if (Convert.ToBoolean(ViewBag.AssemblyAllowView) || Convert.ToBoolean(ViewBag.AssemblyAllowEdit))
+            {
+                <a id="tab02" href="#" class="selected">Assemblies</a>
+            }
+        </div>
+        <div class="clear_fix"></div>
+        @if (Convert.ToBoolean(ViewBag.ItemAllowView) || Convert.ToBoolean(ViewBag.ItemAllowEdit))
+        {
+            <div id="_tab01">
+            <div class="table-container">
+                <table id="grid-item" class="display" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            @if (Convert.ToBoolean(ViewBag.ItemAllowEdit))
+                            {
+                                <th></th>
+                            }
+                            <th>Code</th>
+                            <th>Name</th>
+                            <th>Category  </th>
+                            <th>Inventory</th>
+                            <th>Manufacturer</th>
+                            <th>UOM</th>
+                            <th>Price</th>
+                            @if (Convert.ToBoolean(ViewBag.ItemAllowEdit))
+                            { 
+                                <th></th>
+                            }
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+        }
+        @if (Convert.ToBoolean(ViewBag.AssemblyAllowView) || Convert.ToBoolean(ViewBag.AssemblyAllowEdit))
+        { 
+            <div id="_tab02">
+            <div class="table-container">
+                <table id="grid-assembly" class="display" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            @if (Convert.ToBoolean(ViewBag.ItemAllowEdit))
+                            {
+                                <th></th>
+                            }
+                            <th>Code</th>
+                            <th>Assembly Name</th>
+                            <th>Assembly Description</th>
+                            <th>UOM</th>
+                            @if (Convert.ToBoolean(ViewBag.AssemblyAllowEdit)) 
+                            {
+                                <th></th>
+                            }
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+        }
+    </div>
+</div>
+
+<div id="madals" class="madals"></div>
+<div id="addItem_popup" class="addItem_popup">
+
+    <div class="gridBlockLarge_btnHolder_head">
+        Items
+    </div>
+    <div class="headSpacer"></div>
+    <div id="errorMessagesItem" style="width: 95%; margin-left: 20px; margin-right: 10px;">
+        <div id="successItem" class="alert alert-success alert-dismissable" style="display:none;">
+            <i class="fa fa-check"></i>
+            <button class="close" onclick="$('#successItem').hide()" type="button">×</button>
+            <div id="dvSuccessItem"></div>
+        </div>
+        <div id="dangerItem" class="alert alert-danger alert-dismissable" style="display: none;">
+            <i class="fa fa-ban"></i>
+            <button class="close" onclick="$('#dangerItem').hide()" type="button">×</button>
+            <div id="dvErrorItem"></div>
+        </div>
+    </div>
+    <div class="topBlockSM">
+        <div class="ColumnA">
+            <div class="row">Item Type:</div>
+            <div class="row">Item Code:</div>
+            <div class="row">Name:</div>
+            <div class="row rowHeight">Description:</div>
+            <div class="row">Category:</div>
+            <div class="row">Manufacturer:</div>
+            <div class="row">Unit of Measure:</div>
+            <div class="row">Price:</div>
+            <div class="row">Is an Inv. Item:</div>
+        </div>
+        <div id="itemForm" class="ColumnB" data-val="0">
+            <div class="row">
+                <select id="item-type" class="InputTextAddInv">
+                    <option value="volvo">Please select</option>
+                    <option value="saab">State1</option>
+                    <option value="mercedes">State2</option>
+                    <option value="audi">State3</option>
+                </select>
+            </div>
+            <div class="row">
+                <input id="Item_Code" type="text" class="InputTextAddInv" />
+            </div>
+            <div class="row">
+                <input id="Name" type="text" class="InputText" style="width: calc(100% - 10px)" />
+            </div>
+            <div class="row rowHeight">
+                <textarea id="myNotes" class="Notes" rows="5" cols="10" style="width: calc(100% - 19px); padding-right: 15px; height: 50px; outline: medium none; overflow: hidden;" tabindex="0"></textarea>
+            </div>
+            <div class="row">
+                <select id="Category_pop" class="InputTextAddInv">
+                    <option value="volvo">Please select</option>
+                    <option value="saab">State1</option>
+                    <option value="mercedes">State2</option>
+                    <option value="audi">State3</option>
+                </select>
+            </div>
+            <div class="row">
+                <select id="Manufacturer_pop" class="InputTextAddInv">
+                    <option value="volvo">Please select</option>
+                    <option value="saab">State1</option>
+                    <option value="mercedes">State2</option>
+                    <option value="audi">State3</option>
+                </select>
+            </div>
+            <div class="row">
+                <select id="Measure_pop" class="InputTextAddInv">
+                    <option value="volvo">Please select</option>
+                    <option value="saab">State1</option>
+                    <option value="mercedes">State2</option>
+                    <option value="audi">State3</option>
+                </select>
+            </div>
+            <div class="row">
+                <input id="Price" type="text" class="InputTextAddInv qty" />
+            </div>
+            <div class="row">
+                <input id="chkIsInventoryItem" type="checkbox" style="float: left; margin-left: 0 !important;" />
+            </div>
+        </div>
+    </div>
+
+    <div class="clear_fix"></div>
+    <div class="headSpacer"></div>
+    <div class="gridBlockLarge_btnHolder" style="display: none;">
+        <div class="gridBlockLarge_btnHolder_head">Mark-up(s) <a class="" href="#">Add</a> </div>
+        <div class="addMarkup_block" style="width: 223px">Division:</div>
+        <div class="addMarkup_block" style="width: 157px">
+            <!-- dropdown component -->
+            <div id="Division" class="abcDropDown" tabindex="2">
+                <span>Select Division...</span>
+                <ul class="dropdown">
+                    <li><a href="#">Division 1</a></li>
+                    <li><a href="#">Division 2</a></li>
+                    <li><a href="#">Division 3</a></li>
+                </ul>
+            </div>
+            <!-- dropdown component end -->
+
+        </div>
+        <div class="addMarkup_block">Percentage:</div>
+        <div class="addMarkup_block">
+            <input class="InputText" type="text">
+        </div>
+        <div class="addMarkup_block"><a id="A1" href="#" class="delete_classn inventoryColumn_linkBtn"></a></div>
+        <div class="clear_fix"></div>
+    </div>
+
+    <div class="gridBlockLarge_btnHolderSaveCancel">
+        <a id="addItemSave" class="addLead_saveCancel" href="#">Save & Close</a>
+        <a id="update-item" class="addLead_saveCancel" href="#">Update</a>
+        <a id="Cancel_Pop" class="addLead_saveCancel" href="#">Cancel</a>
+    </div>
+
+</div>
+<!-- modals and popup end-->
+<!-- assembly popup start-->
+<div id="addAssembly_popup" class="addAssembly_popup">
+
+    <div class="gridBlockLarge_btnHolder_head">
+        Assembly
+    </div>
+    <div class="headSpacer"></div>
+    <div id="errorMessagesAssembly" style="width: 95%; margin-left: 20px; margin-right: 10px;">
+        <div id="successAssembly" class="alert alert-success alert-dismissable" style="display:none;">
+            <i class="fa fa-check"></i>
+            <button class="close" onclick="$('#successAssembly').hide()" type="button">×</button>
+            <div id="dvSuccessAssembly"></div>
+        </div>
+        <div id="dangerAssembly" class="alert alert-danger alert-dismissable" style="display: none;">
+            <i class="fa fa-ban"></i>
+            <button class="close" onclick="$('#dangerAssembly').hide()" type="button">×</button>
+            <div id="dvErrorAssembly"></div>
+        </div>
+    </div>
+    <div class="formHolder" id="assembly-form" data-val="0">
+        <div class="m_block" style="width: 50% !important">
+            <div class="row">
+                <div class="colLeft">Code:</div>
+                <div class="colRight">
+                    <input id="Assembly_ID" type="text" class="assamblyInputText" style="width: calc(100% - 45px);">
+                </div>
+            </div>
+            <div class="row">
+                <div class="colLeft">Name:</div>
+                <div class="colRight">
+                    <input id="Assembly_Name" type="text" class="assamblyInputText" style="width: calc(100% - 45px);">
+                </div>
+            </div>
+            <div class="row">
+                <div class="colLeft">Unit of Measure:</div>
+                <div class="colRight">
+                    <select id="Assembly_UOM" class="InputTextAddInv">
+                        <option value="volvo">Please select</option>
+                        <option value="saab">State1</option>
+                        <option value="mercedes">State2</option>
+                        <option value="audi">State3</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row">
+                <div class="colLeft">Total Cost:</div>
+                <div class="colRight">
+                    <input type="text" id="TotalCost" class="inputTextReadOnly qty" style="width: 25%;" onkeydown="return false;">
+                    <span style="width: 40%;">Total Retail Cost:</span>
+                    <input type="text" id="TotalRetailCost" class="inputTextReadOnly qty" style="width: 25%;" onkeydown="return false;">
+                </div>
+            </div>
+        </div>
+        <div class="m_block" style="width: 50% !important">
+            <div class="row" style="width:500px; height:70px;">
+                <div class="colLeft" style="width:150px">Description:</div>
+                <div class="colRight">
+                    <textarea id="Assembly_Description" rows="10" cols="10" class="assamblyInputTextArea" style="width: calc(100% - 19px); height: 50px"></textarea>
+                </div>
+            </div>
+            <div class="row" style="width:500px; height: 70px;">
+                <div class="colLeft" style="width:150px">Proposal Text:</div>
+                <div class="colRight">
+                    <textarea id="proposaltxt" class="assamblyInputTextArea" rows="10" cols="10" style="width: calc(100% - 23px); padding-right: 15px; height: 50px; outline: medium none;"></textarea>
+                </div>
+            </div>
+            <div class="row" style="width:500px; display:none">
+                <div class="colLeft" style="width:150px">Inventory Item:</div>
+                <div class="colRight">
+                    <input id="chkIsItemAssembly" type="checkbox" />
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="clear_fix"></div>
+    <div id="assembly-items">
+        <div id="item-list" class="formHolder" style="height:50px">
+            <div class="m_block" style="height:80px">
+                <div class="row">
+                    <div class="colLeft">Select item :</div>
+                    <div class="colRight">
+                        <select id="items" class="inputText" style="width:250px;">
+                            <option value="volvo">Please select</option>
+                        </select>
+                        <input type="button" id="AddAssemblyItem" value="Add" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="table-container">
+            <table id="grid-itemassembly" class="display" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th width="10%">Code</th>
+                        <th width="30%">Name</th>
+                        <th width="5%">Price</th>
+                        <th width="5%">%</th>
+                        <th width="5%">Value</th>
+                        <th width="5%">%Tax</th>
+                        <th width="5%">Cost</th>
+                        <th width="5%">%Markup</th>
+                        <th width="50px">Retail Cost</th>
+                        <th></th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+    <div class="clear_fix"></div>
+
+    <div class="headSpacer"></div>
+    <div class="gridBlockLarge_btnHolderSaveCancel">
+
+        <a id="a3" class="addLead_saveCancel" href="#" onclick="save_Assemblies(id);">Save & Close</a>
+        <a id="update-assembly" class="addLead_saveCancel" href="#" onclick="save_AssembliesWithoutClose(id)">Update</a>
+        <a id="Cancel_PopAss" class="addLead_saveCancel" href="#">Cancel</a>
+
+    </div>
+
+</div>
+@section scripts {
+    <script type="text/javascript">
+        var items;
+        var Product = new Object();
+        $(document).ready(function () {
+            var itemAllowToEdit = '@ViewBag.ItemAllowEdit';
+            var itemAllowToView = '@ViewBag.ItemAllowView';
+            var assemblyAllowToEdit = '@ViewBag.AssemblyAllowEdit';
+            productReady();
+            $("#products-link").addClass("linkBtn linkBtnAdd_Selected");
+
+            
+            var itemColumns = [{ "sType": "html" },
+                    { "sType": "html" },
+                    { "sType": "html" },
+                    { "sType": "html" },
+                    { "sType": "html" },
+                    { "sType": "html" },
+                    { "sType": "html" },
+                    { "sType": "html" }];
+
+            if (itemAllowToEdit == 'False')
+            {
+                itemColumns = itemColumns.splice(1, 6);
+            }
+
+            $('#grid-item').dataTable({
+                "order": [[1, "asc"]],
+                columnDefs: [
+                    { className: "dt-left", targets: [0, 1, 2, 3, 4, 5, 6, 8] },
+                    { className: "dt-right", targets: [7] }
+                ],
+                "sAjaxSource": '@Url.Action("GetItems", "Product")',
+                "iDisplayLength": 100,
+                "bSort": true,
+                "aoColumns": itemColumns,
+                "fnServerData": function (sSource, aoData, fnCallback) {
+                    $.getJSON(sSource, aoData, function (json) {
+                        keyValue = json.keyValue;
+                        fnCallback(json);
+                    });
+                },
+                "initComplete": function () {
+                    this.api().columns([3]).every( function () {
+                        var column = this;
+                        var select = $('<select style="margin-top: 5px; width: 75px;"><option value=""></option></select>')
+                            .appendTo($(column.header()))
+                            .on('change', function () {
+                                var val = $.fn.dataTable.util.escapeRegex(
+                                    $(this).val()
+                                );
+
+                                column
+                                    .search(val ? '^' + val + '$' : '', true, false)
+                                    .draw();
+                            })
+                            .on('click', function () {
+                                return false;
+                            });
+
+                        column.data().unique().sort().each(function (d, j) {
+                            select.append('<option value="' + d + '">' + d + '</option>')
+                        });
+                    });
+                }
+            });
+
+            var assemblyColumns = [{ "sType": "html" },
+                    { "sType": "html" },
+                    { "sType": "html" },
+                    { "sType": "html" },
+                    { "sType": "html" },
+                    { "sType": "html" }];
+            if (assemblyAllowToEdit == 'False') {
+                assemblyColumns = assemblyColumns.splice(1, 3);
+            }
+
+            $('#grid-assembly').dataTable({
+                "order": [[1, "asc"]],
+                columnDefs: [
+                    { className: "dt-left", targets: [0, 1, 2, 3, 4] }
+                ],
+                "sAjaxSource": '@Url.Action("GetAssemblies", "Product")',
+                "iDisplayLength": 100,
+                "bSort": true,
+                "aoColumns": assemblyColumns,
+                "fnServerData": function (sSource, aoData, fnCallback) {
+                    $.getJSON(sSource, aoData, function (json) {
+                        keyValue = json.keyValue;
+                        fnCallback(json);
+                    });
+                }
+            });
+            $('#grid-itemassembly').dataTable();
+            if (itemAllowToView == 'False' && itemAllowToEdit == 'False')
+                $('.tabHolder a:last').click();
+
+            $(document).keyup(function (e) {
+                if (e.keyCode === 27) {   // esc
+                    $("#Cancel_Pop").click();
+                    $("#Cancel_PopAss").click();
+                }
+            });
+        });
+    </script>
+}

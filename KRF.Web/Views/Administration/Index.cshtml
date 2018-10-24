@@ -1,0 +1,459 @@
+﻿@{
+    ViewBag.Title = "Administration";
+    Layout = "~/Views/Shared/_LayoutPage2.cshtml";
+}
+@Html.AntiForgeryToken()
+@*<link href="~/Content/themes/base/bootstrap.min.css" rel="stylesheet" />*@
+<style>
+    .alignRight {
+        text-align: right;
+    }
+
+    .formHolder {
+        height: 500px;
+    }
+
+        .formHolder .m_block {
+            width: 440px;
+        }
+
+    .content_block .gridBlock {
+        background: none repeat scroll 0 0 #fff;
+        border: 1px solid #d4d4d4;
+        border-radius: 3px 3px 0 0;
+        height: 100%;
+        margin: 0 20px 25px;
+        width: calc(100% - 40px);
+    }
+</style>
+<div id="content_block" class="content_block">
+    <br />
+    <div id="administration" class="gridBlock inventory_page">
+        <div class="head">
+            Administration
+            @if (Convert.ToBoolean(ViewBag.AllowEdit))
+            {
+                <a id="add-administration" class="addLead_saveCancel" href="#">Add</a>
+            }
+        </div>
+        <div class="headSpacer"></div>
+        <div id="errorMessages" style="width: 95%; margin-left: 20px; margin-right: 10px;">
+            <div class="alert alert-success alert-dismissable" style="display:none;">
+                <i class="fa fa-check"></i>
+                <button class="close" onclick="$('.alert-success').hide()" type="button">×</button>
+                <div id="dvSuccess"></div>
+            </div>
+            <div class="alert alert-danger alert-dismissable" style="display: none;">
+                <i class="fa fa-ban"></i>
+                <button class="close" onclick="$('.alert-danger').hide()" type="button">×</button>
+                <div id="dvError"></div>
+            </div>
+        </div>
+        <form id="frmAdministration">
+            <div id="administration-form" class="formHolder" style="width:95%; height:100%;">
+                <input type="hidden" id="id" />
+                <div class="m_block" style="height:50px;">
+                    <div class="row">
+                        <div class="colLeft" style="width:50px;">
+                            Type
+                        </div>
+                        <div class="colRight">
+                            <select id="types" class="inputText">
+                                <option value="0">--Select--</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="clear_fix"></div>
+                    <hr style="margin-left:50px;" />
+                    <br /><br />
+                    <div class="gridBlock" style="width: 100%;">
+                        <div class="table-container" style="border-color: black; border-width:1px; ">
+                            <table id="grid-administrations" class="display" width="100%" cellspacing="0">
+                                <thead>
+                                    <tr>
+                                        @if (Convert.ToBoolean(ViewBag.AllowEdit))
+                                        {
+                                            <th width="10%"></th>
+                                        }
+                                        <th width="40%">Description</th>
+                                        <th width="20%">Abbreviation</th>
+                                        <th width="15%">Status</th>
+                                        @if (Convert.ToBoolean(ViewBag.AllowEdit))
+                                        {
+                                            <th width="15%"></th>
+                                        }
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="clear_fix"></div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<div id="administration_form_popup" class="form_popup">
+    <div class="gridBlockLarge_btnHolder_head">
+        <div id="dvMasterHeading"></div>
+    </div>
+    <div class="headSpacer"></div>
+    <div id="errorMessagesPopup" style="width: 95%; margin-left: 20px; margin-right: 10px;">
+        <div class="alert alert-danger alert-dismissable" style="display: none;">
+            <i class="fa fa-ban"></i>
+            <button class="close" onclick="$('.alert-danger').hide()" type="button">×</button>
+            <div id="dvError"></div>
+        </div>
+    </div>
+    <div id="administration-form-popup" class="formHolder">
+        <div class="m_block" style="width:100px;">
+            <div class="row">
+                <div class="colLeft" style="text-align:right">
+                    Description
+                </div>
+                <div class="colRight">
+                    <input type="text" id="description" class="inputText" maxlength="50" />
+                </div>
+            </div>
+            <div class="row" id="dvExtraField1" style="display:none">
+                <div class="colLeft" style="text-align:right">
+                    Abbreviation
+                </div>
+                <div class="colRight">
+                    <input type="text" id="extraField1" class="inputText" maxlength="10" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="colLeft" style="text-align:right">
+                    &nbsp;
+                </div>
+                <div class="colRight">
+                    <a id="Save_AdministrationPopup" style="margin-left:0px; float: left; cursor:pointer" class="addLead_saveCancel" href="#">Save</a>
+                    <a id="Cancel_AdministrationPopup" style="margin-left:0px; float: left; cursor:pointer" class="addLead_saveCancel" href="#">Cancel</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="AdministrationModals" class="madals"></div>
+<script type="text/javascript">
+    var data;
+    var MasterDataNS = {
+        masterdatas: {}
+    };
+
+    $(document).ready(function () {
+
+        $("#administrations-link").addClass("linkBtn linkBtnAdd_Selected");
+
+        $('#grid-administrations').dataTable({
+            "columnDefs": [
+                { className: "dt-left", targets: [0, 1, 2, 3] },
+                { visible: false, targets: [2] }
+            ]
+        });
+
+        var id = $('#id').val();
+        var token = $('[name=__RequestVerificationToken]').val();
+        var type = parseInt($("#types option:selected").val());
+        $.ajax({
+            url: '@Url.Action("GetAdministrationType", "Administration")',
+            type: 'POST',
+            data: { __RequestVerificationToken: token },
+            beforeSend: function (xhr) {
+                openModal();
+            },
+            success: function (data) {
+                $("#types").populateDropDownList(data.types, 0);
+            },
+            complete: function (jqXHR, textStatus) {
+                closeModal();
+            }
+        });
+
+
+
+        $(document).on("click", "#add-administration", function () {
+            $('#description').val("");
+            $('#extraField1').val("");
+            var type = parseInt($("#types option:selected").val());
+            if (type == 0) {
+                $('#administration .alert-danger').find('#dvError').text('Please select type.');
+                $('#administration .alert-danger').show();
+                return;
+            }
+            if (type == 21)
+            {
+                $('#dvExtraField1').show();
+                $("#administration_form_popup").css({ "height": "250px" });
+            }
+            else
+            {
+                $('#dvExtraField1').hide();
+                $("#administration_form_popup").css({ "height": "200px" });
+            }
+            $('#id').val('0');
+            $('#dvMasterHeading').text($("#types option:selected").text());
+            $('#administration .alert-success').hide();
+            $('#administration .alert-danger').hide();
+            $("#administration_form_popup").show();
+            $("#AdministrationModals").css({ "height": $(document).height(), "width": $(document).width() });
+            $("#AdministrationModals").show();
+            $('#description').focus();
+        });
+
+        $("#types").on("change", TypeChange)
+
+        $("#Save_AdministrationPopup").click(function () {
+            SaveMasterRecord();
+        });
+        $("#Cancel_AdministrationPopup").click(function () {
+            $("#AdministrationModals").hide();
+            $("#administration_form_popup").hide();
+            $('#errorMessagesPopup .alert-danger').hide();
+            $('#errorMessagesPopup .alert-success').hide();
+            $('#description').val("");
+            $('#id').val('0');
+        });
+
+        $(document).on("click", "#grid-administrations .delete-administration", function () {
+            var id = $(this).attr("data-val");
+            var active = $(this).attr("data-active");
+            var type = parseInt($("#types option:selected").val());
+
+            $('#administration .alert-success').hide();
+            $('#administration .alert-danger').hide();
+            if (type == 15) {//Type = Status
+                BootstrapDialog.alert('Sorry, Status cannot be de-activated.');
+            }
+            else if(type == 16) //Type = Role
+            {
+                if(id == 1)
+                {
+                    BootstrapDialog.alert('Sorry, AdminManager role cannot be de-activated.');
+                }
+                else
+                {
+                    if (active == "False") {
+                        BootstrapDialog.confirm('This record may be associated with other modules. Are you sure you want to de-activate?', function (result) {
+                            if (result) {
+                                ActiveDeActiveMasterRecord(type, id, active);
+                            } else {
+                                //alert('Nope.');
+                            }
+                        });
+                    }
+                    else {
+                        ActiveDeActiveMasterRecord(type, id, active);
+                    }
+                }
+            }
+            else if (type == 22) //Type = ItemType
+            {
+                if (id == 1) {
+                    BootstrapDialog.alert('Sorry, Labor item type cannot be de-activated.');
+                }
+                else if (id == 2) {
+                    BootstrapDialog.alert('Sorry, Material item type cannot be de-activated.');
+                }
+                else {
+                    if (active == "False") {
+                        BootstrapDialog.confirm('This record may be associated with other modules. Are you sure you want to de-activate?', function (result) {
+                            if (result) {
+                                ActiveDeActiveMasterRecord(type, id, active);
+                            } else {
+                                //alert('Nope.');
+                            }
+                        });
+                    }
+                    else {
+                        ActiveDeActiveMasterRecord(type, id, active);
+                    }
+                }
+            }
+            else {
+                if (active == "False") {
+                    BootstrapDialog.confirm('This record may be associated with other modules. Are you sure you want to de-activate?', function (result) {
+                        if (result) {
+                            ActiveDeActiveMasterRecord(type, id, active);
+                        } else {
+                            //alert('Nope.');
+                        }
+                    });
+                }
+                else {
+                    ActiveDeActiveMasterRecord(type, id, active);
+                }
+            }
+        });
+
+        $(document).on("click", "#grid-administrations .edit-administration", function () {
+            var id = $(this).attr("data-val");
+            var desc = decodeURI($(this).attr("data-desc"));
+            var extraField1 = decodeURI($(this).attr("data-extraField1"));
+            var type = parseInt($("#types option:selected").val());
+            $('#id').val(id);
+
+            if(type == 16) //Type = Role
+            {
+                if(id == 1)
+                {
+                    BootstrapDialog.alert('Sorry, AdminManager role cannot be edited.');
+                    return;
+                }
+            }
+
+            if (type == 22) //Type = ItemType
+            {
+                if (id == 1) {
+                    BootstrapDialog.alert('Sorry, Labor item type cannot be edited.');
+                    return;
+                }
+                else if (id == 2) {
+                    BootstrapDialog.alert('Sorry, Material item type cannot be edited.');
+                    return;
+                }
+            }
+
+            if (type == 21) {
+                $('#dvExtraField1').show();
+                $('#extraField1').val(extraField1);
+                $("#administration_form_popup").css({ "height": "250px" });
+            }
+            else
+            {
+                $('#dvExtraField1').hide();
+                $('#extraField1').val("");
+                $("#administration_form_popup").css({ "height": "200px" });
+            }
+
+            $('#description').val(desc);
+            $('#dvMasterHeading').text($("#types option:selected").text());
+
+            $('#administration .alert-success').hide();
+            $('#administration .alert-danger').hide();
+            $("#administration_form_popup").show();
+            $("#AdministrationModals").css({ "height": $(document).height(), "width": $(document).width() });
+            $("#AdministrationModals").show();
+            $('#description').focus();
+
+        });
+    });
+
+    function SaveMasterRecord(desc)
+    {
+        var id = $('#id').val();
+        var token = $('[name=__RequestVerificationToken]').val();
+        var type = parseInt($("#types option:selected").val());
+        var desc = $('#description').val();
+        var extraField1 = "";
+        if (desc == "") {
+            $('#errorMessagesPopup .alert-danger').find('#dvError').text('Please enter description.');
+            $('#errorMessagesPopup .alert-danger').show();
+            return;
+        }
+        if (type == 21)
+        {
+            var abbr = $('#extraField1').val();
+            if (abbr == "") {
+                $('#errorMessagesPopup .alert-danger').find('#dvError').text('Please enter Abbreviation.');
+                $('#errorMessagesPopup .alert-danger').show();
+                return;
+            }
+            extraField1 = abbr;
+        }
+        $.ajax({
+            url: '@Url.Action("SaveMasterRecord", "Administration")',
+            type: 'POST',
+            data: { __RequestVerificationToken: token, type: type, id: id, description: desc, extraField1: extraField1 },
+            beforeSend: function (xhr) {
+                openModal();
+            },
+            success: function (data) {
+                if (data.success) {
+                    $('#administration .alert-success').find('#dvSuccess').text(data.message);
+                    $('#administration .alert-success').show();
+                    TypeChange();
+                    $("#AdministrationModals").hide();
+                    $("#administration_form_popup").hide();
+                }
+                else {
+                    $('#errorMessagesPopup .alert-danger').find('#dvError').text(data.message);
+                    $('#errorMessagesPopup .alert-danger').show();
+                }
+            },
+            complete: function (jqXHR, textStatus) {
+                closeModal();
+            }
+        });
+    }
+
+    function ActiveDeActiveMasterRecord(type, id, active) {
+        var token = $('[name=__RequestVerificationToken]').val();
+        $.ajax({
+            url: '@Url.Action("DeleteMasterRecord", "Administration")',
+            type: 'POST',
+            data: { __RequestVerificationToken: token, type: type, id: id, activate: active },
+            beforeSend: function (xhr) {
+                openModal();
+            },
+            success: function (data) {
+                if (data.success) {
+                    $('#administration .alert-success').find('#dvSuccess').text(data.message);
+                    $('#administration .alert-success').show();
+                    TypeChange();
+                }
+                else {
+                    $('#administration .alert-danger').find('#dvError').text(data.message);
+                    $('#administration .alert-danger').show();
+                }
+            },
+            complete: function (jqXHR, textStatus) {
+                closeModal();
+            }
+        });
+    }
+
+    function TypeChange() {
+        $('#administration .alert-success').hide();
+        $('#administration .alert-danger').hide();
+
+        var type = parseInt($("#types option:selected").val());
+        $('#grid-administrations').dataTable().fnDestroy();
+
+        var cols;
+        if (type == 21) //State
+        {
+            cols = [{
+                "targets": [2],
+                "visible": true
+            }];
+        }
+        else
+        {
+            cols = [{
+                "targets": [2],
+                "visible": false
+            }];
+        }
+
+        $('#grid-administrations').dataTable({
+            "order": [[0, "asc"]],
+            "iDisplayLength": 100,
+            "columnDefs": cols,
+            "sAjaxSource": '@Url.Action("GetList", "Administration")',
+            "fnServerData": function (sSource, aoData, fnCallback) {
+                aoData.push({ "name": "type", "value": type });
+                $.getJSON(sSource, aoData, function (json) {
+                    states = json.Description;
+                    status = json.Status;
+                    fnCallback(json);
+                });
+            }
+        });
+
+    }
+
+</script>

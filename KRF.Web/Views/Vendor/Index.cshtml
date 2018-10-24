@@ -1,0 +1,138 @@
+﻿@{
+    ViewBag.Title = "Vendor";
+    Layout = "~/Views/Shared/_LayoutPage2.cshtml";
+}
+@Html.AntiForgeryToken()
+<style>
+    .alignRight {
+        text-align: right;
+    }
+
+    .formHolder {
+        height: 500px;
+    }
+
+        .formHolder .m_block {
+            width: 440px;
+        }
+
+    fieldset.upcommingsession-border {
+        border: 1px groove #ddd !important;
+        /*padding: 0 0 0 0 !important;*/
+        padding: 0 0 1.4em 0 !important;
+        /*margin: 0 0 1.5em 0 !important;*/
+        border-bottom: none;
+    }
+
+    legend.upcommingsession-border {
+        border-bottom: none;
+        width: 150px;
+        margin-bottom: 0px;
+    }
+</style>
+<div id="content_block" class="content_block">
+    <br />
+    <div id="list-vendor" class="gridBlock inventory_page">
+        <div class="head">Vendors
+        @if (Convert.ToBoolean(ViewBag.AllowEdit))
+        {
+            <a id="add-vendor" class="addLead_saveCancel" href="#">Add Vendor</a>
+        }
+        </div>
+        <div class="table-container">
+            <table id="grid-vendor" class="display" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        @if (Convert.ToBoolean(ViewBag.AllowEdit))
+                        {
+                            <th width="5%"></th>
+                        }
+                        <th width="30%">Vendor Name</th>
+                        <th width="15%">Manager</th>
+                        <th width="15%">Sales Rep.</th>
+                        <th width="10%">Office</th>
+                        <th width="10%">Fax</th>
+                        <th width="20%">Email</th>
+                        @if (Convert.ToBoolean(ViewBag.AllowEdit))
+                        {
+                            <th width="5%"></th>
+                        }
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+</div>
+<div id="madals" class="madals"></div>
+
+<script type="text/javascript">
+    var data;
+    var VendorNS = {
+        vendors: {}
+    };
+
+
+
+    $(document).ready(function () {
+        var token = $('[name=__RequestVerificationToken]').val();
+
+        $('#grid-vendor').dataTable({
+            "order": [[1, "desc"]],
+            columnDefs: [
+                { className: "dt-left", targets: [0, 1, 2, 3, 4, 5, 6] }
+            ],
+            "iDisplayLength": 100,
+            //"columns": [null, null, null, null, null, { "sClass": "alignRight" },null,null],
+            "sAjaxSource": '@Url.Action("GetVendors", "Vendor")',
+            //"aLengthMenu": [[5, 10, 25, 50, 100, -1], [5, 10, 25, 50, 100, "All"]],
+            "fnServerData": function (sSource, aoData, fnCallback) {
+                aoData.push({ "name": "ID", "value": 5 });
+                $.getJSON(sSource, aoData, function (json) {
+                    keyValue = json.keyValue;
+                    fnCallback(json);
+                });
+            }
+        });
+
+        $(document).on("click", "#grid-vendor .edit-customer", function () {
+            var id = $(this).attr("data-val");
+            window.location.href = '@Url.Action("Add", "Vendor")?ID=' + id;
+        });
+
+        function search(nameKey, myArray) {
+            for (var i = 0; i < myArray.length; i++) {
+                if (myArray[i].ID == nameKey) {
+                    return myArray[i].Description;
+                }
+            }
+
+            return "";
+        }
+
+        $(document).on("click", "#grid-vendor .delete-customer", function () {
+            var id = $(this).attr("data-val");
+            BootstrapDialog.confirm('Are you sure you want to delete?', function (result) {
+                if (result) {
+                    openModal();
+                    $.ajax({
+                        url: '@Url.Action("SetActiveInactiveVendor", "Vendor")',
+                        type: 'POST',
+                        data: { vendorID: id, active: false, __RequestVerificationToken: token },
+                        success: function (data) {
+                            closeModal();
+                            window.location.href = '@Url.Action("Index", "Vendor")';
+                        }
+                    });
+                } else {
+                    //alert('Nope.');
+                }
+            });
+        });
+
+        $("#add-vendor").click(function () {
+            window.location.href = '@Url.Action("Add", "Vendor")?ID=0';
+        });
+
+        $("#vendors-link").addClass("linkBtn linkBtnAdd_Selected");
+    });
+</script>

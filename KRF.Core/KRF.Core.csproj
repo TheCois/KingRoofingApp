@@ -1,0 +1,191 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{785AC144-BA9F-4865-9426-B7381DC22DF9}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>KRF.Core</RootNamespace>
+    <AssemblyName>KRF.Core</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="DTO\Master\RolePermissionDTO.cs" />
+    <Compile Include="DTO\Master\VendorDTO.cs" />
+    <Compile Include="DTO\Master\FleetDTO.cs" />
+    <Compile Include="DTO\Master\CrewDTO.cs" />
+    <Compile Include="DTO\Master\EquipmentDTO.cs" />
+    <Compile Include="DTO\Product\ProductDTO.cs" />
+    <Compile Include="DTO\Product\AssemblyItemDTO.cs" />
+    <Compile Include="DTO\Employee\EmployeeDTO.cs" />
+    <Compile Include="DTO\Sales\EstimateDTO.cs" />
+    <Compile Include="DTO\Job\JobDTO.cs" />
+    <Compile Include="DTO\Sales\ProspectDTO.cs" />
+    <Compile Include="DTO\Sales\LeadDTO.cs" />
+    <Compile Include="Entities\AccessControl\RolePermission.cs" />
+    <Compile Include="Entities\AccessControl\Permissions.cs" />
+    <Compile Include="Entities\AccessControl\Pages.cs" />
+    <Compile Include="Entities\AccessControl\Role.cs" />
+    <Compile Include="Entities\Actors\User.cs" />
+    <Compile Include="Entities\Customer\BuildingInformation.cs" />
+    <Compile Include="Entities\Customer\City.cs" />
+    <Compile Include="Entities\Customer\CustomerAddress.cs" />
+    <Compile Include="Entities\Customer\File.cs" />
+    <Compile Include="Entities\Customer\JobDocument.cs" />
+    <Compile Include="Entities\Customer\JobCO.cs" />
+    <Compile Include="Entities\Customer\JobInvoice.cs" />
+    <Compile Include="Entities\Customer\JobPermit.cs" />
+    <Compile Include="Entities\Customer\JobWO.cs" />
+    <Compile Include="Entities\Customer\JobPO.cs" />
+    <Compile Include="Entities\Customer\JobTask.cs" />
+    <Compile Include="Entities\Customer\JobAssignment.cs" />
+    <Compile Include="Entities\Customer\Jobs.cs" />
+    <Compile Include="Entities\Master\Vendor.cs" />
+    <Compile Include="Entities\Master\Fleet.cs" />
+    <Compile Include="Entities\Master\Equipment.cs" />
+    <Compile Include="Entities\Master\Crew.cs" />
+    <Compile Include="Entities\Master\CrewDetail.cs" />
+    <Compile Include="Entities\Employee\Employee.cs" />
+    <Compile Include="Entities\Employee\EmployeeRole.cs" />
+    <Compile Include="Entities\MISC\CityAndState.cs" />
+    <Compile Include="Entities\ValueList\ExistingRoof.cs" />
+    <Compile Include="Entities\ValueList\NumberOfStories.cs" />
+    <Compile Include="Enums\LeadStageType.cs" />
+    <Compile Include="Enums\PageType.cs" />
+    <Compile Include="Enums\RoleType.cs" />
+    <Compile Include="Entities\MISC\MasterRecords.cs" />
+    <Compile Include="Entities\MISC\Status.cs" />
+    <Compile Include="Enums\JobDocumentType.cs" />
+    <Compile Include="Enums\ItemType.cs" />
+    <Compile Include="Enums\EstimateStatusType.cs" />
+    <Compile Include="Enums\AdministrationType.cs" />
+    <Compile Include="Entities\Product\Inventory.cs" />
+    <Compile Include="Entities\Sales\Lead.cs" />
+    <Compile Include="Entities\Sales\Prospect.cs" />
+    <Compile Include="Entities\MISC\AuditLog.cs" />
+    <Compile Include="Entities\MISC\BldgInfo.cs" />
+    <Compile Include="Entities\MISC\Contact.cs" />
+    <Compile Include="Entities\MISC\ContactMethod.cs" />
+    <Compile Include="Entities\MISC\DaysOfWeek.cs" />
+    <Compile Include="Entities\MISC\PropertyRelation.cs" />
+    <Compile Include="Entities\MISC\ValueListType.cs" />
+    <Compile Include="Entities\Product\Assembly.cs" />
+    <Compile Include="Entities\Product\AssemblyItem.cs" />
+    <Compile Include="Entities\Product\Item.cs" />
+    <Compile Include="Entities\Product\ItemAssembly.cs" />
+    <Compile Include="Entities\Product\ItemComposition.cs" />
+    <Compile Include="Entities\Sales\CustomerAddress.cs" />
+    <Compile Include="Entities\Sales\Estimate.cs" />
+    <Compile Include="Entities\Sales\Job.cs" />
+    <Compile Include="Entities\Sales\Proposal.cs" />
+    <Compile Include="Entities\Sales\SiteInformation.cs" />
+    <Compile Include="Entities\ValueList\AddressType.cs" />
+    <Compile Include="Entities\ValueList\City.cs" />
+    <Compile Include="Entities\ValueList\ContactMethod.cs" />
+    <Compile Include="Entities\ValueList\FleetStatus.cs" />
+    <Compile Include="Entities\ValueList\ItemType.cs" />
+    <Compile Include="Entities\ValueList\EquipmentStatus.cs" />
+    <Compile Include="Entities\ValueList\PermitStatus.cs" />
+    <Compile Include="Entities\ValueList\PermitInspection.cs" />
+    <Compile Include="Entities\ValueList\Permit.cs" />
+    <Compile Include="Entities\ValueList\ProjectRelationship.cs" />
+    <Compile Include="Entities\ValueList\ProjectType.cs" />
+    <Compile Include="Entities\ValueList\HearAboutUs.cs" />
+    <Compile Include="Entities\ValueList\Status.cs" />
+    <Compile Include="Entities\ValueList\State.cs" />
+    <Compile Include="Entities\ValueList\OpportunityStatus.cs" />
+    <Compile Include="Entities\ValueList\JobStatus.cs" />
+    <Compile Include="Entities\ValueList\ProjectStartTimeline.cs" />
+    <Compile Include="Entities\ValueList\RoofAge.cs" />
+    <Compile Include="Entities\ValueList\Country.cs" />
+    <Compile Include="Entities\ValueList\Division.cs" />
+    <Compile Include="Entities\ValueList\Category.cs" />
+    <Compile Include="Entities\ValueList\Manufacturer.cs" />
+    <Compile Include="Entities\ValueList\SkillLevel.cs" />
+    <Compile Include="Entities\ValueList\AdministrationType.cs" />
+    <Compile Include="Entities\ValueList\UnitOfMeasure.cs" />
+    <Compile Include="Entities\ValueList\RoofPitch.cs" />
+    <Compile Include="Entities\ValueList\RoofType.cs" />
+    <Compile Include="Entities\ValueList\CustomerType.cs" />
+    <Compile Include="Entities\ValueList\JobType.cs" />
+    <Compile Include="Entities\ValueList\OpportunitySource.cs" />
+    <Compile Include="Entities\ValueList\Territory.cs" />
+    <Compile Include="Entities\ValueList\ValueList.cs" />
+    <Compile Include="Enums\PermissionType.cs" />
+    <Compile Include="FunctionalContracts\IAdministrationManagement.cs" />
+    <Compile Include="FunctionalContracts\IZipCode.cs" />
+    <Compile Include="FunctionalContracts\IMailService.cs" />
+    <Compile Include="FunctionalContracts\IRolePermissionManagement.cs" />
+    <Compile Include="FunctionalContracts\IVendorManagement.cs" />
+    <Compile Include="FunctionalContracts\ICrewManagement.cs" />
+    <Compile Include="FunctionalContracts\IJobManagement.cs" />
+    <Compile Include="FunctionalContracts\IFleetManagement.cs" />
+    <Compile Include="FunctionalContracts\IEquipmentManagement.cs" />
+    <Compile Include="FunctionalContracts\IProspectManagement.cs" />
+    <Compile Include="FunctionalContracts\IAssemblyManagement.cs" />
+    <Compile Include="FunctionalContracts\IAuditLog.cs" />
+    <Compile Include="FunctionalContracts\IEstimateManagement.cs" />
+    <Compile Include="FunctionalContracts\IItemManagement.cs" />
+    <Compile Include="FunctionalContracts\ILeadManagement.cs" />
+    <Compile Include="FunctionalContracts\ILogin.cs" />
+    <Compile Include="FunctionalContracts\IRoleManagement.cs" />
+    <Compile Include="FunctionalContracts\IScheduler.cs" />
+    <Compile Include="FunctionalContracts\IEmployeeManagement.cs" />
+    <Compile Include="FunctionalContracts\IUserManagement.cs" />
+    <Compile Include="FunctionalContracts\IValueListManagement.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repository\IAdministrationRepository.cs" />
+    <Compile Include="Repository\IRolePermissionRepository.cs" />
+    <Compile Include="Repository\IVendorManagementRepository.cs" />
+    <Compile Include="Repository\ICrewManagementRepository.cs" />
+    <Compile Include="Repository\IJobManagementRepository.cs" />
+    <Compile Include="Repository\IFleetManagementRepository.cs" />
+    <Compile Include="Repository\IEquipmentManagementRepository.cs" />
+    <Compile Include="Repository\IEmployeeManagementRepository.cs" />
+    <Compile Include="Repository\IEstimateManagementRepository.cs" />
+    <Compile Include="Repository\ILeadManagementRepository.cs" />
+    <Compile Include="Repository\IProspectManagementRepository.cs" />
+    <Compile Include="Repository\IAssemblyManagementRepository.cs" />
+    <Compile Include="Repository\IItemManagementRepository.cs" />
+    <Compile Include="Repository\MISC\IZipCodeRepository.cs" />
+    <Compile Include="Repository\MISC\ILoginRepository.cs" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -1,0 +1,163 @@
+﻿@Html.AntiForgeryToken()
+
+<div id="estimate" class="content_block" style="margin-top:20px; height:150%">
+    <div id="list-estimate" class="gridBlock inventory_page">
+        <div class="head">
+            Estimates / Proposal  
+            @if (Convert.ToBoolean(ViewBag.AllowEdit))
+            {
+                <a id="add-estimate" class="addLead_saveCancel" href="#">Add Estimates</a>
+            }
+        </div>
+        <div class="table-container">
+            <table id="grid-estimates" class="display" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        @if (Convert.ToBoolean(ViewBag.AllowEdit))
+                        {
+                            <th></th>
+                        }
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Roof Type</th>
+                        <th id="cust-col">Customer</th>
+                        <th>Created Date</th>
+                        <th>Contract Price</th>
+                        <th>Status</th>
+                        @if (Convert.ToBoolean(ViewBag.AllowEdit))
+                        {
+                            <th></th>
+                        }
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+
+    <div id="est"></div>
+</div>
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(document).prop('title', 'Estimates');
+        var isCustomerFormActive = false;
+        var customerID = 0;
+
+        if ($("#cust-estimate").length > 0) {
+            isCustomerFormActive = true;
+            customerID = parseInt($("#customer-id").val());
+            $("#cust-col").remove();
+        }
+
+        $('#grid-estimates').dataTable({
+            "order": [[1, "desc"]],
+            "iDisplayLength": 100,
+            //"sAjaxSource": '@Url.Action("GetEstimates", "Estimate")',
+            //"fnServerData": function (sSource, aoData, fnCallback) {
+            //    aoData.push({ "customerID": customerID});
+            //    $.getJSON(sSource, aoData, function (json) {
+            //        customer = json.customers;
+            //        status = json.status;
+            //        fnCallback(json);
+            //    });
+            //},
+            columnDefs: [
+                { className: "dt-left", targets: [0, 1, 2, 3, 4, 7, 8] },
+                { className: "dt-right", targets: [5, 6] }
+            ],
+            "ajax": {
+                'type': 'GET',
+                'url': '@Url.Action("GetEstimates", "Estimate")',
+                'data': {
+                    customerID: customerID
+                }
+            }
+        });
+
+        //$("#add-estimate").on("click", function () {
+        //    console.log("add click");
+        //    $("#form-estimate").show();
+        //    $("#list-estimate").hide();
+        //});
+
+        $("#grid-estimates").on("click", ".edit-estimate", function () {
+
+            var id = $(this).attr("data-val");
+            openModal();
+            $.ajax({
+                url: '@Url.Action("Estimate", "Estimate")',
+                type: 'POST',
+                data: { id: id },
+                success: function (data) {
+                    if ($("#cust-estimate").length > 0) {
+
+                        $("#cust-estimate").html(data);
+                    }
+                    else {
+                        $("#est").html(data);
+                    }
+
+                    $("#list-customer").hide();
+                    $("#madals").hide();
+                    $("#customer-form-popup").hide();
+
+                    $("#list-estimate").hide();
+                    closeModal();
+                }
+            });
+
+        });
+
+        $("#list-estimate").on("click", "#add-estimate", function () {
+            //$("#form-estimate").show();
+            $("#list-estimate").hide();
+            var id = $(this).attr("data-val");
+            openModal();
+            $.ajax({
+                url: '@Url.Action("Estimate", "Estimate")',
+                type: 'POST',
+                data: { id: 0 },
+                success: function (data) {
+                    $("#est").html(data);
+                    closeModal();
+                }
+            });
+        });
+
+        $("#list-estimate").on("click", ".delete-estimate", function () {
+            var id = $(this).attr("data-val");
+            BootstrapDialog.confirm('Are you sure you want to delete?', function (result) {
+                if (result) {
+                    openModal();
+                    $.ajax({
+                        url: '@Url.Action("DeleteEstimate", "Estimate")',
+                        type: 'POST',
+                        data: { id: id },
+                        success: function (data) {
+                            closeModal();
+                            if ($("#cust-estimate").length > 0) {
+                                var customerID = parseInt($("#customer-id").val());
+                                openModal();
+                                $.ajax({
+                                    url: '@Url.Action("Index", "Estimate")',
+                                    data: { customerID: customerID },
+                                    success: function (data) {
+                                        $("#tabs-3").html(data);
+                                        $("#tabs-3 .content_block").removeClass('content_block');
+                                        $("#tabs-3 .head").hide();
+                                        closeModal();
+                                    }
+                                });
+                            }
+                            else
+                                $("#main-content").html(data);
+                        }
+                    });
+                } else {
+                    //alert('Nope.');
+                }
+            });
+        });
+    });
+</script>

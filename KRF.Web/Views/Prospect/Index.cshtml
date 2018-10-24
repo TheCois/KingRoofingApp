@@ -1,0 +1,360 @@
+﻿@{
+    ViewBag.Title = "Prospect";
+    Layout = "~/Views/Shared/_LayoutPage2.cshtml";
+}
+@Html.AntiForgeryToken()
+
+<div class="content_block">
+    <!-- content block -->
+    @*<div class="head">Prospect</div>*@
+    <br />
+    @*<div class="gridBlockLarge_btnHolder">
+            <a id="addProspect" class="addLead_saveCancel" href="#">Add Prospect</a>
+        </div>*@
+    <div class="gridBlock inventory_page">
+        <div class="head">
+            Prospects 
+            @if (Convert.ToBoolean(ViewBag.AllowEdit))
+            {
+                <span id="progress-mesg"></span> <a id="addProspect" class="addLead_saveCancel" href="#">Add Prospect</a> <a id="fake-upload" class="addLead_saveCancel" href="#">Import Prospect</a>
+            }
+        </div>
+        <div class="table-container">
+            <table id="grid-prospect" class="display" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Email</th>
+                        <th>Telephone</th>
+                        <th>Status</th>
+                        @if (Convert.ToBoolean(ViewBag.AllowEdit))
+                        { 
+                            <th></th>
+                            <th></th>
+                        }
+                    </tr>
+                </thead>
+            </table>
+        </div>
+        <div class="gridBlock" style="display:none">
+            <div id="dvImportSegments" class="fileupload ">
+                <fieldset>
+                    <legend style="font-size: small">Upload your CSV File</legend>
+                    <input style="display:none" type="file" name="File Upload" id="txtFileUpload" accept=".csv" />
+
+                </fieldset>
+            </div>
+        </div>
+
+    </div>
+
+
+</div>
+
+<!-- Prospect popup start-->
+<div id="prospect_form_popup" class="form_popup">
+    <input id="prospect-id" type="hidden" value="0" name="prospect-id">
+    <div class="gridBlockLarge_btnHolder_head">
+        Add Prospect
+    </div>
+
+    <div class="headSpacer"></div>
+    <div id="errorMessages" style="width: 95%; margin-left: 20px; margin-right: 10px;">
+        <div class="alert alert-success alert-dismissable" style="display:none;">
+            <i class="fa fa-check"></i>
+            <button class="close" onclick="$('.alert-success').hide()" type="button">×</button>
+            <div id="dvSuccess"></div>
+        </div>
+        <div class="alert alert-danger alert-dismissable" style="display: none;">
+            <i class="fa fa-ban"></i>
+            <button class="close" onclick="$('.alert-danger').hide()" type="button">×</button>
+            <div id="dvError"></div>
+        </div>
+    </div>
+    <div id="prospectForm" class="formHolder">
+        <div class="m_block">
+            <div class="row">
+                <div class="colLeft">First Name</div>
+                <div class="colRight">
+                    <input id="first-name" type="text" class="inputText">
+                </div>
+            </div>
+            <div class="row">
+                <div class="colLeft">Last Name</div>
+                <div class="colRight">
+                    <input id="last-name" type="text" class="inputText">
+                </div>
+            </div>
+            <div class="row">
+                <div class="colLeft">Email</div>
+                <div class="colRight">
+                    <input type="text" id="email" class="inputText">
+                </div>
+            </div>
+            <div class="row">
+                <div class="colLeft">Telephone</div>
+                <div class="colRight">
+                    <input type="text" id="telephone" class="inputText">
+                </div>
+            </div>
+            <div class="row">
+                <div class="colLeft">Address 1</div>
+                <div class="colRight">
+                    <input type="text" id="address1" class="inputText">
+                </div>
+            </div>
+
+        </div>
+
+        <div class="m_block">
+            @*<div class="row">
+                    <div class="colLeft">Country</div>
+                    <div class="colRight">
+                        <select id="countries" class="inputText">
+                            <option value="volvo">Please select</option>
+                            <option value="saab">Saab</option>
+                            <option value="mercedes">Mercedes</option>
+                            <option value="audi">Audi</option>
+                        </select>
+                    </div>
+                </div>*@
+            <div class="row">
+                <div class="colLeft">Address 2</div>
+                <div class="colRight">
+                    <input type="text" id="address2" class="inputText">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="colLeft">City</div>
+                <div class="colRight">
+                    <select id="cities" class="inputText">
+                        <option value="volvo">Please select</option>
+                        <option value="saab">Saab</option>
+                        <option value="mercedes">Mercedes</option>
+                        <option value="audi">Audi</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="colLeft">State</div>
+                <div class="colRight">
+                    <select id="states" class="inputText">
+                        <option value="volvo">Please select</option>
+                        <option value="saab">Saab</option>
+                        <option value="mercedes">Mercedes</option>
+                        <option value="audi">Audi</option>
+                    </select>
+                </div>
+            </div>
+
+
+            <div class="row">
+                <div class="colLeft">Zip Code:</div>
+                <div class="colRight">
+                    <input type="text" id="zipcode" class="inputText">
+                </div>
+            </div>
+            <div class="row">
+                <div class="colLeft">Status</div>
+                <div class="colRight">
+                    <select id="statusList" class="inputText">
+                        <option value="volvo">Please select</option>
+                        <option value="saab">Saab</option>
+                        <option value="mercedes">Mercedes</option>
+                        <option value="audi">Audi</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="clear_fix"></div>
+
+    <div class="popup-footer">
+        <a id="save-prospect" class="addLead_saveCancel" href="#">Save & Close</a>
+        <a id="update-prospect" class="addLead_saveCancel" href="#">Update</a>
+        <a id="Cancel_PopAss" class="addLead_saveCancel" href="#">Cancel</a>
+    </div>
+
+</div>
+<div id="madals" class="madals"></div>
+<!-- modals and popup end-->
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        var token = $('[name=__RequestVerificationToken]').val();
+        // The event listener for the file upload
+        $("#txtFileUpload").on("change", upload);
+
+        var prospectDataTable;
+        var states = {};
+        var status = {};
+        var cities = {};
+        var countries = {};
+
+        $("#addProspect").click(function () {
+            $("#statusList").populateDropDownList(status, 0);
+            $("#states").populateDropDownList(states, 0);
+            $("#cities").populateDropDownList(cities, 0);
+            $("#countries").populateDropDownList(countries, 0);
+
+
+            $("#prospect_form_popup").show();
+            $("#madals").css({ "height": $(document).height(), "width": $(document).width() });
+            $("#madals").show();
+        });
+
+        function clearControls() {
+            $("#prospect-id").val("");
+            $("#first-name").val("");
+            $("#last-name").val("");
+            $("#email").val("");
+            $("#telephone").val("");
+            $("#address1").val("");
+            $("#address2").val("");
+            $("#zipcode").val("");
+        }
+
+        $("#Cancel_PopAss").click(function () {
+            $("#madals").hide();
+            $("#prospect_form_popup").hide();
+            clearControls();
+            window.location.href = '@Url.Action("Index", "Prospect")';
+        });
+
+        $("#save-prospect").on("click", function () {
+            Save(true);
+        });
+
+        function Save(close) {
+            var prospect = {
+                ID: parseInt($("#prospect-id").val()),
+                FirstName: $("#first-name").val(),
+                LastName: $("#last-name").val(),
+                Email: $("#email").val(),
+                Telephone: $("#telephone").val(),
+                Address1: $("#address1").val(),
+                Address2: $("#address2").val(),
+                ZipCode: $("#zipcode").val(),
+                Status: parseInt($("#statusList option:selected").val()),
+                State: parseInt($("#states option:selected").val()),
+                City: parseInt($("#cities option:selected").val()),
+                Country: parseInt($("#countries option:selected").val()),
+                __RequestVerificationToken: token
+            }
+            openModal();
+            $.ajax({
+                url: '@Url.Action("Save", "Prospect")', 
+                type: 'POST',
+                data: prospect,
+                success: function (data) {
+                    $("#prospect-id").val(data.id);
+                    closeModal();
+                    if (close) {
+                        $("#madals").hide();
+                        $("#prospect_form_popup").hide();
+                        window.location.href = '@Url.Action("Index", "Prospect")';
+                    }
+                    else
+                    {
+                        $('.alert-success').show();
+                        $('.alert-success').find('#dvSuccess').text(data.message);
+                    }
+                }
+            });
+        }
+
+        $("#update-prospect").on("click", function () {
+            Save(false);
+        });
+
+        $('#grid-prospect').dataTable({
+            "order": [[0, "desc"]],
+            "sAjaxSource": '@Url.Action("GetProspects", "Prospect")',
+            "iDisplayLength": 100,
+            "fnServerData": function (sSource, aoData, fnCallback) {
+                aoData.push({ "name": "ID", "value": 5 });
+                $.getJSON(sSource, aoData, function (json) {
+                    states = json.states;
+                    status = json.status;
+                    cities = json.cities;
+                    countries = json.countries;
+                    fnCallback(json);
+                });
+            }
+        });
+
+
+
+        $(document).on("click", ".edit-prospect", function () {
+            var id = $(this).attr("data-val");
+            openModal();
+            $.ajax({
+                url: '@Url.Action("GetProspect", "Prospect")',
+                type: 'POST',
+                data: { id: id, __RequestVerificationToken: token },
+                success: function (data) {
+                    $("#prospect-id").val(data.prospect.ID);
+                    $("#first-name").val(data.prospect.FirstName);
+                    $("#last-name").val(data.prospect.LastName);
+                    $("#email").val(data.prospect.Email);
+                    $("#telephone").val(data.prospect.Telephone);
+                    $("#address1").val(data.prospect.Address1);
+                    $("#address2").val(data.prospect.Address2);
+                    $("#zipcode").val(data.prospect.ZipCode);
+                    $("#statusList").populateDropDownList(status, data.prospect.Status);
+                    $("#states").populateDropDownList(states, data.prospect.State);
+                    $("#cities").populateDropDownList(cities, data.prospect.City);
+                    $("#countries").populateDropDownList(countries, data.prospect.Country);
+                    $("#prospect_form_popup").show();
+
+                    $("#madals").css({ "height": $(document).height(), "width": $(document).width() });
+                    $("#madals").show();
+
+                    $('#update-prospect').show();
+
+                    closeModal();
+                }
+            });
+        });
+
+        $(document).on("click", ".delete-prospect", function () {
+            var id = $(this).attr("data-val");
+            BootstrapDialog.confirm('Are you sure you want to delete?', function (result) {
+                if (result) {
+                    openModal();
+                    $.ajax({
+                        url: '@Url.Action("DeleteProspect", "Prospect")',
+                        type: 'POST',
+                        data: { id: id, __RequestVerificationToken: token },
+                        success: function (data) {
+                            $("#prospect-id").val(data.id);
+                            closeModal();
+                            if (data.prospect) {
+                                window.location.href = '@Url.Action("Index", "Prospect")';
+                            }
+                            else
+                            {
+                                BootstrapDialog.alert('Some error occured while deleting.');
+                            }
+                        }
+                    });
+                } else {
+                    //alert('Nope.');
+                }
+            });
+        });
+
+        $("#prospect-link").addClass("linkBtn linkBtnAdd_Selected");
+
+        $("#fake-upload").on("click", function () {
+            $("#txtFileUpload").trigger("click");
+        })
+    });
+</script>

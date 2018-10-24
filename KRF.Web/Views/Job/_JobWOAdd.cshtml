@@ -1,0 +1,121 @@
+﻿<style>
+    #wo-form .btn .caret {
+        margin-left: 0;
+    }
+
+    #wo-form .caret {
+        border-left: 4px solid transparent;
+        border-right: 4px solid transparent;
+        border-top: 4px solid;
+        display: inline-block;
+        height: 0;
+        margin-left: 2px;
+        vertical-align: middle;
+        width: 0;
+    }
+
+    #wo-form .dropdown-menu > li > a {
+        clear: both;
+        color: #333;
+        display: block;
+        font-weight: 400;
+        line-height: 1.42857;
+        padding: 3px 20px;
+        white-space: nowrap;
+    }
+</style>
+<div class="clear_fix"></div>
+<div class="form-footer">
+    @*<a id="cancel-WO" class="addLead_saveCancel" href="javascript:void(0)">Cancel</a>*@
+    <a id="generate-WO" class="addLead_saveCancel" href="javascript:void(0)">Generate WO</a>
+    <a id="save-WO" class="addLead_saveCancel" href="javascript:void(0)">Save</a>
+</div>
+<div class="clear_fix"></div>
+<hr />
+<div class="m_block">
+    <div class="row" style="width:500px">
+        <div class="colLeft" style="width:150px">Id</div>
+        <div class="colRight">
+            <input id="woid" type="text" class="inputTextReadOnly" readonly maxlength="50" />
+        </div>
+    </div>
+    <div class="row" style="width: 500px; ">
+        <div class="colLeft" style="width:150px">Work Week Ending</div>
+        <div class="colRight">
+            <input id="weekendingdate" type="text" class="inputText qty" placeholder="Select date">
+        </div>
+    </div>
+</div>
+<div class="m_block" style="width:500px; margin-left:30px">
+    <div class="row" style="width:500px">
+        <div class="colLeft" style="width:150px">Crew Leader</div>
+        <div class="colRight">
+            <select id="wocrewleads" class="inputText">
+                <option value="volvo">Please select</option>
+            </select>
+        </div>
+    </div>
+</div>
+<div class="clear_fix"></div><br />
+<div id="list-wo-item" class="gridBlock" style="margin: 0px; width: 100%">
+    <div class="m_block" style="height:100%">
+        <div class="row" style="width:500px">
+            <div class="colLeft" style="width:150px">Estimate</div>
+            <div class="colRight">
+                <select id="woestimates" class="inputText">
+                    <option value="volvo">Please select</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="m_block" style="height:100%">
+        <div class="row" style="width:700px">
+            <div class="colLeft" style="width:180px">Change Orders</div>
+            <div class="colRight">
+                <select id="wcos" multiple="multiple">
+                    <option value="volvo">Please select</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="clear_fix"></div>
+    <div class="table-container" style="border-color: black; border-width:1px">
+        <table id="grid-items-wo-estimates" class="display" width="100%" cellspacing="0">
+            <thead>
+                <tr>
+                    <th width="100px">Item Code</th>
+                    <th width="130px">Assembly/Item</th>
+                    <th width="130px">Item Name</th>
+                    <th width="80px">Budget</th>
+                    <th width="30px">Used</th>
+                    <th width="30px">Rate</th>
+                    <th width="80px">Balance</th>
+                    <th width="100px">Amount</th>
+                    <th width="40px"></th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+    <br />
+</div>
+<div>
+    <div class="m_block">
+        <div class="row" style="width:500px">
+            &nbsp;
+        </div>
+    </div>
+    <div class="m_block">
+        <div class="row" style="width: 900px; margin-left: -320px">
+            <div class="colLeft" style="width:700px">
+                Change Order items are highlighted in <span class="highlightRow" style="border:1px solid black">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>&nbsp;color.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                Total Amount
+            </div>
+            <div class="colRight" style="width:150px">
+                <input id="totalCostDisplay" type="text" class="inputTextReadOnly" readonly>
+                <input id="totalCost" type="hidden" class="inputText" readonly>
+            </div>
+        </div>
+    </div>
+</div>

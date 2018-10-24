@@ -1,0 +1,125 @@
+﻿@{
+    ViewBag.Title = "Job";
+    Layout = "~/Views/Shared/_LayoutPage2.cshtml";
+}
+@Html.AntiForgeryToken()
+<style>
+    .alignRight {
+        text-align: right;
+    }
+
+    .formHolder {
+        height: 500px;
+    }
+
+        .formHolder .m_block {
+            width: 440px;
+        }
+</style>
+<div id="content_block" class="content_block">
+    <br />
+    <div id="list-fleet" class="gridBlock inventory_page">
+        <div class="head">Jobs
+        @if (Convert.ToBoolean(ViewBag.AllowEdit))
+        {
+            <a id="add-job" class="addLead_saveCancel" href="#">Add Job</a>
+        }
+        </div>
+        <div class="table-container">
+            <table id="grid-job" class="display" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        @if (Convert.ToBoolean(ViewBag.AllowEdit))
+                        {
+                            <th></th>
+                        }
+                        <th width="10%">ID</th>
+                        <th width="20%">Name</th>
+                        <th width="20%">Customer Name</th>
+                        <th width="10%">Lead ID</th>
+                        <th width="15%">Start Date</th>
+                        <th width="15%">End Date</th>
+                        <th width="15%">Status</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var data;
+    $(document).ready(function () {
+        var token = $('[name=__RequestVerificationToken]').val();
+
+        var keyValue = {};
+        var custAddresses = [];
+
+        $("#add-job").click(function () {
+            window.location.href = '@Url.Action("Add", "Job")?ID=0';
+        });
+
+        $('#grid-job').dataTable({
+            "order": [[1, "desc"]],
+            columnDefs: [
+                { className: "dt-left", targets: [0, 1, 2, 3, 4, 7] },
+                { className: "dt-right", targets: [5, 6] }
+            ],
+            //"columns": [null, null, null, null, null, { "sClass": "alignRight" },null,null],
+            "sAjaxSource": '@Url.Action("GetJobs", "Job")',
+            "iDisplayLength": 100,
+            //"aLengthMenu": [[5, 10, 25, 50, 100, -1], [5, 10, 25, 50, 100, "All"]],
+            "fnServerData": function (sSource, aoData, fnCallback) {
+                aoData.push({ "name": "ID", "value": 5 });
+                $.getJSON(sSource, aoData, function (json) {
+                    keyValue = json.keyValue;
+                    fnCallback(json);
+                });
+            }
+        });
+
+        $(document).on("click", "#grid-job .edit-job", function () {
+            var id = $(this).attr("data-val");
+            window.location.href = '@Url.Action("Add", "Job")?ID=' + id;
+        });
+
+        function search(nameKey, myArray) {
+            for (var i = 0; i < myArray.length; i++) {
+                if (myArray[i].ID == nameKey) {
+                    return myArray[i].Description;
+                }
+            }
+
+            return "";
+        }
+
+        $(document).on("click", "#grid-job .complete-job", function () {
+            var id = $(this).attr("data-val");
+            var checkbox = $(this);
+            BootstrapDialog.confirm('Are you sure you want to change job status to complete?', function (result) {
+                if (result) {
+                    openModal();
+                    $.ajax({
+                        url: '@Url.Action("ToggleJobStatus", "Job")', 
+                        type: 'POST',
+                        data: { jobID: id, tobeEnabled: true, __RequestVerificationToken: token },
+                        success: function (data) {
+                            if (data.hasDeleted) {
+                                window.location.href = '@Url.Action("Index", "Job")';
+                            }
+                            else
+                            {
+                                ClearDivMessages();
+                                $('.alert-danger').find('#dvError').html("Error occured. Please try again later.");
+                                $('.alert-danger').show();
+                            }
+                            closeModal();
+                        }
+                    });
+                } else {
+                    checkbox.attr('checked', false);
+                }
+            });
+        });
+        $("#jobs-link").addClass("linkBtn linkBtnAdd_Selected");
+    });
+</script>

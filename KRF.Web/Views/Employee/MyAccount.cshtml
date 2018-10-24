@@ -1,0 +1,246 @@
+﻿@{
+    ViewBag.Title = "My Account";
+    Layout = null;
+}
+@Html.AntiForgeryToken()
+@*<link href="~/Content/themes/base/bootstrap.min.css" rel="stylesheet" />*@
+<style>
+    #myaccount-form .alignRight {
+        text-align: right;
+    }
+
+    #myaccount-form .formHolder {
+        height: 800px;
+    }
+
+
+        #myaccount-form .m_block {
+            float: left;
+            width: 550px;
+        }
+
+        #myaccount-form .m_block .row {
+            width: 500px;
+        }
+
+            #myaccount-form .m_block .row .colLeft {
+                width: 120px;
+            }
+
+    #myaccount-form .inputText {
+        width: calc(100% - 30px);
+        height: 30px;
+        background: #DBE4E9;
+        border: none;
+        padding: 0px 0px 0px 10px;
+    }
+
+    #myaccount-form .formHolder .m_block {
+        width: 540px;
+    }
+
+    #myaccount-form .formHolder .upcommingsession-border {
+        border: 1px groove #ddd !important;
+        /*padding: 0 0 0 0 !important;*/
+        padding: 0.2em 0 1.4em 1em !important;
+        /*margin: 0 0 1.5em 0 !important;*/
+        border-bottom: none;
+    }
+
+    #myaccount-form .formHolder fieldset {
+        width: 400px;
+    }
+
+    #myaccount-form .formHolder legend.upcommingsession-border {
+        border-bottom: none;
+        width: 150px;
+        margin-bottom: 0px;
+    }
+
+    #myaccount-form .formHolder legend {
+        font-size: 15px;
+    }
+
+    #employeeadd .formHolder {
+        width: 100%;
+        margin-left: 50px;
+    }
+
+    #myaccount-form .dataTables_length {
+        display: none;
+    }
+</style>
+
+<div id="content_block" class="content_block">
+    <br />
+    @Html.Partial("_MyAccount")
+</div>
+
+<script type="text/javascript">
+    var data;
+    var MyAccountNS = {
+        employes: {},
+        territories: {},
+        //roles: {},
+        skillItems: {},
+        crewItems: {}
+    };
+
+
+
+    $(document).ready(function () {
+
+        var token = $('[name=__RequestVerificationToken]').val();
+
+        var ID = parseInt(@ViewBag.ID);
+
+        getMyAccount(ID);
+
+        var keyValue = {};
+        var custAddresses = [];
+
+        $("#Cancel_PopAss").click(function () {
+            window.location.href = '@Url.Action("Index", "Employee")';
+        });
+
+        function search(nameKey, myArray) {
+            for (var i = 0; i < myArray.length; i++) {
+                if (myArray[i].ID == nameKey) {
+                    return myArray[i].Description;
+                }
+            }
+
+            return "";
+        }
+    });
+
+    function getMyAccount(ID) {
+        openModal();
+        $.ajax({
+            url: '@Url.Action("GetEmployeeByUserID", "Employee")',
+            type: 'POST',
+            data: { userID: ID },
+            success: function (data) {
+                MyAccountNS.employee = data.employee;
+                MyAccountNS.territories = data.keyValue.territories;
+                //MyAccountNS.roles = data.keyValue.roles;
+                if (ID == 0) {
+                    emptyMyAccountForm(data);
+                } else {
+                    populateMyAccountForm(data);
+                    MyAccountNS.territories = data.keyValue.territories;
+                }
+                closeModal();
+            }
+        });
+    }
+    function emptyMyAccountForm(data) {
+        $('#myaccount-form').find("#territories").populateDropDownList(data.keyValue.territories, 0);
+        $('#myaccount-form').find("#roleList").populateDropDownList(data.keyValue.roles, 0);
+        $('#myaccount-form').find("#skillLevels").populateDropDownList(data.keyValue.skilllevels, 0);
+        $('#myaccount-form').find("#crewList").populateDropDownList(data.keyValue.crews, 0);
+
+        $('#myaccount-form').find("#employee-id").val(0);
+        $('#myaccount-form').find("#mc-first-name").val("");
+        $('#myaccount-form').find("#mc-last-name").val("");
+        $('#myaccount-form').find("#mc-title").val("");
+        $('#myaccount-form').find("#type").val("");
+        $('#myaccount-form').find("#home-address").val("");
+        $('#myaccount-form').find("#phone-1").val("");
+        $('#myaccount-form').find("#phone-2").val("");
+        $('#myaccount-form').find("#hourly-rate").val("0.00");
+
+        $('#myaccount-form').find("#emergency-contact-name").val("");
+        $('#myaccount-form').find("#emergency-phone1").val("");
+        $('#myaccount-form').find("#emergency-phone2").val("");
+        $('#myaccount-form').find("#dl").val("");
+
+
+        $('#myaccount-form').find("#middle-name").val("");
+        $('#myaccount-form').find("#address-line2").val("");
+        $('#myaccount-form').find("#city").val("");
+        $('#myaccount-form').find("#state").val("");
+        $('#myaccount-form').find("#zip").val("");
+        $('#myaccount-form').find("#EmpPhone2").val("");
+        $('#myaccount-form').find("#EmpPhone3").val("");
+        $('#myaccount-form').find("#EmailID").val("");
+        $('#myaccount-form').find("#DateCreated").val("");
+        $('#myaccount-form').find("#DateUpdated").val("");
+        $('#myaccount-form').find("#UserID").val("");
+        $('#myaccount-form').find("#AppAccess").val("");
+        $('#myaccount-form').find("#Status").val("");
+        //$('#myaccount-form').find("#IsAdmin").attr("checked", false);
+        $('#myaccount-form').find("#Password").val("");
+        $('#myaccount-form').find("#ConfirmPassword").val("");
+    }
+
+    function populateMyAccountForm(data) {
+        $('#myaccount-form').find("#territories").populateDropDownList(data.keyValue.territories, data.employee.TerritoryID);
+        $('#myaccount-form').find("#roleList").populateDropDownList(data.keyValue.roles, data.employee.RoleId);
+        $('#myaccount-form').find("#skillLevels").populateDropDownList(data.keyValue.skilllevels, 0);
+        $('#myaccount-form').find("#crewList").populateDropDownList(data.keyValue.crews, 0);
+
+        $('#myaccount-form').find("#employee-id").val(data.employee.EmpId);
+        //var createdDate = new Date(parseInt(data.estimate.CreatedDate.substr(6)));
+        //$('#myaccount-form').find("#createdDate").val(createdDate);
+        $('#myaccount-form').find("#mc-first-name").val(data.employee.FirstName);
+        $('#myaccount-form').find("#mc-last-name").val(data.employee.LastName);
+        $('#myaccount-form').find("#mc-title").val(data.employee.Title);
+        $('#myaccount-form').find("#type").val(data.employee.EmpType);
+        $('#myaccount-form').find("#home-address").val(data.employee.AddressLine1);
+        $('#myaccount-form').find("#phone-1").val(data.employee.EmpPhNo1);
+        $('#myaccount-form').find("#phone-2").val(data.employee.EmpPhNo2);
+        $('#myaccount-form').find("#hourly-rate").val(data.employee.HourlyRate);
+
+        $('#myaccount-form').find("#emergency-contact-name").val(data.employee.EmergencyCName);
+        $('#myaccount-form').find("#emergency-phone1").val(data.employee.EmergencyCPhNo);
+        $('#myaccount-form').find("#emergency-phone2").val(data.employee.EmergencyCPhNo2);
+
+        $('#myaccount-form').find("#dl").val(data.employee.DLNo);
+
+        $('#myaccount-form').find("#middle-name").val(data.employee.MiddleName);
+        $('#myaccount-form').find("#address-line2").val(data.employee.AddressLine2);
+        $('#myaccount-form').find("#city").val(data.employee.City);
+        $('#myaccount-form').find("#state").val(data.employee.State);
+        $('#myaccount-form').find("#zip").val(data.employee.Zip);
+        $('#myaccount-form').find("#EmpPhone2").val(data.employee.EmpPhone2);
+        $('#myaccount-form').find("#EmpPhone3").val(data.employee.EmpPhone3);
+        $('#myaccount-form').find("#EmailID").val(data.employee.EmailID);
+        $('#myaccount-form').find("#DateCreated").val(data.employee.DateCreated);
+        $('#myaccount-form').find("#DateUpdated").val(data.employee.DateUpdated);
+        $('#myaccount-form').find("#UserID").val(data.employee.UserID);
+        $('#myaccount-form').find("#AppAccess").val(data.employee.AppAccess);
+        $('#myaccount-form').find("#Status").val(data.employee.Status);
+
+        //$('#myaccount-form').find("#IsAdmin").attr("checked", data.employee.IsAdmin);
+        $('#myaccount-form').find("#Password").val(data.employee.Password);
+        $('#myaccount-form').find("#ConfirmPassword").val(data.employee.Password);
+    }
+
+    function searchObjectSkillIndex(nameKey, myArray) {
+        for (var i = 0; i < myArray.length; i++) {
+            if (myArray[i].SkillDesc.replace(/ /g, '') == nameKey.replace(/ /g, '')) {
+                return i;
+            }
+        }
+        return null;
+    }
+
+    function searchObjectCrewIndex(nameKey, myArray) {
+        for (var i = 0; i < myArray.length; i++) {
+            if (myArray[i].CrewID == nameKey) {
+                return i;
+            }
+        }
+        return null;
+    }
+
+    function searchObjectByEmpID(nameKey, myArray) {
+        for (var i = 0; i < myArray.length; i++) {
+            if (myArray[i].EmpId == nameKey) {
+                return i;
+            }
+        }
+        return null;
+    }
+</script>

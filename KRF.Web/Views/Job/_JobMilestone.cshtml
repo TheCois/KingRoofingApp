@@ -1,0 +1,171 @@
+﻿<style>
+    #job-milestone .m_block {
+        width: 500px;
+    }
+
+    #job-milestone table .columnA {
+        font-size: 13px;
+    }
+
+    #job-milestone table .columnB {
+        font-size: 13px;
+    }
+
+    #job-milestone .m_block .row {
+        width: 500px;
+    }
+
+    #job-milestone .row .row-label {
+        height: 30px;
+        line-height: 30px;
+        color: #333;
+        font-size: 13px;
+        padding: 0 10px 0 0;
+        text-align: left;
+    }
+
+    #job-milestone .row .row-input {
+        height: 30px;
+        line-height: 30px;
+        vertical-align: middle;
+        color: #333;
+        font-size: 13px;
+    }
+
+    #job-milestone .table-container {
+        font-size: 0.75em;
+    }
+
+    .xdsoft_datetimepicker {
+        width: 315px !important;
+    }
+</style>
+<form id="job-milestone" name="job-milestone" enctype="multipart/form-data">
+    <input type="hidden" name="jobID" id="jobID" />
+    <input type="hidden" name="taskID" id="taskID" value="0" />
+    <div class="m_block">
+        <div class="row">
+            <div class="colLeft" style="width:255px;">Task Name </div>
+            <div class="colRight" style="width:230px;">
+                <input id="taskname" type="text" maxlength="100" class="inputText" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="colLeft" style="width:255px;">Inspection Scheduled </div>
+            <div class="colRight" style="width:230px;">
+                <input id="inspectionscheduled" type="text" class="inputText qty" placeholder="Select date">
+            </div>
+        </div>
+        <div class="row">
+            <div class="colLeft" style="width:255px;">Inspection Completed </div>
+            <div class="colRight" style="width:230px;">
+                <input id="inspectioncompleted" type="text" class="inputText qty" placeholder="Select date">
+            </div>
+        </div>
+        <div class="row">
+            <div class="colLeft" style="width:255px;">Inspection Schedule Confirmation # </div>
+            <div class="colRight" style="width:230px;">
+                <input id="inspscheduleconfirmation" type="text" maxlength="50" class="inputText" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="colLeft" style="width:255px;">Inspection Completed Confirmation # </div>
+            <div class="colRight" style="width:230px;">
+                <input id="inspcompletedconfirmation" type="text" maxlength="50" class="inputText" />
+            </div>
+        </div>
+        <div class="clear_fix">
+        </div>
+    </div>
+    <div class="m_block" style="width:500px; margin-left:50px;">
+        <div class="row" style="width:500px">
+            <table width="100%">
+                <tr>
+                    <td class="columnA">Start Date </td>
+                    <td class="columnB"><input id="taskstartdate" type="text" class="inputText qty" style="width:100px" placeholder="Select date"></td>
+                    <td class="columnA">Completed Date </td>
+                    <td class="columnB"><input id="taskcompleteddate" type="text" class="inputText qty" style="width:100px" placeholder="Select date"></td>
+                </tr>
+            </table>
+        </div>
+        <div class="row rowTextarea" style="width:500px">
+            <div class="row-label">Inspection Notes </div>
+            <div class="row-input">
+                <textarea id="inspectionnote" class="inputText" maxlength="1000" style="height: 100px; width:95%"> </textarea>
+            </div>
+        </div>
+        <div class="row">
+            <div>
+                <br /><br />
+                <a id="save-job-milestone" class="addLead_saveCancel" href="javascript:void(0)">Save</a>
+                <a id="cancel-job-milestone" class="addLead_saveCancel" href="javascript:void(0)">Cancel</a>
+            </div>
+        </div>
+    </div>
+    <div class="clear_fix"></div>
+    <div class="clear_fix"></div><br/><br /><br /><br /><br /><br /><br />
+    <div id="list-milestone" class="gridBlock">
+        <div class="table-container" style="border-color: black; border-width:1px">
+            <table id="grid-items-milestone" class="display" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th width="200px">Task Name</th>
+                        <th width="150px">Start Date</th>
+                        <th width="150px">Completed Date</th>
+                        @*<th width="100px">Status</th>*@
+                        <th width="100px"></th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+</form>
+<script>
+    jQuery('#inspectionscheduled').datetimepicker(
+        {
+            lang: 'en',
+            timepicker: false,
+            format: 'm/d/Y',
+            formatDate: 'm/d/Y',
+            closeOnDateSelect: true
+        }
+    );
+    jQuery('#inspectioncompleted').datetimepicker(
+        {
+            lang: 'en',
+            timepicker: false,
+            format: 'm/d/Y',
+            formatDate: 'm/d/Y',
+            closeOnDateSelect: true
+        }
+    );
+    jQuery('#taskstartdate').datetimepicker(
+        {
+            lang: 'en',
+            timepicker: false,
+            format: 'm/d/Y',
+            formatDate: 'm/d/Y',
+            closeOnDateSelect: true
+        }
+    );
+    jQuery('#taskcompleteddate').datetimepicker(
+        {
+            lang: 'en',
+            timepicker: false,
+            format: 'm/d/Y',
+            formatDate: 'm/d/Y',
+            closeOnDateSelect: true
+        }
+    );
+    $('#grid-items-milestone').dataTable({
+        "bFilter": true,
+        "bInfo": false,
+        "bPaginate": true,
+        "bSort": false,
+        "columnDefs": [
+            { className: "dt-left", targets: [0, 3] },
+            { className: "dt-right", targets: [1, 2] }
+        ],
+        "iDisplayLength": 10
+    });
+</script>

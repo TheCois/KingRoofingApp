@@ -1,0 +1,1762 @@
+
+.follow {
+    clear: both;
+    margin-top: 1em;
+}
+.follow span {
+    font-weight: bold;
+}
+ul {
+    margin: 0;
+    padding: 0;
+}
+li {
+    list-style: outside none none;
+    margin: 0 0 0.25em;
+    overflow: hidden;
+    padding: 0;
+    position: relative;
+    z-index: 1;
+}
+li a:link, li a:visited {
+    border: 0 none;
+    color: #0056A9;
+    padding-left: 28px;
+}
+td li a:link, td li a:visited {
+    border: 0 none;
+    color: #0056A9;
+    padding-left: 28px;
+}
+li a:hover, li a:focus, li a:active {
+    background: none repeat scroll 0 0 transparent;
+    color: #730800;
+}
+li:before, li:after, li a:before, li a:after {
+    content: "";
+    left: 0;
+    position: absolute;
+    top: 50%;
+}
+li a:before, li a:after {
+    background: none repeat scroll 0 0 #0056A9;
+    margin: -8px 0 0;
+}
+li a:hover:before, li a:focus:before, li a:active:before {
+    background: none repeat scroll 0 0 #730800;
+}
+.noicon {
+    padding-left: 0 !important;
+}
+.player, .headphones, .ribbon, .views, .location, .info, .help, .pie, .success, .success-alt, .warning, .denied {
+    padding-left: 28px;
+}
+.search a:before {
+    background: none repeat scroll 0 0 transparent;
+    border: 3px solid #0056A9;
+    border-radius: 12px;
+    height: 6px;
+    width: 6px;
+}
+.search a:after {
+    height: 7px;
+    left: 10px;
+    margin-top: 0;
+    transform: rotate(-45deg);
+    width: 3px;
+}
+.search a:hover:before, .search a:focus:before, .search a:active:before {
+    background: none repeat scroll 0 0 transparent;
+    border-color: #730800;
+}
+.search a:hover:after, .search a:focus:after, .search a:active:after {
+    background: none repeat scroll 0 0 #730800;
+}
+.comment a:before {
+    border-radius: 2px;
+    height: 10px;
+    margin-top: -8px;
+    width: 16px;
+}
+.comment a:after {
+    -moz-border-bottom-colors: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+    background: none repeat scroll 0 0 transparent;
+    border-color: #0056A9 transparent transparent #0056A9;
+    border-image: none;
+    border-right: 2px solid transparent;
+    border-style: solid;
+    border-width: 2px;
+    left: 8px;
+    margin-top: 2px;
+}
+.comment a:hover:after, .comment a:focus:after, .comment a:active:after {
+    border-left-color: #730800;
+    border-top-color: #730800;
+}
+.like a:before, .like a:after {
+    background: none repeat scroll 0 0 #0056A9;
+    border-radius: 6px 0 0 6px;
+    height: 9px;
+    margin-top: -6px;
+    transform: rotate(45deg);
+    width: 14px;
+}
+.like a:after {
+    left: 4px;
+    transform: rotate(135deg);
+}
+.like a:hover:after, .like a:focus:after, .like a:active:after {
+    background: none repeat scroll 0 0 #730800;
+}
+.add a:before {
+    border-radius: 16px;
+    height: 16px;
+    width: 16px;
+}
+.add a:after {
+    background: none repeat scroll 0 0 #fff;
+    height: 2px;
+    left: 3px;
+    margin-top: -1px;
+    width: 10px;
+}
+.add:before {
+    background: none repeat scroll 0 0 #fff;
+    height: 10px;
+    left: 7px;
+    margin-top: -5px;
+    width: 2px;
+    z-index: 10;
+}
+.add-alt a:before {
+    background: none repeat scroll 0 0 #0056A9;
+    height: 15px;
+    left: 6px;
+    margin-top: -7px;
+    width: 5px;
+}
+.add-alt a:after {
+    background: none repeat scroll 0 0 #0056A9;
+    height: 5px;
+    left: 1px;
+    margin-top: -2px;
+    width: 15px;
+}
+.add-alt a:hover:after, .add-alt a:focus:after, .add-alt a:active:after {
+    background: none repeat scroll 0 0 #730800;
+}
+.remove a:before {
+    border-radius: 16px;
+    height: 16px;
+    width: 16px;
+}
+.remove a:after {
+    background: none repeat scroll 0 0 #fff;
+    height: 2px;
+    left: 3px;
+    margin-top: -1px;
+    width: 10px;
+}
+.remove-alt a:before {
+    background: none repeat scroll 0 0 #0056A9;
+    height: 5px;
+    left: 1px;
+    margin-top: -2px;
+    width: 15px;
+}
+.delete a:before {
+    border-radius: 16px;
+    height: 16px;
+    width: 16px;
+}
+.delete a:after {
+    background: none repeat scroll 0 0 #fff;
+    height: 2px;
+    left: 3px;
+    margin-top: -1px;
+    transform: rotate(45deg);
+    width: 10px;
+}
+.delete:before {
+    background: none repeat scroll 0 0 #fff;
+    height: 10px;
+    left: 7px;
+    margin-top: -5px;
+    transform: rotate(45deg);
+    width: 2px;
+    z-index: 10;
+}
+.delete-alt a:before, .delete-alt a:after {
+    background: none repeat scroll 0 0 #0056A9;
+    height: 15px;
+    left: 6px;
+    margin-top: -7px;
+    transform: rotate(45deg);
+    width: 5px;
+}
+.delete-alt a:after {
+    height: 5px;
+    left: 1px;
+    margin-top: -2px;
+    width: 15px;
+}
+.delete-alt a:hover:after, .delete-alt a:focus:after, .delete-alt a:active:after {
+    background: none repeat scroll 0 0 #730800;
+}
+.report a:before {
+    background: none repeat scroll 0 0 transparent;
+    border-color: #0056A9;
+    border-style: solid;
+    border-width: 7px 0 0 2px;
+    height: 7px;
+    left: 3px;
+    margin-top: -5px;
+    transform: skewY(-8deg);
+    width: 7px;
+}
+.report a:after {
+    background: none repeat scroll 0 0 #0056A9;
+    height: 7px;
+    left: 9px;
+    margin-top: -3px;
+    transform: skewY(-6deg);
+    width: 6px;
+}
+.report a:hover:before, .report a:focus:before, .report a:active:before {
+    background: none repeat scroll 0 0 transparent;
+    border-color: #730800;
+}
+.report a:hover:after, .report a:focus:after, .report a:active:after {
+    background: none repeat scroll 0 0 #730800;
+}
+.trash:after {
+    border-left: 1px solid #0056A9;
+    border-right: 3px double #0056A9;
+    height: 7px;
+    left: 6px;
+    margin-top: -2px;
+    width: 1px;
+}
+.trash a:before {
+    background: none repeat scroll 0 0 transparent;
+    border: 2px solid #0056A9;
+    height: 11px;
+    left: 2px;
+    margin-top: -6px;
+    width: 9px;
+}
+.trash a:after {
+    -moz-border-bottom-colors: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+    background: none repeat scroll 0 0 transparent;
+    border-color: #0056A9 #0056A9 -moz-use-text-color;
+    border-image: none;
+    border-radius: 2px 2px 0 0;
+    border-style: solid solid none;
+    border-width: 2px 2px 0;
+    height: 2px;
+    left: 5px;
+    margin-top: -9px;
+    width: 3px;
+}
+.trash:hover:after, .trash a:hover:before, .trash a:focus:before, .trash a:active:before, .trash a:hover:after, .trash a:focus:after, .trash a:active:after {
+    background: none repeat scroll 0 0 transparent;
+    border-color: #730800;
+}
+.lock:before, .lock:after, .unlock:before, .unlock:after {
+    background: none repeat scroll 0 0 #fff;
+    border-radius: 3px;
+    height: 3px;
+    left: 8px;
+    margin-top: -2px;
+    width: 3px;
+    z-index: 10;
+}
+.lock:before, .unlock:before {
+    height: 4px;
+    left: 9px;
+    margin-top: 0;
+    width: 1px;
+}
+.lock a:before, .unlock a:before {
+    height: 10px;
+    left: 3px;
+    margin-top: -4px;
+    width: 13px;
+}
+.lock a:after, .unlock a:after {
+    -moz-border-bottom-colors: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+    background: none repeat scroll 0 0 transparent;
+    border-color: #0056A9 #0056A9 -moz-use-text-color;
+    border-image: none;
+    border-radius: 5px 5px 0 0;
+    border-style: solid solid none;
+    border-width: 2px 2px 0;
+    height: 5px;
+    left: 5px;
+    margin-top: -11px;
+    width: 5px;
+}
+.unlock a:after {
+    left: 12px;
+}
+.lock a:hover:after, .lock a:focus:after, .lock a:active:after, .unlock a:hover:after, .unlock a:focus:after, .unlock a:active:after {
+    border-color: #730800;
+}
+.update:before {
+    border-color: transparent #0056A9;
+    border-style: solid;
+    border-width: 2px 0 2px 2px;
+    left: 10px;
+    margin-top: -1px;
+}
+.update a:before {
+    background: none repeat scroll 0 0 transparent;
+    border: 2px solid #0056A9;
+    border-radius: 3px;
+    height: 10px;
+    left: 4px;
+    margin-top: -6px;
+    width: 10px;
+}
+.update a:after {
+    border: 1px solid #fff;
+    height: 3px;
+    left: 10px;
+    margin-top: -6px;
+    transform: rotate(-45deg);
+    width: 10px;
+}
+.update:hover:before {
+    border-left-color: #730800;
+}
+.update a:hover:before, .update a:focus:before, .update a:active:before {
+    background: none repeat scroll 0 0 transparent;
+    border-color: #730800;
+}
+.update a:hover:after, .update a:focus:after, .update a:active:after {
+    background: none repeat scroll 0 0 #730800;
+}
+.retweet:before, .retweet a:before {
+    background: none repeat scroll 0 0 transparent;
+    border-color: transparent;
+    border-style: solid;
+}
+.retweet:before {
+    border-left-color: #fff;
+    border-top-color: #0056A9;
+    border-width: 5px 5px 0;
+    left: 12px;
+    margin-top: 2px;
+    z-index: -1;
+}
+.retweet a:before {
+    border-bottom-color: #0056A9;
+    border-right-color: #fff;
+    border-width: 0 5px 5px;
+    left: -1px;
+    margin-top: -7px;
+}
+.retweet a:after {
+    background: none repeat scroll 0 0 transparent;
+    border: 3px solid #0056A9;
+    height: 6px;
+    left: 3px;
+    margin-top: -6px;
+    width: 10px;
+    z-index: -2;
+}
+.retweet:hover:before {
+    border-top-color: #730800;
+}
+.retweet a:hover:before, .retweet a:focus:before, .retweet a:active:before {
+    background: none repeat scroll 0 0 transparent;
+    border-bottom-color: #730800;
+}
+.retweet a:hover:after, .retweet a:focus:after, .retweet a:active:after {
+    border-color: #730800;
+}
+.save:before, .save a:before {
+    background: none repeat scroll 0 0 transparent;
+    border-color: transparent #0056A9;
+    border-style: solid;
+    border-width: 10px 0 10px 8px;
+    left: 6px;
+    margin-top: -9px;
+    transform: rotate(22.5deg);
+}
+.save a:before {
+    left: 6px;
+    transform: rotate(157.5deg);
+}
+.save a:after {
+    background: none repeat scroll 0 0 transparent;
+    border-color: #0056A9 transparent;
+    border-style: solid;
+    border-width: 8px 10px 0;
+    margin-top: -3px;
+}
+.save:hover:before, .save:focus:before, .save:active:before, .save a:hover:before, .save a:focus:before, .save a:active:before {
+    background: none repeat scroll 0 0 transparent;
+    border-left-color: #730800;
+}
+.save a:hover:after, .save a:focus:after, .save a:active:after {
+    background: none repeat scroll 0 0 transparent;
+    border-top-color: #730800;
+}
+.edit a:before {
+    background: none repeat scroll 0 0 #0056A9;
+    height: 5px;
+    left: 3px;
+    margin-top: 2px;
+    transform: skew(-10deg, -10deg);
+    width: 5px;
+}
+.edit a:after {
+    border-left: 1px solid #fff;
+    height: 6px;
+    left: 3px;
+    margin-top: -3px;
+    transform: rotate(-45deg);
+    width: 13px;
+}
+.edit a:hover:before, .edit a:focus:before, .edit a:active:before, .edit a:hover:after, .edit a:focus:after, .edit a:active:after {
+    background: none repeat scroll 0 0 #730800;
+}
+.download a:before {
+    -moz-border-bottom-colors: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+    background: none repeat scroll 0 0 transparent;
+    border-color: -moz-use-text-color #0056A9 #0056A9;
+    border-image: none;
+    border-right: 3px solid #0056A9;
+    border-style: none solid solid;
+    border-width: 0 3px 3px;
+    height: 8px;
+    margin-top: -5px;
+    width: 14px;
+}
+.download a:after {
+    background: none repeat scroll 0 0 transparent;
+    border-color: #0056A9 transparent;
+    border-style: solid;
+    border-width: 5px 5px 0;
+    left: 5px;
+    margin-top: -5px;
+}
+.download a:hover:before, .download a:focus:before, .download a:active:before {
+    background: none repeat scroll 0 0 transparent;
+    border-color: #730800;
+}
+.download a:hover:after, .download a:focus:after, .download a:active:after {
+    border-color: #730800 transparent;
+}
+.arrow a:before {
+    border-radius: 16px;
+    height: 16px;
+    width: 16px;
+}
+.arrow a:after {
+    background: none repeat scroll 0 0 transparent;
+    border-color: transparent #fff;
+    border-style: solid;
+    border-width: 5px 0 5px 6px;
+    left: 8px;
+    margin-top: -5px;
+}
+.arrow:before {
+    background: none repeat scroll 0 0 #fff;
+    height: 4px;
+    left: 3px;
+    margin-top: -2px;
+    width: 5px;
+    z-index: 10;
+}
+.arrow.back a:after {
+    border-width: 5px 6px 5px 0;
+    left: 2px;
+}
+.arrow.back:before {
+    left: 8px;
+}
+.arrow.up a:after, .arrow.down a:after {
+    border-color: #fff transparent;
+    border-width: 0 5px 6px;
+    left: 3px;
+    margin-top: -6px;
+}
+.arrow.up:before, .arrow.down:before {
+    height: 5px;
+    left: 6px;
+    margin-top: 0;
+    width: 4px;
+}
+.arrow.down a:after {
+    border-width: 6px 5px 0;
+    margin-top: 0;
+}
+.arrow.down:before {
+    margin-top: -5px;
+}
+.arrow-alt a:before {
+    background: none repeat scroll 0 0 transparent;
+    border-color: transparent #0056A9;
+    border-style: solid;
+    border-width: 7px 0 7px 8px;
+    left: 8px;
+    margin-top: -7px;
+}
+.arrow-alt a:after {
+    background: none repeat scroll 0 0 #0056A9;
+    height: 6px;
+    left: 0;
+    margin-top: -3px;
+    width: 8px;
+}
+.arrow-alt a:hover:before, .arrow-alt a:focus:before, .arrow-alt a:active:before {
+    background: none repeat scroll 0 0 transparent;
+    border-color: transparent #730800;
+}
+.arrow-alt a:hover:after, .arrow-alt a:focus:after, .arrow-alt a:active:after {
+    background: none repeat scroll 0 0 #730800;
+}
+.arrow-alt.back a:before {
+    border-width: 7px 8px 7px 0;
+    left: 0;
+}
+.arrow-alt.back a:after {
+    left: 8px;
+}
+.arrow-alt.up a:before, .arrow-alt.down a:before {
+    border-color: #0056A9 transparent;
+    border-width: 0 7px 8px;
+    left: 1px;
+    margin-top: -8px;
+}
+.arrow-alt.up a:after, .arrow-alt.down a:after {
+    height: 8px;
+    left: 5px;
+    margin-top: 0;
+    width: 6px;
+}
+.arrow-alt.down a:before {
+    border-width: 8px 7px 0;
+    left: 1px;
+    margin-top: 0;
+}
+.arrow-alt.down a:after {
+    margin-top: -8px;
+}
+.arrow-alt.up a:hover:before, .arrow-alt.up a:focus:before, .arrow-alt.up a:active:before, .arrow-alt.down a:hover:before, .arrow-alt.down a:focus:before, .arrow-alt.down a:active:before {
+    border-color: #730800 transparent;
+}
+.arrow-alt2 a:before {
+    background: none repeat scroll 0 0 transparent;
+    border-color: #0056A9;
+    border-style: solid;
+    border-width: 0 3px 3px 0;
+    height: 7px;
+    left: 8px;
+    margin-top: -5px;
+    transform: rotate(-45deg);
+    width: 7px;
+}
+.arrow-alt2 a:after {
+    background: none repeat scroll 0 0 #0056A9;
+    height: 4px;
+    left: 3px;
+    margin-top: -2px;
+    width: 13px;
+}
+.arrow-alt2 a:hover:before, .arrow-alt2 a:focus:before, .arrow-alt2 a:active:before {
+    background: none repeat scroll 0 0 transparent;
+    border-color: #730800;
+}
+.arrow-alt2 a:hover:after, .arrow-alt2 a:focus:after, .arrow-alt2 a:active:after {
+    background: none repeat scroll 0 0 #730800;
+}
+.arrow-alt2.back a:before {
+    border-width: 0 0 3px 3px;
+    left: 4px;
+    transform: rotate(45deg);
+}
+.arrow-alt2.back a:after {
+    left: 5px;
+}
+.arrow-alt2.back a:hover:before, .arrow-alt2.back a:focus:before, .arrow-alt2.back a:active:before {
+    border-right-color: #730800;
+}
+.arrow-alt2.up a:before {
+    border-width: 3px 0 0 3px;
+    left: 4px;
+    transform: rotate(45deg);
+}
+.arrow-alt2.up a:after, .arrow-alt2.down a:after {
+    height: 13px;
+    left: 7px;
+    margin-top: -4px;
+    width: 4px;
+}
+.arrow-alt2.down a:before {
+    border-width: 0 0 3px 3px;
+    left: 4px;
+    transform: rotate(-45deg);
+}
+.arrow-alt2.down a:after {
+    margin-top: -8px;
+}
+.home a:before {
+    background: none repeat scroll 0 0 transparent;
+    border-color: transparent transparent #0056A9;
+    border-style: solid;
+    border-width: 8px 7px;
+    left: 1px;
+    margin-top: -16px;
+}
+.home a:after {
+    background: none repeat scroll 0 0 transparent;
+    border-color: #0056A9 #0056A9 transparent;
+    border-style: solid;
+    border-width: 3px 4px 0;
+    height: 4px;
+    left: 3px;
+    margin-top: 0;
+    width: 2px;
+}
+.home a:hover:before, .home a:focus:before, .home a:active:before {
+    background: none repeat scroll 0 0 transparent;
+    border-bottom-color: #730800;
+}
+.home a:hover:after, .home a:focus:after, .home a:active:after {
+    border-color: #730800 #730800 transparent;
+}
+.photo a:before {
+    height: 12px;
+    left: 2px;
+    margin-top: -6px;
+    width: 16px;
+}
+.photo a:after {
+    height: 2px;
+    left: 6px;
+    margin-top: -8px;
+    width: 8px;
+}
+.photo:after {
+    background: none repeat scroll 0 0 #fff;
+    border-radius: 8px;
+    height: 8px;
+    left: 6px;
+    margin-top: -4px;
+    width: 8px;
+}
+.photo a:hover:after, .photo a:focus:after, .photo a:active:after {
+    background: none repeat scroll 0 0 #730800;
+}
+.video a:before {
+    border-radius: 2px;
+    height: 12px;
+    left: 2px;
+    margin-top: -6px;
+    width: 14px;
+}
+.video a:after {
+    background: none repeat scroll 0 0 transparent;
+    border-color: transparent #0056A9 transparent transparent;
+    border-style: solid;
+    border-width: 5px 6px 5px 0;
+    left: 14px;
+    margin-top: -5px;
+}
+.video a:hover:after, .video a:focus:after, .video a:active:after {
+    border-right-color: #730800;
+}
+.music a:before {
+    background: none repeat scroll 0 0 transparent;
+    border-color: #0056A9 transparent transparent #0056A9;
+    border-radius: 0 10px 0 0;
+    border-style: solid;
+    border-width: 2px 1px 0 2px;
+    height: 10px;
+    left: 8px;
+    width: 6px;
+}
+.music a:after {
+    background: none repeat scroll 0 0 #0056A9;
+    border-radius: 10px;
+    height: 6px;
+    left: 3px;
+    margin-top: 0;
+    width: 7px;
+}
+.music a:hover:before, .music a:focus:before, .music a:active:before {
+    background: none repeat scroll 0 0 transparent;
+    border-color: #730800 transparent transparent #730800;
+}
+.music a:hover:after, .music a:focus:after, .music a:active:after {
+    background: none repeat scroll 0 0 #730800;
+}
+.call a:before {
+    background: none repeat scroll 0 0 transparent;
+    border-bottom-left-radius: 3px 5px;
+    border-color: #0056A9;
+    border-style: solid;
+    border-top-left-radius: 3px 5px;
+    border-width: 5px 0 5px 2px;
+    height: 8px;
+    left: 5px;
+    transform: rotate(-30deg);
+    width: 4px;
+}
+.call-on a:after {
+    -moz-border-bottom-colors: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+    background: none repeat scroll 0 0 transparent;
+    border-color: #0056A9;
+    border-image: none;
+    border-radius: 0 15px 0 0;
+    border-style: double;
+    border-width: 4px 4px 0 0;
+    height: 6px;
+    left: 10px;
+    margin-top: -8px;
+    transform: rotate(15deg);
+    width: 6px;
+}
+.call a:hover:before, .call a:focus:before, .call a:active:before, .call a:hover:after, .call a:focus:after, .call a:active:after {
+    background: none repeat scroll 0 0 transparent;
+    border-color: #730800;
+}
+.tags a:before {
+    background: none repeat scroll 0 0 #0056A9;
+    border-radius: 5px 5px 0 0;
+    height: 15px;
+    left: 6px;
+    margin-top: -8px;
+    transform: rotate(-40deg);
+    width: 9px;
+}
+.tags a:after {
+    background: none repeat scroll 0 0 #fff;
+    border-radius: 5px;
+    height: 3px;
+    left: 7px;
+    margin-top: -4px;
+    width: 3px;
+}
+.rss a:before {
+    border-radius: 5px;
+    height: 5px;
+    left: 3px;
+    margin-top: 0;
+    width: 5px;
+}
+.rss a:after {
+    background: none repeat scroll 0 0 transparent;
+    border-color: #0056A9;
+    border-radius: 0 25px 0 0;
+    border-style: double;
+    border-width: 5px 5px 0 0;
+    height: 8px;
+    left: 3px;
+    width: 8px;
+}
+.rss a:hover:after, .rss a:focus:after, .rss a:active:after {
+    border-color: #730800;
+}
+.email:before {
+    background: none repeat scroll 0 0 transparent;
+    border-color: #fff;
+    border-style: solid;
+    border-width: 0 1px 1px 0;
+    height: 12px;
+    left: 6px;
+    margin-top: -13px;
+    transform: rotate(39deg) skew(-12deg);
+    width: 12px;
+    z-index: 10;
+}
+.email a:before {
+    background: none repeat scroll 0 0 transparent;
+    border-color: #0056A9 #0056A9 transparent;
+    border-style: solid;
+    border-width: 6px;
+    left: 3px;
+    margin-top: -7px;
+    width: 6px;
+}
+.email a:after {
+    background: none repeat scroll 0 0 transparent;
+    border-color: #0056A9 transparent;
+    border-style: solid;
+    border-width: 0 8px 9px;
+    left: 4px;
+    margin-top: -3px;
+}
+.email a:hover:before, .email a:focus:before, .email a:active:before {
+    background: none repeat scroll 0 0 transparent;
+    border-color: #730800 #730800 transparent;
+}
+.email a:hover:after, .email a:focus:after, .email a:active:after {
+    border-bottom-color: #730800;
+}
+.profile a:before {
+    border-radius: 5px 5px 0 0;
+    height: 5px;
+    left: 4px;
+    margin-top: 1px;
+    width: 16px;
+}
+.profile a:after {
+    border-radius: 5px / 5px 5px 10px 10px;
+    height: 10px;
+    left: 9px;
+    margin-top: -7px;
+    width: 6px;
+}
+.profile a:hover:after, .profile a:focus:after, .profile a:active:after {
+    background: none repeat scroll 0 0 #730800;
+}
+.file a:before {
+    background: none repeat scroll 0 0 transparent;
+    border: 2px solid #0056A9;
+    height: 12px;
+    left: 5px;
+    width: 8px;
+}
+.file a:after {
+    background: none repeat scroll 0 0 transparent;
+    border-color: #fff #0056A9 #0056A9 #fff;
+    border-style: solid;
+    border-width: 3px;
+    left: 4px;
+    margin-top: -9px;
+}
+.file a:hover:before, .file a:focus:before, .file a:active:before {
+    background: none repeat scroll 0 0 transparent;
+    border-color: #730800;
+}
+.file a:hover:after, .file a:focus:after, .file a:active:after {
+    border-color: #fff #730800 #730800 #fff;
+}
+.folder a:before {
+    border-radius: 0 0 1px 1px;
+    height: 12px;
+    left: 4px;
+    margin-top: -6px;
+    width: 16px;
+}
+.folder a:after {
+    background: none repeat scroll 0 0 #0056A9;
+    border-radius: 1px 1px 0 0;
+    height: 2px;
+    left: 6px;
+    margin-top: -8px;
+    width: 6px;
+}
+.folder a:hover:after, .folder a:focus:after, .folder a:active:after {
+    background: none repeat scroll 0 0 #730800;
+}
+.list a:before, .list a:after {
+    background: none repeat scroll 0 0 transparent;
+    border-color: #0056A9;
+    border-style: double;
+    border-width: 6px 0;
+    height: 2px;
+    left: 8px;
+    width: 12px;
+}
+.list a:after {
+    left: 4px;
+    width: 2px;
+}
+.list a:hover:before, .list a:focus:before, .list a:active:before, .list a:hover:after, .list a:focus:after, .list a:active:after {
+    background: none repeat scroll 0 0 transparent;
+    border-color: #730800;
+}
+.permalink a:before, .permalink a:after, .permalink:after {
+    background: none repeat scroll 0 0 transparent;
+    border: 2px solid #0056A9;
+    border-radius: 3px;
+    height: 4px;
+    left: 4px;
+    transform: rotate(45deg);
+    width: 6px;
+}
+.permalink a:after {
+    left: 12px;
+    margin-top: 0;
+}
+.permalink:after {
+    background: none repeat scroll 0 0 #0056A9;
+    border: 1px solid #fff;
+    height: 2px;
+    left: 7px;
+    margin-top: -2px;
+    width: 10px;
+}
+.permalink a:hover:before, .permalink a:focus:before, .permalink a:active:before, .permalink a:hover:after, .permalink a:focus:after, .permalink a:active:after {
+    background: none repeat scroll 0 0 transparent;
+    border-color: #730800;
+}
+.permalink:hover:after {
+    background: none repeat scroll 0 0 #730800;
+}
+.history a:before, .history a:after {
+    background: none repeat scroll 0 0 transparent;
+    border: 2px solid #0056A9;
+    height: 13px;
+    left: 2px;
+    margin-top: -8px;
+    width: 13px;
+}
+.history a:before {
+    border-radius: 18px;
+}
+.history a:after {
+    background: none repeat scroll 0 0 transparent;
+    border-width: 0 0 2px 2px;
+    height: 5px;
+    left: 10px;
+    margin-top: -5px;
+    width: 4px;
+}
+.history a:hover:before, .history a:focus:before, .history a:active:before, .history a:hover:after, .history a:focus:after, .history a:active:after {
+    background: none repeat scroll 0 0 transparent;
+    border-color: #730800;
+}
+.tools:after {
+    background: none repeat scroll 0 0 #fff;
+    height: 5px;
+    left: 13px;
+    margin-top: -8px;
+    transform: rotate(45deg);
+    width: 3px;
+}
+.tools a:before {
+    background: none repeat scroll 0 0 #0056A9;
+    height: 15px;
+    left: 6px;
+    margin-top: -7px;
+    transform: rotate(45deg);
+    width: 4px;
+}
+.tools a:after {
+    background: none repeat scroll 0 0 #0056A9;
+    border-radius: 8px;
+    height: 9px;
+    left: 8px;
+    width: 9px;
+}
+.tools a:hover:after, .tools a:focus:after, .tools a:active:after {
+    background: none repeat scroll 0 0 #730800;
+}
+.player:before {
+    border-color: #555;
+    border-radius: 2px;
+    border-style: solid;
+    border-width: 2px 2px 11px;
+    height: 6px;
+    left: 3px;
+    margin-top: -10px;
+    width: 9px;
+}
+.player:after {
+    border: 2px solid #fff;
+    border-radius: 8px;
+    height: 3px;
+    left: 6px;
+    width: 3px;
+}
+.headphones:before {
+    border-color: #555;
+    border-radius: 20px 20px 0 0;
+    border-style: solid;
+    border-width: 2px 2px 0;
+    height: 10px;
+    left: 2px;
+    margin: -8px 0 0;
+    width: 12px;
+}
+.headphones:after {
+    border-color: #555;
+    border-style: solid;
+    border-width: 0 3px;
+    height: 6px;
+    left: 5px;
+    width: 4px;
+}
+.ribbon:before {
+    border-color: #f0a1d1 #f0a1d1 transparent;
+    border-style: solid;
+    border-width: 10px 5px 6px;
+    left: 6px;
+    margin: -8px 0 0;
+}
+.views:before {
+    background: none repeat scroll 0 0 #555;
+    border-radius: 12px 0;
+    height: 14px;
+    left: 3px;
+    margin-top: -8px;
+    transform: rotate(45deg);
+    width: 14px;
+}
+.views:after {
+    border: 2px solid #fff;
+    border-radius: 6px;
+    height: 4px;
+    left: 6px;
+    margin-top: -5px;
+    width: 4px;
+}
+.location:before {
+    -moz-border-bottom-colors: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+    background: none repeat scroll 0 0 #fff;
+    border-color: #555 #555 -moz-use-text-color;
+    border-image: none;
+    border-radius: 8px 8px 0 0;
+    border-style: solid solid none;
+    border-width: 3px 3px 0;
+    height: 2px;
+    left: 6px;
+    margin-top: -9px;
+    width: 2px;
+}
+.location:after {
+    border-color: #555 transparent;
+    border-style: solid;
+    border-width: 12px 4px 0;
+    left: 6px;
+    margin-top: -4px;
+}
+.info {
+    color: #2385ba;
+}
+.info:before {
+    background: none repeat scroll 0 0 #2385ba;
+    border-radius: 16px;
+    color: #fff;
+    content: "i";
+    font-size: 14px;
+    font-style: italic;
+    font-weight: bold;
+    height: 16px;
+    left: 3px;
+    line-height: 15px;
+    margin-top: -8px;
+    text-align: center;
+    width: 16px;
+}
+.help {
+    color: #2385ba;
+}
+.help:before {
+    background: none repeat scroll 0 0 #2385ba;
+    border-radius: 16px;
+    color: #fff;
+    content: "?";
+    font-size: 14px;
+    font-weight: bold;
+    height: 16px;
+    left: 3px;
+    line-height: 15px;
+    margin-top: -8px;
+    text-align: center;
+    width: 16px;
+}
+.pie {
+    color: #9d2ca3;
+}
+.pie:before {
+    border: 8px solid #9d2ca3;
+    border-radius: 16px;
+    left: 3px;
+    margin-top: -7px;
+}
+.pie:after {
+    background: none repeat scroll 0 0 #9d2ca3;
+    border-color: #fff;
+    border-radius: 0 16px 0 0;
+    border-style: solid;
+    border-width: 0 0 2px 2px;
+    height: 8px;
+    left: 11px;
+    margin-top: -8px;
+    width: 8px;
+}
+.success {
+    color: #7f913c;
+}
+.success:before {
+    background: none repeat scroll 0 0 #7f913c;
+    border-radius: 16px;
+    height: 16px;
+    left: 3px;
+    margin-top: -8px;
+    width: 16px;
+}
+.success:after {
+    border-color: #fff;
+    border-style: solid;
+    border-width: 0 2px 2px 0;
+    height: 8px;
+    left: 8px;
+    margin-top: -6px;
+    transform: rotate(45deg);
+    width: 3px;
+}
+.success-alt {
+    color: #7f913c;
+}
+.success-alt:before {
+    border-color: #7f913c;
+    border-style: solid;
+    border-width: 0 5px 5px 0;
+    height: 12px;
+    left: 6px;
+    margin-top: -11px;
+    transform: rotate(45deg);
+    width: 5px;
+}
+.warning:before {
+    color: #000;
+    content: "!";
+    font-size: 14px;
+    font-weight: bold;
+    left: 8px;
+    margin-top: -8px;
+    z-index: 2;
+}
+.warning:after {
+    background: none repeat scroll 0 0 transparent;
+    border-color: #f8d201 transparent;
+    border-style: solid;
+    border-width: 0 11px 18px;
+    margin-top: -10px;
+    z-index: 1;
+}
+.denied {
+    color: #c00000;
+}
+.denied:before {
+    background: none repeat scroll 0 0 transparent;
+    border: 3px solid #c00000;
+    border-radius: 16px;
+    height: 10px;
+    left: 3px;
+    margin-top: -8px;
+    width: 10px;
+}
+.denied:after {
+    background: none repeat scroll 0 0 #c00000;
+    height: 3px;
+    left: 6px;
+    margin-top: -2px;
+    transform: rotate(-45deg);
+    width: 11px;
+}
+.power a:before {
+    background: none repeat scroll 0 0 transparent;
+    border: 2px solid #0056A9;
+    border-radius: 16px;
+    height: 10px;
+    left: 1px;
+    margin-top: -6px;
+    width: 10px;
+}
+.power a:after {
+    background: none repeat scroll 0 0 #0056A9;
+    border: 1px solid #fff;
+    height: 7px;
+    left: 6px;
+    margin: -8px 0 0;
+    width: 2px;
+}
+.power a:hover:before, .power a:focus:before, .power a:active:before {
+    background: none repeat scroll 0 0 transparent;
+    border-color: #730800;
+}
+.power a:hover:after, .power a:focus:after, .power a:active:after {
+    background: none repeat scroll 0 0 #730800;
+}
+.play a:before {
+    border-radius: 16px;
+    height: 16px;
+    width: 16px;
+}
+.play a:after {
+    -moz-border-bottom-colors: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+    background: none repeat scroll 0 0 transparent;
+    border-color: transparent transparent transparent #fff;
+    border-image: none;
+    border-style: solid;
+    border-width: 4px;
+    left: 7px;
+    margin-top: -4px;
+}
+.play-alt a:before {
+    -moz-border-bottom-colors: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+    background: none repeat scroll 0 0 transparent;
+    border-color: transparent transparent transparent #0056A9;
+    border-image: none;
+    border-style: solid;
+    border-width: 8px 12px;
+    left: 2px;
+    margin-top: -8px;
+}
+.play-alt a:hover:before, .play-alt a:focus:before, .play-alt a:active:before {
+    background: none repeat scroll 0 0 transparent;
+    border-left-color: #730800;
+}
+.stop a:before {
+    border-radius: 16px;
+    height: 16px;
+    width: 16px;
+}
+.stop a:after {
+    background: none repeat scroll 0 0 #fff;
+    height: 6px;
+    left: 5px;
+    margin-top: -3px;
+    width: 6px;
+}
+.stop-alt a:before {
+    height: 14px;
+    left: 1px;
+    margin-top: -7px;
+    width: 14px;
+}
+.pause a:before {
+    border-radius: 16px;
+    height: 16px;
+    width: 16px;
+}
+.pause a:after {
+    -moz-border-bottom-colors: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+    background: none repeat scroll 0 0 transparent;
+    border-color: #fff;
+    border-image: none;
+    border-style: solid;
+    border-width: 0 2px;
+    height: 8px;
+    left: 5px;
+    margin-top: -4px;
+    width: 2px;
+}
+.pause-alt a:before {
+    -moz-border-bottom-colors: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+    background: none repeat scroll 0 0 transparent;
+    border-color: #0056A9;
+    border-image: none;
+    border-style: solid;
+    border-width: 0 4px;
+    height: 14px;
+    left: 2px;
+    margin-top: -7px;
+    width: 4px;
+}
+.pause-alt a:hover:before, .pause-alt a:focus:before, .pause-alt a:active:before {
+    background: none repeat scroll 0 0 transparent;
+    border-color: #730800;
+}
+.volume a:before {
+    -moz-border-bottom-colors: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+    background: none repeat scroll 0 0 transparent;
+    border-color: transparent #0056A9 transparent transparent;
+    border-image: none;
+    border-style: solid;
+    border-width: 7px;
+    left: -2px;
+    margin-top: -7px;
+}
+.volume a:after {
+    height: 6px;
+    left: 4px;
+    margin-top: -3px;
+    width: 4px;
+}
+.volume a:hover:before, .volume a:focus:before, .volume a:active:before {
+    background: none repeat scroll 0 0 transparent;
+    border-right-color: #730800;
+}
+.volume a:hover:after, .volume a:focus:after, .volume a:active:after {
+    background: none repeat scroll 0 0 #730800;
+}
+.volume-on:before {
+    -moz-border-bottom-colors: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+    border-color: #0056A9;
+    border-image: none;
+    border-radius: 0 15px 0 0;
+    border-style: double;
+    border-width: 4px 4px 0 0;
+    height: 6px;
+    left: 12px;
+    margin-top: -5px;
+    transform: rotate(45deg);
+    width: 6px;
+}
+.volume-on:hover:before {
+    border-color: #730800;
+}
+.mute:before {
+    border: 1px solid #0056A9;
+    border-radius: 16px;
+    height: 16px;
+    margin-top: -9px;
+    width: 16px;
+}
+.mute:after {
+    border-top: 1px solid #0056A9;
+    transform: rotate(-45deg);
+    width: 18px;
+}
+.mute:hover:before, .mute:hover:after {
+    border-color: #730800;
+}
+.volume-up:before {
+    background: none repeat scroll 0 0 #0056A9;
+    height: 8px;
+    left: 16px;
+    margin-top: -4px;
+    width: 2px;
+}
+.volume-up:after, .volume-down:after {
+    background: none repeat scroll 0 0 #0056A9;
+    height: 2px;
+    left: 13px;
+    margin-top: -1px;
+    width: 8px;
+}
+.volume-up:hover:before, .volume-up:hover:after, .volume-down:hover:after {
+    background: none repeat scroll 0 0 #730800;
+}
+.mic a:before {
+    border-radius: 4px;
+    height: 12px;
+    left: 6px;
+    margin-top: -9px;
+    width: 7px;
+}
+.mic a:after {
+    background: none repeat scroll 0 0 transparent;
+    border-color: #0056A9;
+    border-radius: 0 0 11px 11px;
+    border-style: solid;
+    border-width: 0 1px 1px;
+    height: 6px;
+    left: 4px;
+    margin-top: -2px;
+    width: 9px;
+}
+.mic:before, .mic:after {
+    background: none repeat scroll 0 0 #0056A9;
+    height: 4px;
+    left: 9px;
+    margin-top: 4px;
+    width: 1px;
+}
+.mic:after {
+    height: 1px;
+    left: 6px;
+    margin-top: 7px;
+    width: 7px;
+}
+.mic a:hover:after, .mic a:focus:after, .mic a:active:after {
+    border-color: #730800;
+}
+.mic:hover:before, .mic:hover:after {
+    background: none repeat scroll 0 0 #730800;
+}
+.fforward a:before {
+    -moz-border-bottom-colors: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+    background: none repeat scroll 0 0 transparent;
+    border-color: transparent transparent transparent #0056A9;
+    border-image: none;
+    border-style: solid;
+    border-width: 5px 7px;
+    left: 1px;
+    margin-top: -4px;
+}
+.fforward a:after {
+    -moz-border-bottom-colors: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+    background: none repeat scroll 0 0 transparent;
+    border-color: transparent transparent transparent #0056A9;
+    border-image: none;
+    border-style: solid;
+    border-width: 5px 7px;
+    left: 7px;
+    margin-top: -4px;
+}
+.fforward a:hover:before, .fforward a:focus:before, .fforward a:active:before {
+    background: none repeat scroll 0 0 transparent;
+    border-left-color: #730800;
+}
+.fforward a:hover:after, .fforward a:focus:after, .fforward a:active:after {
+    border-left-color: #730800;
+}
+.frewind a:before {
+    -moz-border-bottom-colors: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+    background: none repeat scroll 0 0 transparent;
+    border-color: transparent #0056A9 transparent transparent;
+    border-image: none;
+    border-style: solid;
+    border-width: 5px 7px;
+    left: -6px;
+    margin-top: -4px;
+}
+.frewind a:after {
+    -moz-border-bottom-colors: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+    background: none repeat scroll 0 0 transparent;
+    border-color: transparent #0056A9 transparent transparent;
+    border-image: none;
+    border-style: solid;
+    border-width: 5px 7px;
+    margin-top: -4px;
+}
+.frewind a:hover:before, .frewind a:focus:before, .frewind a:active:before {
+    background: none repeat scroll 0 0 transparent;
+    border-right-color: #730800;
+}
+.frewind a:hover:after, .frewind a:focus:after, .frewind a:active:after {
+    border-right-color: #730800;
+}
+.next a:before {
+    height: 10px;
+    left: 9px;
+    margin-top: -4px;
+    width: 2px;
+}
+.next a:after {
+    -moz-border-bottom-colors: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+    background: none repeat scroll 0 0 transparent;
+    border-color: transparent transparent transparent #0056A9;
+    border-image: none;
+    border-style: solid;
+    border-width: 5px 7px;
+    left: 2px;
+    margin-top: -4px;
+}
+.next a:hover:after, .next a:focus:after, .next a:active:after {
+    border-left-color: #730800;
+}
+.prev a:before {
+    height: 10px;
+    left: 2px;
+    margin-top: -4px;
+    width: 2px;
+}
+.prev a:after {
+    -moz-border-bottom-colors: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+    background: none repeat scroll 0 0 transparent;
+    border-color: transparent #0056A9 transparent transparent;
+    border-image: none;
+    border-style: solid;
+    border-width: 5px 7px;
+    left: -3px;
+    margin-top: -4px;
+}
+.prev a:hover:after, .prev a:focus:after, .prev a:active:after {
+    border-right-color: #730800;
+}
+.pop a:before, .pop a:after {
+    background: none repeat scroll 0 0 #fff;
+    border: 1px solid #0056A9;
+    height: 8px;
+    margin-top: -4px;
+    width: 12px;
+}
+.pop a:after {
+    left: 3px;
+    margin-top: -7px;
+}
+.pop a:hover:before, .pop a:focus:before, .pop a:active:before, .pop a:hover:after, .pop a:focus:after, .pop a:active:after {
+    background: none repeat scroll 0 0 #fff;
+    border-color: #730800;
+}
+.enlarge a:before {
+    height: 14px;
+    margin-top: -7px;
+    width: 16px;
+}
+.enlarge a:after {
+    background: none repeat scroll 0 0 #fff;
+    height: 6px;
+    left: 1px;
+    margin-top: -6px;
+    width: 7px;
+}
+.repeat a:before {
+    background: none repeat scroll 0 0 transparent;
+    border: 3px solid #0056A9;
+    border-radius: 16px;
+    height: 9px;
+    left: 1px;
+    margin-top: -6px;
+    width: 9px;
+}
+.repeat a:after {
+    -moz-border-bottom-colors: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+    background: none repeat scroll 0 0 transparent;
+    border-color: #fff #fff #fff #0056A9;
+    border-image: none;
+    border-style: solid;
+    border-width: 5px 2px 5px 5px;
+    left: 9px;
+    margin: -9px 0 0;
+}
+.repeat a:hover:before, .repeat a:focus:before, .repeat a:active:before {
+    background: none repeat scroll 0 0 transparent;
+    border-color: #730800;
+}
+.repeat a:hover:after, .repeat a:focus:after, .repeat a:active:after {
+    border-left-color: #730800;
+}
+.expand a:before {
+    background: none repeat scroll 0 0 transparent;
+    border-color: transparent #0056A9;
+    border-style: solid;
+    border-width: 7px 7px 0;
+    height: 0;
+    left: 1px;
+    margin-top: -4px;
+    transform: rotate(-45deg);
+    width: 5px;
+    z-index: -2;
+}
+.expand a:after {
+    -moz-border-bottom-colors: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+    background: none repeat scroll 0 0 transparent;
+    border-color: #0056A9;
+    border-image: none;
+    border-style: solid;
+    border-width: 3px 0 0 3px;
+    height: 8px;
+    left: 5px;
+    margin-top: -6px;
+    width: 8px;
+}
+.expand a:hover:before, .expand a:focus:before, .expand a:active:before {
+    background: none repeat scroll 0 0 transparent;
+    border-color: transparent #730800;
+}
+.expand a:hover:after, .expand a:focus:after, .expand a:active:after {
+    border-color: #730800;
+}
+.shrink a:before {
+    background: none repeat scroll 0 0 transparent;
+    border-color: transparent #0056A9;
+    border-style: solid;
+    border-width: 0 7px 7px;
+    height: 0;
+    left: 1px;
+    margin-top: -4px;
+    transform: rotate(-45deg);
+    width: 5px;
+    z-index: -2;
+}
+.shrink a:after {
+    -moz-border-bottom-colors: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+    background: none repeat scroll 0 0 transparent;
+    border-color: #0056A9;
+    border-image: none;
+    border-style: solid;
+    border-width: 0 3px 3px 0;
+    height: 8px;
+    left: 5px;
+    margin-top: -6px;
+    width: 8px;
+}
+.shrink a:hover:before, .shrink a:focus:before, .shrink a:active:before {
+    background: none repeat scroll 0 0 transparent;
+    border-color: transparent #730800;
+}
+.shrink a:hover:after, .shrink a:focus:after, .shrink a:active:after {
+    border-color: #730800;
+}
+.toggle-size a:before {
+    background: none repeat scroll 0 0 transparent;
+    border-color: #0056A9 transparent transparent #0056A9;
+    border-style: solid;
+    border-width: 6px;
+    left: 2px;
+    margin-top: -7px;
+}
+.toggle-size a:after {
+    background: none repeat scroll 0 0 transparent;
+    border-color: transparent #0056A9 #0056A9 transparent;
+    border-style: solid;
+    border-width: 4px;
+    left: 7px;
+    margin-top: -2px;
+}
+.toggle-size a:hover:before, .toggle-size a:focus:before, .toggle-size a:active:before {
+    background: none repeat scroll 0 0 transparent;
+    border-color: #730800 transparent transparent #730800;
+}
+.toggle-size a:hover:after, .toggle-size a:focus:after, .toggle-size a:active:after {
+    border-color: transparent #730800 #730800 transparent;
+}
+.full:before, .full:after {
+    -moz-border-bottom-colors: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+    border-color: #0056A9;
+    border-image: none;
+    border-style: solid;
+    border-width: 5px 0;
+    height: 8px;
+    left: 8px;
+    margin-top: -8px;
+    transform: rotate(45deg);
+    width: 3px;
+    z-index: 1;
+}
+.full:after {
+    transform: rotate(-45deg);
+}
+.full:hover:before, .full:hover:after {
+    border-color: #730800;
+}
+.full a:before, .full a:after {
+    background: none repeat scroll 0 0 transparent;
+    border-color: transparent #0056A9;
+    border-style: solid;
+    border-width: 0 7px 7px;
+    height: 0;
+    margin-top: -8px;
+    width: 4px;
+    z-index: 10;
+}
+.full a:after {
+    border-width: 7px 7px 0;
+    margin-top: 3px;
+}
+.full a:hover:before, .full a:focus:before, .full a:active:before, .full a:hover:after, .full a:focus:after, .full a:active:after {
+    background: none repeat scroll 0 0 transparent;
+    border-color: transparent #730800;
+}
+.exit:before, .exit:after {
+    -moz-border-bottom-colors: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+    border-color: #0056A9;
+    border-image: none;
+    border-style: solid;
+    border-width: 5px 0;
+    height: 14px;
+    left: 8px;
+    margin-top: -12px;
+    top: 50%;
+    transform: rotate(45deg);
+    width: 3px;
+    z-index: 1;
+}
+.exit:after {
+    transform: rotate(-45deg);
+}
+.exit:hover:before, .exit:hover:after {
+    border-color: #730800;
+}
+.exit a:before, .exit a:after {
+    background: none repeat scroll 0 0 transparent;
+    border-color: transparent #0056A9;
+    border-style: solid;
+    border-width: 5px;
+    left: 2px;
+    margin-top: -5px;
+    transform: rotate(-45deg);
+    width: 6px;
+    z-index: 10;
+}
+.exit a:after {
+    transform: rotate(45deg);
+}
+.exit a:hover:before, .exit a:focus:before, .exit a:active:before, .exit a:hover:after, .exit a:focus:after, .exit a:active:after {
+    background: none repeat scroll 0 0 transparent;
+    border-color: transparent #730800;
+}
+.eject a:before {
+    height: 2px;
+    left: 1px;
+    margin-top: 4px;
+    width: 14px;
+}
+.eject a:after {
+    -moz-border-bottom-colors: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+    background: none repeat scroll 0 0 transparent;
+    border-color: transparent transparent #0056A9;
+    border-image: none;
+    border-style: solid;
+    border-width: 8px 7px;
+    left: 1px;
+    margin-top: -13px;
+}
+.eject a:hover:after, .eject a:focus:after, .eject a:active:after {
+    border-bottom-color: #730800;
+}

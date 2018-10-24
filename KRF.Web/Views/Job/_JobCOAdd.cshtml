@@ -1,0 +1,99 @@
+﻿<div class="clear_fix"></div>
+<div class="form-footer">
+    <a id="cancel-CO" class="addLead_saveCancel" href="javascript:void(0)">Cancel</a>
+    <a id="save-CO" class="addLead_saveCancel" href="javascript:void(0)">Save</a>
+</div>
+<div class="clear_fix"></div>
+<hr />
+<div class="m_block">
+    <div class="row" style="width:500px">
+        <div class="colLeft" style="width:150px">Id</div>
+        <div class="colRight">
+            <input id="coid" type="text" value="0" class="inputTextReadOnly" readonly maxlength="50" />
+        </div>
+    </div>
+    <div class="row" style="width:500px">
+        <div class="colLeft" style="width:150px">Description</div>
+        <div class="colRight">
+            <input id="desc" type="text" class="inputText" maxlength="150" />
+        </div>
+    </div>
+    <div class="row" style="width:500px">
+        <div class="colLeft" style="width:150px">Date</div>
+        <div class="colRight">
+            <input id="codate" type="text" class="inputText qty" placeholder="Select date">
+        </div>
+    </div>
+</div>
+<div class="m_block" style="width:500px; margin-left:30px">
+    <div class="row" style="width:500px">
+        <div class="colLeft" style="width:150px">Sales Rep.</div>
+        <div class="colRight">
+            @*<input id="cocustomerrep" type="text" class="inputText" maxlength="100" />*@
+            <select id="cocustomerreps" class="inputText">
+                <option value="volvo">Please select</option>
+            </select>
+        </div>
+    </div>
+    <div class="row" style="width:500px">
+        <div class="colLeft" style="width:150px">Sales Rep. Email</div>
+        <div class="colRight">
+            <input id="cucustomerrepemail" type="text" class="inputText" maxlength="100" />
+        </div>
+    </div>
+    @*<div class="row" style="width:500px">
+        <div class="colLeft" style="width:150px">Search Item</div>
+        <div class="colRight">
+            <select id="co-items" class="inputText" style="width:270px">
+                <option value="volvo">Please select</option>
+            </select>
+            <input type="button" id="AddCOItem" value="Add" />
+        </div>
+    </div>*@
+</div>
+<div class="clear_fix"></div><br /><br />
+<div id="list-co-item" class="gridBlock" style="margin: 0px; width: 100%">
+    <div class="m_block" style="height:100%">
+        <div class="row" style="width:500px">
+            <div class="colLeft" style="width:100px">Search Item</div>
+            <div class="colRight">
+                <select id="co-items" class="inputText" style="width:270px">
+                    <option value="volvo">Please select</option>
+                </select>
+                <input type="button" id="AddCOItem" value="Add" />
+            </div>
+        </div>
+    </div>
+    <div class="clear_fix"></div>
+    <div class="table-container" style="border-color: black; border-width:1px">
+        <table id="grid-items-assembly-co" class="display" width="100%" cellspacing="0">
+            <thead>
+                <tr>
+                    <th width="70px">Item Code</th>
+                    <th width="150px">Description</th>
+                    <th width="20px">Qty</th>
+                    <th width="20%">Cost</th>
+                    <th width="20%">Amount</th>
+                    <th width="20%"></th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+    <br />
+</div>
+<div>
+    <div class="m_block">
+        <div class="row" style="width:500px">
+            &nbsp;
+        </div>
+    </div>
+    <div class="m_block">
+        <div class="row" style="width: 400px; margin-left: 180px">
+            <div class="colLeft" style="width:150px">Total Amount</div>
+            <div class="colRight" style="width:150px">
+                <input id="cototalCostDisplay" type="text" class="inputTextReadOnly" readonly>
+                <input id="cototalCost" type="hidden" class="inputText" readonly>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,20 @@
+﻿@{
+    ViewBag.Title = "Access Denied";
+    string title = Convert.ToString(ViewData["Title"]);
+    Layout = "~/Views/Shared/_LayoutPage2.cshtml";
+}
+@Html.AntiForgeryToken()
+<title>@ViewBag.Title</title>
+<div class="content_block">
+    <br />
+    <div class="gridBlock inventory_page">
+        <div class="head">
+            Access Denied
+        </div>
+        <div class="table-container">
+            <hgroup class="title">
+                <h5 class="error">Access is denied. You are not allowed to access this page.</h5>
+            </hgroup>
+        </div>
+    </div>
+</div>

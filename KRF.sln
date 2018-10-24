@@ -1,0 +1,59 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KRF.Web", "KRF.Web\KRF.Web.csproj", "{178380AB-1E06-4FF2-B680-8DAF2BAAD841}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KRF.Core", "KRF.Core\KRF.Core.csproj", "{785AC144-BA9F-4865-9426-B7381DC22DF9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KRF.Persistence", "KRF.Persistence\KRF.Persistence.csproj", "{B7BD0296-B948-4362-95A6-F18013038B2D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KRF.Common", "KRF.Common\KRF.Common.csproj", "{DAAB0160-3860-469B-BF23-EBC21F277DD9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KRF.DependencyResolution", "KRF.DepedencyResolution\KRF.DependencyResolution.csproj", "{3125EC3D-A586-4F10-B390-CF9CC9D0FC22}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KRF.Mail", "KRF.Mail\KRF.Mail.csproj", "{D4A67018-7707-43EA-8CBD-6A32E9A9C5F3}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{C017A55B-CE5D-46A2-A3F7-C1FD8A3FBBFC}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\NuGet.Config = .nuget\NuGet.Config
+		.nuget\NuGet.exe = .nuget\NuGet.exe
+		.nuget\NuGet.targets = .nuget\NuGet.targets
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{178380AB-1E06-4FF2-B680-8DAF2BAAD841}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{178380AB-1E06-4FF2-B680-8DAF2BAAD841}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{178380AB-1E06-4FF2-B680-8DAF2BAAD841}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{178380AB-1E06-4FF2-B680-8DAF2BAAD841}.Release|Any CPU.Build.0 = Release|Any CPU
+		{785AC144-BA9F-4865-9426-B7381DC22DF9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{785AC144-BA9F-4865-9426-B7381DC22DF9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{785AC144-BA9F-4865-9426-B7381DC22DF9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{785AC144-BA9F-4865-9426-B7381DC22DF9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B7BD0296-B948-4362-95A6-F18013038B2D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B7BD0296-B948-4362-95A6-F18013038B2D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B7BD0296-B948-4362-95A6-F18013038B2D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B7BD0296-B948-4362-95A6-F18013038B2D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DAAB0160-3860-469B-BF23-EBC21F277DD9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DAAB0160-3860-469B-BF23-EBC21F277DD9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DAAB0160-3860-469B-BF23-EBC21F277DD9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DAAB0160-3860-469B-BF23-EBC21F277DD9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3125EC3D-A586-4F10-B390-CF9CC9D0FC22}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3125EC3D-A586-4F10-B390-CF9CC9D0FC22}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3125EC3D-A586-4F10-B390-CF9CC9D0FC22}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3125EC3D-A586-4F10-B390-CF9CC9D0FC22}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D4A67018-7707-43EA-8CBD-6A32E9A9C5F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D4A67018-7707-43EA-8CBD-6A32E9A9C5F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D4A67018-7707-43EA-8CBD-6A32E9A9C5F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D4A67018-7707-43EA-8CBD-6A32E9A9C5F3}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
