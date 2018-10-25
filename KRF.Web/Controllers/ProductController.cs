@@ -242,7 +242,7 @@ namespace KRF.Web.Controllers
             IItemManagementRepository itemRepository = ObjectFactory.GetInstance<IItemManagementRepository>();
             var product = itemRepository.GetProduct();
             TempData["Product"] = product;
-            return View();
+            return View(); // TODO go write this View
         }
     }
 

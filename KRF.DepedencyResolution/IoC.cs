@@ -16,19 +16,10 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 
-using KRF.Common;
-using KRF.Core;
-using KRF.Core.FunctionalContracts;
-using KRF.Persistence;
 using StructureMap;
-using KRF.Core.Repository.MISC;
-using KRF.Persistence.RepositoryImplementation;
 using System.Configuration;
-using StructureMap.Graph;
-using KRF.Persistence.FunctionalContractImplementation;
-using KRF.Core.Repository;
 using System;
-using KRF.Mail;
+using ObjectFactory = KRF.Persistence.ObjectFactory;
 
 namespace KRF.DependencyResolution {
     public static class IoC

@@ -193,5 +193,57 @@ namespace KRF.Web.Controllers
             }
             return Json(new { result = result, message = msg }, JsonRequestBehavior.AllowGet);
         }
+
+        // TODO Write AccountController.Register
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public ActionResult Register(ResetPasswordModel model)
+        {
+            bool result = false;
+            string msg = string.Empty;
+            try
+            {
+            }
+            catch (Exception ex)
+            {
+                msg = "Some error occured. Please try again";
+            }
+            return Json(new { result = result, message = msg }, JsonRequestBehavior.AllowGet);
+        }
+
+        // TODO Write AccountController.Manage
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Manage(ResetPasswordModel model)
+        {
+            bool result = false;
+            string msg = string.Empty;
+            try
+            {
+            }
+            catch (Exception ex)
+            {
+                msg = "Some error occured. Please try again";
+            }
+            return Json(new { result = result, message = msg }, JsonRequestBehavior.AllowGet);
+        }
+
+        // TODO Write AccountController.LogOff
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult LogOff(ResetPasswordModel model)
+        {
+            bool result = false;
+            string msg = string.Empty;
+            try
+            {
+            }
+            catch (Exception ex)
+            {
+                msg = "Some error occured. Please try again";
+            }
+            return Json(new { result = result, message = msg }, JsonRequestBehavior.AllowGet);
+        }
     }
 }

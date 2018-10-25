@@ -15,7 +15,8 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-using System.Web.Mvc;
+using System.Web.Http.Dependencies;
+using StructureMap;
 
 namespace KRF.DependencyResolution
 {
@@ -49,7 +50,7 @@ namespace KRF.DependencyResolution
         /// </returns>
         public IDependencyScope BeginScope()
         {
-            IContainer child = this.Container.GetNestedContainer();
+            IContainer child = Container.GetNestedContainer();
             return new StructureMapDependencyResolver(child);
         }
 
