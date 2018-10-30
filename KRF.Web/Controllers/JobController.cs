@@ -1833,9 +1833,9 @@ namespace KRF.Web.Controllers
             IEmployeeManagementRepository empRepo = ObjectFactory.GetInstance<IEmployeeManagementRepository>();
             var inspList = jobRepo.GetJobInspections(jobID);
             var employDTO = empRepo.GetEmployees();
-            List<Permit> permits = jobRepo.GetPrmitList();
-            List<PermitInspection> permitInspection = jobRepo.GetPrmitInspectionList();
-            List<PermitStatus> permitStatus = jobRepo.GetPrmitStatusList();
+            List<Permit> permits = jobRepo.GetPermitList();
+            List<PermitInspection> permitInspection = jobRepo.GetPermitInspectionList();
+            List<PermitStatus> permitStatus = jobRepo.GetPermitStatusList();
             var jobDTO = jobRepo.GetJobDetail(jobID);
             string jobAddress = jobRepo.GetJobAddress(jobID);
             return Json(new
@@ -1933,9 +1933,9 @@ namespace KRF.Web.Controllers
 
             var inspList = jobRepo.GetJobInspections(jobData.JobInspection.JobID);
             var employDTO = empRepo.GetEmployees();
-            List<Permit> permits = jobRepo.GetPrmitList();
-            List<PermitInspection> permitInspection = jobRepo.GetPrmitInspectionList();
-            List<PermitStatus> permitStatus = jobRepo.GetPrmitStatusList();
+            List<Permit> permits = jobRepo.GetPermitList();
+            List<PermitInspection> permitInspection = jobRepo.GetPermitInspectionList();
+            List<PermitStatus> permitStatus = jobRepo.GetPermitStatusList();
             return Json(new
             {
                 hasSaved = hasSaved,
@@ -1974,9 +1974,9 @@ namespace KRF.Web.Controllers
             IEmployeeManagementRepository empRepo = ObjectFactory.GetInstance<IEmployeeManagementRepository>();
             IJobManagementRepository jobRepo = ObjectFactory.GetInstance<IJobManagementRepository>();
             JobDTO jobDTO = jobRepo.GetJobInspection(inspID);
-            List<Permit> permits = jobRepo.GetPrmitList();
-            List<PermitInspection> permitInspection = jobRepo.GetPrmitInspectionList();
-            List<PermitStatus> permitStatus = jobRepo.GetPrmitStatusList();
+            List<Permit> permits = jobRepo.GetPermitList();
+            List<PermitInspection> permitInspection = jobRepo.GetPermitInspectionList();
+            List<PermitStatus> permitStatus = jobRepo.GetPermitStatusList();
             var employDTO = empRepo.GetEmployees();
             return Json(new
             {

@@ -23,60 +23,55 @@ namespace KRF.Persistence.FunctionalContractImplementation
 {
     public class JobManagement : IJobManagement
     {
-        private string _connectionString;
-
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        public JobManagement()
-        {
-            _connectionString = Convert.ToString(ConfigurationManager.AppSettings["ApplicationDSN"]);
-        }
         /// <summary>
         /// Get Job detail by JobID
         /// </summary>
-        /// <param name="jobID"></param>
+        /// <param name="jobId"></param>
         /// <returns></returns>
-        public JobDTO GetJobDetail(int jobID)
+        public JobDTO GetJobDetail(int jobId)
         {
-            using (var sqlConnection = new SqlConnection(_connectionString))
+            var dbConnection = new DataAccessFactory();
+            using (var conn = dbConnection.CreateConnection())
             {
-                sqlConnection.Open();
-                Job job = sqlConnection.Get<Job>(jobID);
+                conn.Open();
+                var job = conn.Get<Job>(jobId);
                 IList<Job> p = new List<Job>();
                 p.Add(job);
 
 
-                IList<KRF.Core.Entities.Sales.Lead> leads = sqlConnection.GetList<KRF.Core.Entities.Sales.Lead>().ToList();
-                var customerAddress = sqlConnection.GetList<KRF.Core.Entities.Sales.CustomerAddress>().ToList();
-                var predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
+                IList<Core.Entities.Sales.Lead> leads = conn.GetList<Core.Entities.Sales.Lead>().ToList();
+                var customerAddress = conn.GetList<KRF.Core.Entities.Sales.CustomerAddress>().ToList();
+                var predicateGroup = new PredicateGroup
+                    {Operator = GroupOperator.And, Predicates = new List<IPredicate>()};
                 predicateGroup.Predicates.Add(Predicates.Field<State>(s => s.Active, Operator.Eq, true));
-                IList<State> states = sqlConnection.GetList<State>(predicateGroup).ToList();
-                predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
-                predicateGroup.Predicates.Add(Predicates.Field<KRF.Core.Entities.ValueList.City>(s => s.Active, Operator.Eq, true));
-                IList<KRF.Core.Entities.ValueList.City> cities = sqlConnection.GetList<KRF.Core.Entities.ValueList.City>(predicateGroup).ToList();
+                IList<State> states = conn.GetList<State>(predicateGroup).ToList();
+                predicateGroup = new PredicateGroup {Operator = GroupOperator.And, Predicates = new List<IPredicate>()};
+                predicateGroup.Predicates.Add(
+                    Predicates.Field<KRF.Core.Entities.ValueList.City>(s => s.Active, Operator.Eq, true));
+                IList<KRF.Core.Entities.ValueList.City> cities =
+                    conn.GetList<KRF.Core.Entities.ValueList.City>(predicateGroup).ToList();
 
-                predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
-                predicateGroup.Predicates.Add(Predicates.Field<JobAssignment>(s => s.JobID, Operator.Eq, jobID));
-                IList<JobAssignment> jobAssigments = sqlConnection.GetList<JobAssignment>(predicateGroup).ToList();
+                predicateGroup = new PredicateGroup {Operator = GroupOperator.And, Predicates = new List<IPredicate>()};
+                predicateGroup.Predicates.Add(Predicates.Field<JobAssignment>(s => s.JobID, Operator.Eq, jobId));
+                IList<JobAssignment> jobAssignments = conn.GetList<JobAssignment>(predicateGroup).ToList();
 
                 //predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
                 //predicateGroup.Predicates.Add(Predicates.Field<JobTask>(s => s.JobID, Operator.Eq, jobID));
-                //IList<JobTask> jobTasks = sqlConnection.GetList<JobTask>(predicateGroup).ToList();
+                //IList<JobTask> jobTasks = conn.GetList<JobTask>(predicateGroup).ToList();
 
                 //predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
                 //predicateGroup.Predicates.Add(Predicates.Field<JobPO>(s => s.JobID, Operator.Eq, jobID));
-                //IList<JobPO> jobPOs = sqlConnection.GetList<JobPO>(predicateGroup).ToList();
+                //IList<JobPO> jobPOs = conn.GetList<JobPO>(predicateGroup).ToList();
 
                 //predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
                 //predicateGroup.Predicates.Add(Predicates.Field<JobCO>(s => s.JobID, Operator.Eq, jobID));
-                //IList<JobCO> jobCOs = sqlConnection.GetList<JobCO>(predicateGroup).ToList();
+                //IList<JobCO> jobCOs = conn.GetList<JobCO>(predicateGroup).ToList();
 
-                predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
+                predicateGroup = new PredicateGroup {Operator = GroupOperator.And, Predicates = new List<IPredicate>()};
                 predicateGroup.Predicates.Add(Predicates.Field<UnitOfMeasure>(s => s.Active, Operator.Eq, true));
 
-                IItemManagement itemMgt = ObjectFactory.GetInstance<IItemManagement>();
-                IAssemblyManagement assemblyMgt = ObjectFactory.GetInstance<IAssemblyManagement>();
+                var itemMgt = ObjectFactory.GetInstance<IItemManagement>();
+                var assemblyMgt = ObjectFactory.GetInstance<IAssemblyManagement>();
 
                 return new JobDTO
                 {
@@ -85,25 +80,27 @@ namespace KRF.Persistence.FunctionalContractImplementation
                     CustomerAddress = customerAddress,
                     Cities = cities,
                     States = states,
-                    JobAssignments = jobAssigments,
+                    JobAssignments = jobAssignments,
                     Items = itemMgt.GetAllItems().ToList(),
                     Assemblies = assemblyMgt.GetAllAssemblies().ToList(),
-                    UnitOfMeasures = sqlConnection.GetList<UnitOfMeasure>(predicateGroup).ToList()
+                    UnitOfMeasures = conn.GetList<UnitOfMeasure>(predicateGroup).ToList()
                 };
             }
         }
+
         /// <summary>
         /// Get Job List
         /// </summary>
         /// <returns></returns>
         public JobDTO GetJobs()
         {
-            using (var sqlConnection = new SqlConnection(_connectionString))
+            var dbConnection = new DataAccessFactory();
+            using (var conn = dbConnection.CreateConnection())
             {
-                sqlConnection.Open();
-                IList<Job> jobs = sqlConnection.GetList<Job>().ToList();
-                IList<KRF.Core.Entities.Sales.Lead> leads = sqlConnection.GetList<KRF.Core.Entities.Sales.Lead>().ToList();
-                IList<Status> status = sqlConnection.GetList<Status>().ToList();
+                conn.Open();
+                IList<Job> jobs = conn.GetList<Job>().ToList();
+                IList<Core.Entities.Sales.Lead> leads = conn.GetList<Core.Entities.Sales.Lead>().ToList();
+                IList<Status> status = conn.GetList<Status>().ToList();
                 return new JobDTO
                 {
                     Jobs = jobs,
@@ -112,6 +109,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
                 };
             }
         }
+
         /// <summary>
         /// Create Job Information record
         /// </summary>
@@ -121,22 +119,24 @@ namespace KRF.Persistence.FunctionalContractImplementation
         {
             using (var transactionScope = new TransactionScope())
             {
-                using (var sqlConnection = new SqlConnection(_connectionString))
+                var dbConnection = new DataAccessFactory();
+                using (var conn = dbConnection.CreateConnection())
                 {
-                    sqlConnection.Open();
-                    job.JobStatusID = (int)KRF.Core.Entities.MISC.Status.New;
-                    int id = sqlConnection.Insert<Job>(job);
-                    Job jobCurrent = sqlConnection.Get<Job>(id);
+                    conn.Open();
+                    job.JobStatusID = (int) Core.Entities.MISC.Status.New;
+                    int id = conn.Insert(job);
+                    var jobCurrent = conn.Get<Job>(id);
                     jobCurrent.JobCode = id.ToString();
-                    sqlConnection.Update<Job>(jobCurrent);
-                    KRF.Core.Entities.Sales.CustomerAddress custJobAdd = sqlConnection.Get<KRF.Core.Entities.Sales.CustomerAddress>(job.JobAddressID);
-                    if (custJobAdd != null)
+                    conn.Update(jobCurrent);
+                    var customerJobAdd =
+                        conn.Get<KRF.Core.Entities.Sales.CustomerAddress>(job.JobAddressID);
+                    if (customerJobAdd != null)
                     {
-                        job.JobAddress1 = custJobAdd.Address1;
-                        job.JobAddress2 = custJobAdd.Address2;
-                        job.JobCity = custJobAdd.City;
-                        job.JobState = custJobAdd.State;
-                        job.JobZipCode = custJobAdd.ZipCode;
+                        job.JobAddress1 = customerJobAdd.Address1;
+                        job.JobAddress2 = customerJobAdd.Address2;
+                        job.JobCity = customerJobAdd.City;
+                        job.JobState = customerJobAdd.State;
+                        job.JobZipCode = customerJobAdd.ZipCode;
                     }
 
                     transactionScope.Complete();
@@ -144,6 +144,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
                 }
             }
         }
+
         /// <summary>
         /// Update Job Information record
         /// </summary>
@@ -153,11 +154,12 @@ namespace KRF.Persistence.FunctionalContractImplementation
         {
             using (var transactionScope = new TransactionScope())
             {
-                using (var sqlConnection = new SqlConnection(_connectionString))
+                var dbConnection = new DataAccessFactory();
+                using (var conn = dbConnection.CreateConnection())
                 {
-                    sqlConnection.Open();
-                    int id = job.Id;
-                    Job jobCurrent = sqlConnection.Get<Job>(id);
+                    conn.Open();
+                    var id = job.Id;
+                    var jobCurrent = conn.Get<Job>(id);
                     job.CreatedOn = jobCurrent.CreatedOn;
                     job.Status = jobCurrent.Status;
                     job.JobStatusID = jobCurrent.JobStatusID;
@@ -166,20 +168,24 @@ namespace KRF.Persistence.FunctionalContractImplementation
                     {
                         job.Description = jobCurrent.Description;
                     }
+
                     if (job.Title == null)
                     {
                         job.Title = jobCurrent.Title;
                     }
+
                     if (job.StartDate == null)
                     {
                         job.StartDate = jobCurrent.StartDate;
                     }
+
                     if (job.EndDate == null)
                     {
                         job.EndDate = jobCurrent.EndDate;
                     }
 
-                    KRF.Core.Entities.Sales.CustomerAddress custJobAdd = sqlConnection.Get<KRF.Core.Entities.Sales.CustomerAddress>(job.JobAddressID);
+                    var custJobAdd =
+                        conn.Get<KRF.Core.Entities.Sales.CustomerAddress>(job.JobAddressID);
                     if (custJobAdd != null)
                     {
                         job.JobAddress1 = custJobAdd.Address1;
@@ -189,12 +195,13 @@ namespace KRF.Persistence.FunctionalContractImplementation
                         job.JobZipCode = custJobAdd.ZipCode;
                     }
 
-                    var isEdited = sqlConnection.Update<Job>(job);
+                    var isEdited = conn.Update(job);
                     transactionScope.Complete();
                     return isEdited;
                 }
             }
         }
+
         /// <summary>
         /// Update Job Summary
         /// </summary>
@@ -204,22 +211,24 @@ namespace KRF.Persistence.FunctionalContractImplementation
         {
             using (var transactionScope = new TransactionScope())
             {
-                using (var sqlConnection = new SqlConnection(_connectionString))
+                var dbConnection = new DataAccessFactory();
+                using (var conn = dbConnection.CreateConnection())
                 {
-                    sqlConnection.Open();
-                    int id = job.Id;
-                    Job jobCurrent = sqlConnection.Get<Job>(id);
+                    conn.Open();
+                    var id = job.Id;
+                    var jobCurrent = conn.Get<Job>(id);
                     jobCurrent.Notes = job.Notes;
                     jobCurrent.JobStatusID = job.JobStatusID;
                     jobCurrent.Status = job.Status;
                     jobCurrent.DateUpdated = DateTime.Now;
 
-                    var isEdited = sqlConnection.Update<Job>(jobCurrent);
+                    var isEdited = conn.Update(jobCurrent);
                     transactionScope.Complete();
                     return isEdited;
                 }
             }
         }
+
         /// <summary>
         /// Edit Job Assignment record
         /// </summary>
@@ -230,55 +239,62 @@ namespace KRF.Persistence.FunctionalContractImplementation
         {
             using (var transactionScope = new TransactionScope())
             {
-                using (var sqlConnection = new SqlConnection(_connectionString))
+                var dbConnection = new DataAccessFactory();
+                using (var conn = dbConnection.CreateConnection())
                 {
-                    sqlConnection.Open();
-                    int id = job.Id;
-                    Job jobCurrent = sqlConnection.Get<Job>(id);
+                    conn.Open();
+                    var id = job.Id;
+                    var jobCurrent = conn.Get<Job>(id);
                     jobCurrent.StartDate = job.StartDate;
                     jobCurrent.EndDate = job.EndDate;
                     jobCurrent.EstimatedLabourHours = job.EstimatedLabourHours;
                     jobCurrent.AverageWorkingHours = job.AverageWorkingHours;
                     jobCurrent.DateUpdated = DateTime.Now;
 
-                    var predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
+                    var predicateGroup = new PredicateGroup
+                        {Operator = GroupOperator.And, Predicates = new List<IPredicate>()};
                     predicateGroup.Predicates.Add(Predicates.Field<JobAssignment>(s => s.JobID, Operator.Eq, id));
-                    IList<JobAssignment> jobAsgmts = sqlConnection.GetList<JobAssignment>(predicateGroup).ToList();
-                    foreach (JobAssignment jobAsgmt in jobAsgmts)
+                    IList<JobAssignment> jobAsgmts = conn.GetList<JobAssignment>(predicateGroup).ToList();
+                    foreach (var jobAsgmt in jobAsgmts)
                     {
-                        sqlConnection.Delete(jobAsgmt);
+                        conn.Delete(jobAsgmt);
                     }
 
                     if (jobAssignments != null)
                     {
-                        foreach (JobAssignment jobAssigment in jobAssignments)
+                        foreach (var jobAssigment in jobAssignments)
                         {
                             jobAssigment.JobID = id;
-                            sqlConnection.Insert<JobAssignment>(jobAssigment);
+                            conn.Insert(jobAssigment);
                         }
                     }
-                    var isEdited = sqlConnection.Update<Job>(jobCurrent);
+
+                    var isEdited = conn.Update(jobCurrent);
                     transactionScope.Complete();
                     return isEdited;
                 }
             }
         }
+
         /// <summary>
         /// Get List of Job Tasks
         /// </summary>
-        /// <param name="jobID"></param>
+        /// <param name="jobId"></param>
         /// <returns></returns>
-        public List<JobTask> GetJobTasks(int jobID)
+        public List<JobTask> GetJobTasks(int jobId)
         {
-            using (var sqlConnection = new SqlConnection(_connectionString))
+            var dbConnection = new DataAccessFactory();
+            using (var conn = dbConnection.CreateConnection())
             {
-                sqlConnection.Open();
-                var predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
-                predicateGroup.Predicates.Add(Predicates.Field<JobTask>(s => s.JobID, Operator.Eq, jobID));
-                IList<JobTask> jobTasks = sqlConnection.GetList<JobTask>(predicateGroup).ToList();
+                conn.Open();
+                var predicateGroup = new PredicateGroup
+                    {Operator = GroupOperator.And, Predicates = new List<IPredicate>()};
+                predicateGroup.Predicates.Add(Predicates.Field<JobTask>(s => s.JobID, Operator.Eq, jobId));
+                IList<JobTask> jobTasks = conn.GetList<JobTask>(predicateGroup).ToList();
                 return jobTasks.ToList();
             }
         }
+
         /// <summary>
         /// Create Job Task
         /// </summary>
@@ -288,9 +304,10 @@ namespace KRF.Persistence.FunctionalContractImplementation
         {
             using (var transactionScope = new TransactionScope())
             {
-                using (var sqlConnection = new SqlConnection(_connectionString))
+                var dbConnection = new DataAccessFactory();
+                using (var conn = dbConnection.CreateConnection())
                 {
-                    sqlConnection.Open();
+                    conn.Open();
                     jobTask.DateCreated = DateTime.Now;
                     if (jobTask.TaskCompletedDate != null && jobTask.TaskCompletedDate.Value.Year > 1970)
                     {
@@ -300,13 +317,15 @@ namespace KRF.Persistence.FunctionalContractImplementation
                     {
                         jobTask.IsCompleted = false;
                     }
-                    var id = sqlConnection.Insert<JobTask>(jobTask);
+
+                    var id = conn.Insert(jobTask);
 
                     transactionScope.Complete();
                     return id;
                 }
             }
         }
+
         /// <summary>
         /// Edit Job Task
         /// </summary>
@@ -316,11 +335,12 @@ namespace KRF.Persistence.FunctionalContractImplementation
         {
             using (var transactionScope = new TransactionScope())
             {
-                using (var sqlConnection = new SqlConnection(_connectionString))
+                var dbConnection = new DataAccessFactory();
+                using (var conn = dbConnection.CreateConnection())
                 {
-                    sqlConnection.Open();
-                    int id = jobTask.TaskID;
-                    JobTask jobTaskCurrent = sqlConnection.Get<JobTask>(id);
+                    conn.Open();
+                    var id = jobTask.TaskID;
+                    var jobTaskCurrent = conn.Get<JobTask>(id);
                     jobTask.DateCreated = jobTaskCurrent.DateCreated;
                     if (jobTask.TaskCompletedDate != null && jobTask.TaskCompletedDate.Value.Year > 1970)
                     {
@@ -330,14 +350,16 @@ namespace KRF.Persistence.FunctionalContractImplementation
                     {
                         jobTask.IsCompleted = false;
                     }
+
                     jobTask.DateUpdated = DateTime.Now;
 
-                    var isEdited = sqlConnection.Update<JobTask>(jobTask);
+                    var isEdited = conn.Update(jobTask);
                     transactionScope.Complete();
                     return isEdited;
                 }
             }
         }
+
         /// <summary>
         /// Set Task status
         /// </summary>
@@ -348,19 +370,21 @@ namespace KRF.Persistence.FunctionalContractImplementation
         {
             using (var transactionScope = new TransactionScope())
             {
-                using (var sqlConnection = new SqlConnection(_connectionString))
+                var dbConnection = new DataAccessFactory();
+                using (var conn = dbConnection.CreateConnection())
                 {
-                    sqlConnection.Open();
-                    JobTask jobTaskCurrent = sqlConnection.Get<JobTask>(taskID);
+                    conn.Open();
+                    var jobTaskCurrent = conn.Get<JobTask>(taskID);
                     jobTaskCurrent.IsCompleted = isCompleted;
                     jobTaskCurrent.DateUpdated = DateTime.Now;
 
-                    var isEdited = sqlConnection.Update<JobTask>(jobTaskCurrent);
+                    var isEdited = conn.Update(jobTaskCurrent);
                     transactionScope.Complete();
                     return isEdited;
                 }
             }
         }
+
         /// <summary>
         /// Calculate Estimated Labor Hours
         /// </summary>
@@ -375,22 +399,26 @@ namespace KRF.Persistence.FunctionalContractImplementation
             decimal totalHourlyRate = 0;
             try
             {
-                using (var sqlConnection = new SqlConnection(_connectionString))
+                var dbConnection = new DataAccessFactory();
+                using (var conn = dbConnection.CreateConnection())
                 {
-                    Job job = sqlConnection.Get<Job>(jobID);
+                    conn.Open();
+                    var job = conn.Get<Job>(jobID);
                     if (job != null)
                     {
-                        KRF.Core.Entities.Sales.Estimate estimate = sqlConnection.Get<KRF.Core.Entities.Sales.Estimate>(job.EstimateID);
+                        var estimate =
+                            conn.Get<Core.Entities.Sales.Estimate>(job.EstimateID);
                         if (estimate != null)
                         {
                             totalLaborCost = estimate.TotalLaborCost;
                         }
                     }
-                    foreach (JobAssignment jobAssignment in jobAssigments)
+
+                    foreach (var jobAssignment in jobAssigments)
                     {
                         if (jobAssignment.Type == "E")
                         {
-                            Employee emp = sqlConnection.Get<Employee>(jobAssignment.ObjectPKID);
+                            var emp = conn.Get<Employee>(jobAssignment.ObjectPKID);
                             if (emp != null)
                             {
                                 totalHourlyRate += Convert.ToDecimal(emp.HourlyRate);
@@ -398,14 +426,16 @@ namespace KRF.Persistence.FunctionalContractImplementation
                         }
                         else if (jobAssignment.Type == "C")
                         {
-                            var predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
-                            predicateGroup.Predicates.Add(Predicates.Field<CrewDetail>(s => s.CrewID, Operator.Eq, jobAssignment.ObjectPKID));
-                            IList<CrewDetail> crewDetails = sqlConnection.GetList<CrewDetail>(predicateGroup).ToList();
-                            foreach (CrewDetail crewDetail in crewDetails)
+                            var predicateGroup = new PredicateGroup
+                                {Operator = GroupOperator.And, Predicates = new List<IPredicate>()};
+                            predicateGroup.Predicates.Add(Predicates.Field<CrewDetail>(s => s.CrewID, Operator.Eq,
+                                jobAssignment.ObjectPKID));
+                            IList<CrewDetail> crewDetails = conn.GetList<CrewDetail>(predicateGroup).ToList();
+                            foreach (var crewDetail in crewDetails)
                             {
                                 if (crewDetail.Active)
                                 {
-                                    Employee emp = sqlConnection.Get<Employee>(crewDetail.EmpId);
+                                    var emp = conn.Get<Employee>(crewDetail.EmpId);
                                     if (emp != null)
                                     {
                                         totalHourlyRate += Convert.ToDecimal(emp.HourlyRate);
@@ -414,6 +444,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
                             }
                         }
                     }
+
                     if (totalHourlyRate > 0)
                     {
                         estimatedLaborHours = totalLaborCost / totalHourlyRate;
@@ -424,8 +455,10 @@ namespace KRF.Persistence.FunctionalContractImplementation
             {
 
             }
+
             return estimatedLaborHours;
         }
+
         /// <summary>
         /// Calculate Job End Date from estimated Labor hours
         /// </summary>
@@ -435,19 +468,20 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <returns></returns>
         public DateTime CalculateJobEndDate(DateTime jobStartDate, decimal estimatedWorkgHours, int avgWorkingHours)
         {
-            DateTime jobEndDate = new DateTime();
+            var jobEndDate = new DateTime();
             try
             {
-                decimal totalHours = estimatedWorkgHours / (decimal)avgWorkingHours;
-                int intPart = 0;
+                var totalHours = estimatedWorkgHours / (decimal) avgWorkingHours;
+                var intPart = 0;
                 decimal decimalPart = 0;
-                intPart = (int)Decimal.Truncate(totalHours);
+                intPart = (int) Decimal.Truncate(totalHours);
                 decimalPart = totalHours - Decimal.Truncate(intPart);
-                int businessDays = intPart;
+                var businessDays = intPart;
                 if (decimalPart > 0)
                 {
                     businessDays += 1;
                 }
+
                 jobEndDate = CalculateBusinessDaysFromInputDate(jobStartDate, businessDays);
                 //if(businessDays>0)
                 //{
@@ -458,10 +492,11 @@ namespace KRF.Persistence.FunctionalContractImplementation
             {
 
             }
+
             return jobEndDate;
         }
 
-        public System.DateTime CalculateBusinessDaysFromInputDate(System.DateTime StartDate, int NumberOfBusinessDays)
+        public DateTime CalculateBusinessDaysFromInputDate(DateTime StartDate, int NumberOfBusinessDays)
         {
             //Knock the start date down one day if it is on a weekend.
             if (StartDate.DayOfWeek == DayOfWeek.Saturday |
@@ -469,6 +504,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
             {
                 NumberOfBusinessDays -= 1;
             }
+
             if (StartDate.DayOfWeek == DayOfWeek.Monday |
                 StartDate.DayOfWeek == DayOfWeek.Tuesday |
                 StartDate.DayOfWeek == DayOfWeek.Wednesday |
@@ -478,7 +514,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
                 NumberOfBusinessDays = NumberOfBusinessDays - 1;
             }
 
-            int index = 0;
+            var index = 0;
 
             for (index = 1; index <= NumberOfBusinessDays; index++)
             {
@@ -515,6 +551,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
 
             return StartDate;
         }
+
         /// <summary>
         /// Mark job status as complete
         /// </summary>
@@ -523,20 +560,24 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <returns></returns>
         public bool ToggleJobStatus(int jobID, bool tobeEnabled)
         {
-            using (var sqlConnection = new SqlConnection(_connectionString))
+            var dbConnection = new DataAccessFactory();
+            using (var conn = dbConnection.CreateConnection())
+
             {
-                sqlConnection.Open();
-                Job job = sqlConnection.Get<Job>(jobID);
+                conn.Open();
+                var job = conn.Get<Job>(jobID);
                 if (tobeEnabled)
                 {
-                    job.JobStatusID = (int)Core.Entities.MISC.Status.Complete;
+                    job.JobStatusID = (int) Core.Entities.MISC.Status.Complete;
                 }
+
                 job.Status = tobeEnabled;
                 job.DateUpdated = DateTime.Now;
-                var isUpdated = sqlConnection.Update<Job>(job);
+                var isUpdated = conn.Update(job);
                 return isUpdated;
             }
         }
+
         /// <summary>
         /// Get List of Job POs
         /// </summary>
@@ -544,16 +585,20 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <returns></returns>
         public List<JobPO> GetJobPOs(int jobID)
         {
-            using (var sqlConnection = new SqlConnection(_connectionString))
+            var dbConnection = new DataAccessFactory();
+            using (var conn = dbConnection.CreateConnection())
+
             {
-                sqlConnection.Open();
-                var predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
+                conn.Open();
+                var predicateGroup = new PredicateGroup
+                    {Operator = GroupOperator.And, Predicates = new List<IPredicate>()};
                 predicateGroup.Predicates.Add(Predicates.Field<JobPO>(s => s.JobID, Operator.Eq, jobID));
                 predicateGroup.Predicates.Add(Predicates.Field<JobPO>(s => s.Active, Operator.Eq, true));
-                IList<JobPO> jobPOs = sqlConnection.GetList<JobPO>(predicateGroup).ToList();
+                IList<JobPO> jobPOs = conn.GetList<JobPO>(predicateGroup).ToList();
                 return jobPOs.ToList();
             }
         }
+
         /// <summary>
         /// Toggle job PO status
         /// </summary>
@@ -562,16 +607,19 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <returns></returns>
         public bool ToggleJobPOStatus(int poID, bool active)
         {
-            using (var sqlConnection = new SqlConnection(_connectionString))
+            var dbConnection = new DataAccessFactory();
+            using (var conn = dbConnection.CreateConnection())
+
             {
-                sqlConnection.Open();
-                JobPO jobPO = sqlConnection.Get<JobPO>(poID);
+                conn.Open();
+                var jobPO = conn.Get<JobPO>(poID);
                 jobPO.Active = active;
                 jobPO.DateUpdated = DateTime.Now;
-                var isUpdated = sqlConnection.Update<JobPO>(jobPO);
+                var isUpdated = conn.Update(jobPO);
                 return isUpdated;
             }
         }
+
         /// <summary>
         /// Get List of Job PO
         /// </summary>
@@ -579,13 +627,16 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <returns></returns>
         public JobDTO GetJobPO(int poID)
         {
-            using (var sqlConnection = new SqlConnection(_connectionString))
+            var dbConnection = new DataAccessFactory();
+            using (var conn = dbConnection.CreateConnection())
+
             {
-                sqlConnection.Open();
-                JobPO jobPO = sqlConnection.Get<JobPO>(poID);
-                var predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
+                conn.Open();
+                var jobPO = conn.Get<JobPO>(poID);
+                var predicateGroup = new PredicateGroup
+                    {Operator = GroupOperator.And, Predicates = new List<IPredicate>()};
                 predicateGroup.Predicates.Add(Predicates.Field<POEstimateItem>(s => s.POID, Operator.Eq, poID));
-                IList<POEstimateItem> jobPOItems = sqlConnection.GetList<POEstimateItem>(predicateGroup).ToList();
+                IList<POEstimateItem> jobPOItems = conn.GetList<POEstimateItem>(predicateGroup).ToList();
 
                 return new JobDTO()
                 {
@@ -594,6 +645,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
                 };
             }
         }
+
         /// <summary>
         /// Create Job PO
         /// </summary>
@@ -604,14 +656,16 @@ namespace KRF.Persistence.FunctionalContractImplementation
         {
             using (var transactionScope = new TransactionScope())
             {
-                using (var sqlConnection = new SqlConnection(_connectionString))
+                var dbConnection = new DataAccessFactory();
+                using (var conn = dbConnection.CreateConnection())
+
                 {
-                    sqlConnection.Open();
+                    conn.Open();
                     jobPO.DateCreated = DateTime.Now;
                     jobPO.Active = true;
 
-                    JobPO jobPOLast = sqlConnection.GetList<JobPO>().OrderByDescending(p => p.POID).FirstOrDefault();
-                    int pocodeid = 0;
+                    var jobPOLast = conn.GetList<JobPO>().OrderByDescending(p => p.POID).FirstOrDefault();
+                    var pocodeid = 0;
                     if (jobPOLast != null)
                     {
                         if (jobPOLast.POCode.Contains("-"))
@@ -620,16 +674,16 @@ namespace KRF.Persistence.FunctionalContractImplementation
                         }
                     }
 
-                    string POCode = "PO-";
+                    var POCode = "PO-";
                     pocodeid = (pocodeid == 0 ? 1000 : (pocodeid + 1));
                     POCode += pocodeid;
                     jobPO.POCode = POCode;
-                    var id = sqlConnection.Insert<JobPO>(jobPO);
+                    var id = conn.Insert(jobPO);
 
-                    foreach (POEstimateItem poItem in poEstimateItems)
+                    foreach (var poItem in poEstimateItems)
                     {
                         poItem.POID = id;
-                        sqlConnection.Insert<POEstimateItem>(poItem);
+                        conn.Insert(poItem);
                     }
 
                     transactionScope.Complete();
@@ -637,6 +691,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
                 }
             }
         }
+
         /// <summary>
         /// Edit Job PO
         /// </summary>
@@ -647,87 +702,99 @@ namespace KRF.Persistence.FunctionalContractImplementation
         {
             using (var transactionScope = new TransactionScope())
             {
-                using (var sqlConnection = new SqlConnection(_connectionString))
+                var dbConnection = new DataAccessFactory();
+                using (var conn = dbConnection.CreateConnection())
+
                 {
-                    int id = jobPO.POID;
-                    JobPO jobPOCurrent = sqlConnection.Get<JobPO>(id);
+                    var id = jobPO.POID;
+                    var jobPOCurrent = conn.Get<JobPO>(id);
                     jobPO.DateCreated = jobPOCurrent.DateCreated;
                     jobPO.Active = jobPOCurrent.Active;
                     jobPO.DateUpdated = DateTime.Now;
 
 
-                    var predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
+                    var predicateGroup = new PredicateGroup
+                        {Operator = GroupOperator.And, Predicates = new List<IPredicate>()};
                     predicateGroup.Predicates.Add(Predicates.Field<POEstimateItem>(s => s.POID, Operator.Eq, id));
-                    IList<POEstimateItem> jobPOItems = sqlConnection.GetList<POEstimateItem>(predicateGroup).ToList();
-                    foreach (POEstimateItem jobPOItem in jobPOItems)
+                    IList<POEstimateItem> jobPOItems = conn.GetList<POEstimateItem>(predicateGroup).ToList();
+                    foreach (var jobPOItem in jobPOItems)
                     {
-                        sqlConnection.Delete(jobPOItem);
+                        conn.Delete(jobPOItem);
                     }
 
                     if (poEstimateItems != null)
                     {
-                        foreach (POEstimateItem poItem in poEstimateItems)
+                        foreach (var poItem in poEstimateItems)
                         {
                             poItem.POID = id;
-                            sqlConnection.Insert<POEstimateItem>(poItem);
+                            conn.Insert(poItem);
                         }
                     }
 
-                    var isEdited = sqlConnection.Update<JobPO>(jobPO);
+                    var isEdited = conn.Update(jobPO);
                     transactionScope.Complete();
                     return isEdited;
                 }
             }
         }
+
         public JobDocument GetJobDocumentByType(int type)
         {
-            using (var sqlConnection = new SqlConnection(_connectionString))
+            var dbConnection = new DataAccessFactory();
+            using (var conn = dbConnection.CreateConnection())
+
             {
-                var predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
+                var predicateGroup = new PredicateGroup
+                    {Operator = GroupOperator.And, Predicates = new List<IPredicate>()};
                 predicateGroup.Predicates.Add(Predicates.Field<JobDocument>(s => s.Type, Operator.Eq, type));
 
-                JobDocument jobDocument = sqlConnection.GetList<JobDocument>(predicateGroup).First();
+                var jobDocument = conn.GetList<JobDocument>(predicateGroup).First();
                 return jobDocument;
             }
         }
+
         public byte[] CreatePODocument(int poID)
         {
             JobPO jobPO = null;
             Job job = null;
             KRF.Core.Entities.Sales.CustomerAddress custAdd = null;
-            KRF.Core.Entities.Sales.Lead lead = null;
-            List<POEstimateItem> poEstimates = new List<POEstimateItem>();
-            IEstimateManagementRepository estimateRepo = ObjectFactory.GetInstance<IEstimateManagementRepository>();
+            Core.Entities.Sales.Lead lead = null;
+            var poEstimates = new List<POEstimateItem>();
+            var estimateRepo = ObjectFactory.GetInstance<IEstimateManagementRepository>();
             KRF.Core.Entities.ValueList.City city = null;
-            KRF.Core.Entities.ValueList.State state = null;
+            State state = null;
             Vendor vendor = null;
 
-            using (var sqlConnection = new SqlConnection(_connectionString))
+            var dbConnection = new DataAccessFactory();
+            using (var conn = dbConnection.CreateConnection())
+
             {
-                sqlConnection.Open();
+                conn.Open();
 
-                jobPO = sqlConnection.Get<JobPO>(poID);
-                job = sqlConnection.Get<Job>(jobPO.JobID);
-                custAdd = sqlConnection.Get<KRF.Core.Entities.Sales.CustomerAddress>(job.JobAddressID);
-                city = sqlConnection.Get<KRF.Core.Entities.ValueList.City>(custAdd.City);
-                state = sqlConnection.Get<KRF.Core.Entities.ValueList.State>(custAdd.State);
-                lead = sqlConnection.Get<KRF.Core.Entities.Sales.Lead>(job.LeadID);
-                vendor = sqlConnection.Get<Vendor>(jobPO.VendorID);
+                jobPO = conn.Get<JobPO>(poID);
+                job = conn.Get<Job>(jobPO.JobID);
+                custAdd = conn.Get<KRF.Core.Entities.Sales.CustomerAddress>(job.JobAddressID);
+                city = conn.Get<KRF.Core.Entities.ValueList.City>(custAdd.City);
+                state = conn.Get<State>(custAdd.State);
+                lead = conn.Get<Core.Entities.Sales.Lead>(job.LeadID);
+                vendor = conn.Get<Vendor>(jobPO.VendorID);
 
-                var predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
+                var predicateGroup = new PredicateGroup
+                    {Operator = GroupOperator.And, Predicates = new List<IPredicate>()};
                 predicateGroup.Predicates.Add(Predicates.Field<POEstimateItem>(s => s.POID, Operator.Eq, jobPO.POID));
 
-                poEstimates = sqlConnection.GetList<POEstimateItem>(predicateGroup).ToList();
+                poEstimates = conn.GetList<POEstimateItem>(predicateGroup).ToList();
             }
-            KRF.Core.DTO.Sales.EstimateDTO estDTO = estimateRepo.Select(jobPO.EstimateID ?? 0);
+
+            var estDTO = estimateRepo.Select(jobPO.EstimateID ?? 0);
 
             var document = GetJobDocumentByType(-1); // -1 = Purchase Order Document
-            byte[] byteArray = document.Text;
+            var byteArray = document.Text;
 
-            using (MemoryStream mem = new MemoryStream())
+            using (var mem = new MemoryStream())
             {
-                mem.Write(byteArray, 0, (int)byteArray.Length);
-                using (WordprocessingDocument wordDoc =
+                mem.Write(byteArray, 0, (int) byteArray.Length);
+                using (var wordDoc =
                     WordprocessingDocument.Open(mem, true))
                 {
                     XNamespace w =
@@ -736,16 +803,17 @@ namespace KRF.Persistence.FunctionalContractImplementation
 
                     IDictionary<String, BookmarkStart> bookmarkMap = new Dictionary<String, BookmarkStart>();
 
-                    foreach (BookmarkStart bookmarkStart in wordDoc.MainDocumentPart.RootElement.Descendants<BookmarkStart>())
+                    foreach (var bookmarkStart in wordDoc.MainDocumentPart.RootElement
+                        .Descendants<BookmarkStart>())
                     {
                         bookmarkMap[bookmarkStart.Name] = bookmarkStart;
                     }
 
-                    foreach (BookmarkStart bookmarkStart in bookmarkMap.Values)
+                    foreach (var bookmarkStart in bookmarkMap.Values)
                     {
                         if (!bookmarkStart.Name.ToString().Trim().StartsWith("_"))
                         {
-                            Run bookmarkText = bookmarkStart.NextSibling<Run>();
+                            var bookmarkText = bookmarkStart.NextSibling<Run>();
                             if (bookmarkText != null)
                             {
                                 if (bookmarkStart.Name.ToString() == "PONO")
@@ -757,45 +825,58 @@ namespace KRF.Persistence.FunctionalContractImplementation
                                 {
                                     bookmarkText.GetFirstChild<Text>().Text = DateTime.Now.ToString("MM/dd/yyyy");
                                 }
+
                                 if (bookmarkStart.Name.ToString() == "VENDORNAME")
                                 {
                                     bookmarkText.GetFirstChild<Text>().Text = (vendor != null ? vendor.VendorName : "");
                                 }
+
                                 if (bookmarkStart.Name.ToString() == "VENDORADDRESS")
                                 {
-                                    string vendorAddress = (vendor != null ? vendor.VendorAddress : "");
+                                    var vendorAddress = (vendor != null ? vendor.VendorAddress : "");
                                     if (!string.IsNullOrEmpty(vendorAddress))
                                     {
-                                        string[] jobAddresses = vendorAddress.Split('\n');
-                                        int cnt = jobAddresses.Length;
-                                        int index = 1;
-                                        foreach (string jobAdd in jobAddresses)
+                                        var jobAddresses = vendorAddress.Split('\n');
+                                        var cnt = jobAddresses.Length;
+                                        var index = 1;
+                                        foreach (var jobAdd in jobAddresses)
                                         {
                                             bookmarkText.AppendChild(new Text(jobAdd));
                                             if (index < cnt)
                                             {
                                                 bookmarkText.AppendChild(new Break());
                                             }
+
                                             index++;
                                         }
                                     }
                                 }
+
                                 if (bookmarkStart.Name.ToString() == "VENDORPHONE")
                                 {
-                                    bookmarkText.GetFirstChild<Text>().Text = (vendor != null ? Common.EncryptDecrypt.formatPhoneNumber(vendor.Phone, "(###) ###-####") : "");
+                                    bookmarkText.GetFirstChild<Text>().Text = (vendor != null
+                                        ? Common.EncryptDecrypt.formatPhoneNumber(vendor.Phone, "(###) ###-####")
+                                        : "");
                                 }
+
                                 if (bookmarkStart.Name.ToString() == "VENDORFAX")
                                 {
-                                    bookmarkText.GetFirstChild<Text>().Text = (vendor != null ? Common.EncryptDecrypt.formatPhoneNumber(vendor.Fax, "(###) ###-####") : "");
+                                    bookmarkText.GetFirstChild<Text>().Text = (vendor != null
+                                        ? Common.EncryptDecrypt.formatPhoneNumber(vendor.Fax, "(###) ###-####")
+                                        : "");
                                 }
+
                                 if (bookmarkStart.Name.ToString() == "VENDORCELL")
                                 {
-                                    bookmarkText.GetFirstChild<Text>().Text = (vendor != null ? Common.EncryptDecrypt.formatPhoneNumber(vendor.Cell, "(###) ###-####") : "");
+                                    bookmarkText.GetFirstChild<Text>().Text = (vendor != null
+                                        ? Common.EncryptDecrypt.formatPhoneNumber(vendor.Cell, "(###) ###-####")
+                                        : "");
                                 }
 
                                 if (bookmarkStart.Name.ToString() == "DELIVERYDATE")
                                 {
-                                    bookmarkText.GetFirstChild<Text>().Text = String.Format("{0:MMMM dd, yyyy}", jobPO.DeliveryDate);
+                                    bookmarkText.GetFirstChild<Text>().Text =
+                                        String.Format("{0:MMMM dd, yyyy}", jobPO.DeliveryDate);
                                 }
 
                                 if (bookmarkStart.Name.ToString() == "VENDOREMAIL")
@@ -807,6 +888,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
                                 {
                                     bookmarkText.GetFirstChild<Text>().Text = jobPO.VendorRep;
                                 }
+
                                 //Job Address
                                 if (custAdd != null)
                                 {
@@ -814,64 +896,75 @@ namespace KRF.Persistence.FunctionalContractImplementation
                                     {
                                         bookmarkText.GetFirstChild<Text>().Text = custAdd.Address1;
                                     }
+
                                     if (bookmarkStart.Name.ToString() == "JOBADDRESS2")
                                     {
                                         bookmarkText.GetFirstChild<Text>().Text = custAdd.Address2;
                                     }
+
                                     if (bookmarkStart.Name.ToString() == "JOBSTATECITYZIP")
                                     {
-                                        bookmarkText.GetFirstChild<Text>().Text = city.Description + ", " + state.Abbreviation.Trim() + ", " + custAdd.ZipCode;
+                                        bookmarkText.GetFirstChild<Text>().Text =
+                                            city.Description + ", " + state.Abbreviation.Trim() + ", " +
+                                            custAdd.ZipCode;
                                     }
                                 }
+
                                 //Job Info
                                 if (bookmarkStart.Name.ToString() == "JOBNUMBER")
                                 {
                                     bookmarkText.GetFirstChild<Text>().Text = job.Id.ToString();
                                 }
+
                                 if (bookmarkStart.Name.ToString() == "JOBNAME")
                                 {
                                     bookmarkText.GetFirstChild<Text>().Text = job.Title;
                                 }
+
                                 if (bookmarkStart.Name.ToString() == "STORIES")
                                 {
                                     bookmarkText.GetFirstChild<Text>().Text = lead.NumberOfStories.ToString();
                                 }
+
                                 if (bookmarkStart.Name.ToString() == "ITEMTOTALAMOUNT")
                                 {
                                     bookmarkText.GetFirstChild<Text>().Text = jobPO.TotalAmount.ToString();
                                 }
+
                                 if (bookmarkStart.Name.ToString() == "PERCENTTOTAL")
                                 {
-                                    decimal percentTotal = (jobPO.TotalAmount * 6) / 100;
+                                    var percentTotal = (jobPO.TotalAmount * 6) / 100;
                                     percentTotal = Math.Round(percentTotal, 2);
-                                    decimal total = jobPO.TotalAmount + percentTotal;
+                                    var total = jobPO.TotalAmount + percentTotal;
                                     bookmarkText.GetFirstChild<Text>().Text = (percentTotal).ToString();
 
-                                    BookmarkStart bookmarkSt = bookmarkMap["TOTAL"];
+                                    var bookmarkSt = bookmarkMap["TOTAL"];
                                     bookmarkText = bookmarkSt.NextSibling<Run>();
                                     if (bookmarkText != null)
                                     {
-                                        bookmarkText.GetFirstChild<Text>().Text = "$" + total.ToString("N", new CultureInfo("en-US"));
+                                        bookmarkText.GetFirstChild<Text>().Text =
+                                            "$" + total.ToString("N", new CultureInfo("en-US"));
                                     }
                                 }
                             }
                         }
                     }
-                    int maxrows = poEstimates.Count() < 15 ? poEstimates.Count() : 15;
-                    for (int rowindex = 1; rowindex <= maxrows; rowindex++)
+
+                    var maxrows = poEstimates.Count() < 15 ? poEstimates.Count() : 15;
+                    for (var rowindex = 1; rowindex <= maxrows; rowindex++)
                     {
-                        BookmarkStart bookmarkStart = bookmarkMap["QTY" + rowindex.ToString()];
-                        Run bookmarkText = bookmarkStart.NextSibling<Run>();
+                        var bookmarkStart = bookmarkMap["QTY" + rowindex.ToString()];
+                        var bookmarkText = bookmarkStart.NextSibling<Run>();
                         if (bookmarkText != null)
                         {
-                            RunProperties runProperties = bookmarkText.AppendChild(new RunProperties());
+                            var runProperties = bookmarkText.AppendChild(new RunProperties());
                             //if (poEstimates[rowindex - 1].COID > 0)
                             //{
                             //    Color color = new Color();
                             //    color.Val = "3F48CC";
                             //    runProperties.AppendChild(color);
                             //}
-                            runProperties.Append(new Text() { Text = poEstimates[rowindex - 1].Quantity.ToString() });
+                            runProperties.Append(new Text() {Text = poEstimates[rowindex - 1].Quantity.ToString()});
                         }
 
                         bookmarkStart = bookmarkMap["UM" + rowindex.ToString()];
@@ -881,11 +974,12 @@ namespace KRF.Persistence.FunctionalContractImplementation
                             bookmarkText.GetFirstChild<Text>().Text = ""; //TODO: get UOM
                         }
 
-                        string itemCode = string.Empty;
-                        string itemDesc = string.Empty;
+                        var itemCode = string.Empty;
+                        var itemDesc = string.Empty;
                         if (poEstimates[rowindex - 1].ItemAssemblyType == 1)
                         {
-                            var assembly = estDTO.Assemblies.Where(p => p.Id == poEstimates[rowindex - 1].ItemAssemblyID).FirstOrDefault();
+                            var assembly = estDTO.Assemblies
+                                .Where(p => p.Id == poEstimates[rowindex - 1].ItemAssemblyID).FirstOrDefault();
                             if (assembly != null)
                             {
                                 itemCode = assembly.Code;
@@ -894,74 +988,79 @@ namespace KRF.Persistence.FunctionalContractImplementation
                         }
                         else
                         {
-                            var item = estDTO.Items.Where(p => p.Id == poEstimates[rowindex - 1].ItemAssemblyID).FirstOrDefault();
+                            var item = estDTO.Items
+                                .FirstOrDefault(p => p.Id == poEstimates[rowindex - 1].ItemAssemblyID);
                             if (item != null)
                             {
                                 itemCode = item.Code;
                                 itemDesc = item.Name;
                             }
                         }
+
                         bookmarkStart = bookmarkMap["ITEMCODE" + rowindex.ToString()];
                         bookmarkText = bookmarkStart.NextSibling<Run>();
                         if (bookmarkText != null)
                         {
-                            RunProperties runProperties = bookmarkText.AppendChild(new RunProperties());
+                            var runProperties = bookmarkText.AppendChild(new RunProperties());
                             //if (poEstimates[rowindex - 1].COID > 0)
                             //{
                             //    Color color = new Color();
                             //    color.Val = "3F48CC";
                             //    runProperties.AppendChild(color);
                             //}
-                            runProperties.Append(new Text() { Text = itemCode });
+                            runProperties.Append(new Text {Text = itemCode});
                             //bookmarkText.GetFirstChild<Text>().Text = itemCode;
                         }
+
                         bookmarkStart = bookmarkMap["ITEMDESC" + rowindex.ToString()];
                         bookmarkText = bookmarkStart.NextSibling<Run>();
                         if (bookmarkText != null)
                         {
-                            RunProperties runProperties = bookmarkText.AppendChild(new RunProperties());
+                            var runProperties = bookmarkText.AppendChild(new RunProperties());
                             //if (poEstimates[rowindex - 1].COID > 0)
                             //{
                             //    Color color = new Color();
                             //    color.Val = "3F48CC";
                             //    runProperties.AppendChild(color);
                             //}
-                            runProperties.Append(new Text() { Text = itemDesc });
+                            runProperties.Append(new Text() {Text = itemDesc});
                             //bookmarkText.GetFirstChild<Text>().Text = itemDesc;
                         }
+
                         bookmarkStart = bookmarkMap["ITEMCOST" + rowindex.ToString()];
                         bookmarkText = bookmarkStart.NextSibling<Run>();
                         if (bookmarkText != null)
                         {
-                            RunProperties runProperties = bookmarkText.AppendChild(new RunProperties());
+                            var runProperties = bookmarkText.AppendChild(new RunProperties());
                             //if (poEstimates[rowindex - 1].COID > 0)
                             //{
                             //    Color color = new Color();
                             //    color.Val = "3F48CC";
                             //    runProperties.AppendChild(color);
                             //}
-                            runProperties.Append(new Text() { Text = poEstimates[rowindex - 1].Price.ToString() });
+                            runProperties.Append(new Text() {Text = poEstimates[rowindex - 1].Price.ToString()});
                             //bookmarkText.GetFirstChild<Text>().Text = poEstimates[rowindex - 1].Price.ToString();
                         }
+
                         bookmarkStart = bookmarkMap["ITEMAMOUNT" + rowindex.ToString()];
                         bookmarkText = bookmarkStart.NextSibling<Run>();
                         if (bookmarkText != null)
                         {
                             bookmarkText.GetFirstChild<Text>().Text = "";
-                            RunProperties runProperties = bookmarkText.AppendChild(new RunProperties());
+                            var runProperties = bookmarkText.AppendChild(new RunProperties());
                             //if (poEstimates[rowindex - 1].COID > 0)
                             //{
                             //    Color color = new Color();
                             //    color.Val = "3F48CC";
                             //    runProperties.AppendChild(color);
                             //}
-                            runProperties.Append(new Text() { Text = poEstimates[rowindex - 1].Cost.ToString() });
+                            runProperties.Append(new Text() {Text = poEstimates[rowindex - 1].Cost.ToString()});
                             //bookmarkText.GetFirstChild<Text>().Text = poEstimates[rowindex - 1].Cost.ToString();
                         }
                     }
                 }
 
-                JobDocument e = new JobDocument
+                var e = new JobDocument
                 {
                     JobID = jobPO.JobID,
                     Name = "Purchase Order.docx",
@@ -973,6 +1072,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
                 return e.Text;
             }
         }
+
         /// <summary>
         /// Get List of Job CO
         /// </summary>
@@ -980,13 +1080,16 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <returns></returns>
         public JobDTO GetJobCO(int coID)
         {
-            using (var sqlConnection = new SqlConnection(_connectionString))
+            var dbConnection = new DataAccessFactory();
+            using (var conn = dbConnection.CreateConnection())
+
             {
-                sqlConnection.Open();
-                JobCO jobCO = sqlConnection.Get<JobCO>(coID);
-                var predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
+                conn.Open();
+                var jobCO = conn.Get<JobCO>(coID);
+                var predicateGroup = new PredicateGroup
+                    {Operator = GroupOperator.And, Predicates = new List<IPredicate>()};
                 predicateGroup.Predicates.Add(Predicates.Field<COEstimateItem>(s => s.COID, Operator.Eq, coID));
-                IList<COEstimateItem> jobCOItems = sqlConnection.GetList<COEstimateItem>(predicateGroup).ToList();
+                IList<COEstimateItem> jobCOItems = conn.GetList<COEstimateItem>(predicateGroup).ToList();
 
                 return new JobDTO()
                 {
@@ -995,6 +1098,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
                 };
             }
         }
+
         /// <summary>
         /// Get List of Job COs
         /// </summary>
@@ -1002,16 +1106,20 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <returns></returns>
         public List<JobCO> GetJobCOs(int jobID)
         {
-            using (var sqlConnection = new SqlConnection(_connectionString))
+            var dbConnection = new DataAccessFactory();
+            using (var conn = dbConnection.CreateConnection())
+
             {
-                sqlConnection.Open();
-                var predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
+                conn.Open();
+                var predicateGroup = new PredicateGroup
+                    {Operator = GroupOperator.And, Predicates = new List<IPredicate>()};
                 predicateGroup.Predicates.Add(Predicates.Field<JobCO>(s => s.JobID, Operator.Eq, jobID));
                 predicateGroup.Predicates.Add(Predicates.Field<JobCO>(s => s.Active, Operator.Eq, true));
-                IList<JobCO> jobCOs = sqlConnection.GetList<JobCO>(predicateGroup).ToList();
+                IList<JobCO> jobCOs = conn.GetList<JobCO>(predicateGroup).ToList();
                 return jobCOs.ToList();
             }
         }
+
         /// <summary>
         /// Create Job CO
         /// </summary>
@@ -1022,18 +1130,22 @@ namespace KRF.Persistence.FunctionalContractImplementation
         {
             using (var transactionScope = new TransactionScope())
             {
-                using (var sqlConnection = new SqlConnection(_connectionString))
+                var dbConnection = new DataAccessFactory();
+                using (var conn = dbConnection.CreateConnection())
+
                 {
-                    sqlConnection.Open();
+                    conn.Open();
                     jobCO.DateCreated = DateTime.Now;
                     jobCO.Active = true;
                     jobCO.SalesRepID = (jobCO.SalesRepID == 0 ? null : jobCO.SalesRepID);
 
-                    var predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
+                    var predicateGroup = new PredicateGroup
+                        {Operator = GroupOperator.And, Predicates = new List<IPredicate>()};
                     predicateGroup.Predicates.Add(Predicates.Field<JobCO>(s => s.JobID, Operator.Eq, jobCO.JobID));
-                    JobCO jobCOLast = sqlConnection.GetList<JobCO>(predicateGroup).OrderByDescending(p => p.COID).FirstOrDefault();
-                    string COCode = "CO-";
-                    int cocodeid = 0;
+                    var jobCOLast = conn.GetList<JobCO>(predicateGroup).OrderByDescending(p => p.COID)
+                        .FirstOrDefault();
+                    var COCode = "CO-";
+                    var cocodeid = 0;
                     if (jobCOLast != null)
                     {
                         if (jobCOLast.COCode.Contains("-"))
@@ -1050,13 +1162,14 @@ namespace KRF.Persistence.FunctionalContractImplementation
                     {
                         COCode += "0" + (cocodeid + 1);
                     }
-                    jobCO.COCode = COCode;
-                    var id = sqlConnection.Insert<JobCO>(jobCO);
 
-                    foreach (COEstimateItem coItem in coEstimateItems)
+                    jobCO.COCode = COCode;
+                    var id = conn.Insert(jobCO);
+
+                    foreach (var coItem in coEstimateItems)
                     {
                         coItem.COID = id;
-                        sqlConnection.Insert<COEstimateItem>(coItem);
+                        conn.Insert(coItem);
                     }
 
                     transactionScope.Complete();
@@ -1064,6 +1177,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
                 }
             }
         }
+
         /// <summary>
         /// Edit Job CO
         /// </summary>
@@ -1074,39 +1188,43 @@ namespace KRF.Persistence.FunctionalContractImplementation
         {
             using (var transactionScope = new TransactionScope())
             {
-                using (var sqlConnection = new SqlConnection(_connectionString))
+                var dbConnection = new DataAccessFactory();
+                using (var conn = dbConnection.CreateConnection())
+
                 {
-                    int id = jobCO.COID;
-                    JobCO jobCOCurrent = sqlConnection.Get<JobCO>(id);
+                    var id = jobCO.COID;
+                    var jobCOCurrent = conn.Get<JobCO>(id);
                     jobCO.DateCreated = jobCOCurrent.DateCreated;
                     jobCO.Active = jobCOCurrent.Active;
                     jobCO.DateUpdated = DateTime.Now;
                     jobCO.SalesRepID = (jobCO.SalesRepID == 0 ? null : jobCO.SalesRepID);
 
 
-                    var predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
+                    var predicateGroup = new PredicateGroup
+                        {Operator = GroupOperator.And, Predicates = new List<IPredicate>()};
                     predicateGroup.Predicates.Add(Predicates.Field<COEstimateItem>(s => s.COID, Operator.Eq, id));
-                    IList<COEstimateItem> jobCOItems = sqlConnection.GetList<COEstimateItem>(predicateGroup).ToList();
-                    foreach (COEstimateItem jobCOItem in jobCOItems)
+                    IList<COEstimateItem> jobCOItems = conn.GetList<COEstimateItem>(predicateGroup).ToList();
+                    foreach (var jobCOItem in jobCOItems)
                     {
-                        sqlConnection.Delete(jobCOItem);
+                        conn.Delete(jobCOItem);
                     }
 
                     if (coEstimateItems != null)
                     {
-                        foreach (COEstimateItem coItem in coEstimateItems)
+                        foreach (var coItem in coEstimateItems)
                         {
                             coItem.COID = id;
-                            sqlConnection.Insert<COEstimateItem>(coItem);
+                            conn.Insert(coItem);
                         }
                     }
 
-                    var isEdited = sqlConnection.Update<JobCO>(jobCO);
+                    var isEdited = conn.Update(jobCO);
                     transactionScope.Complete();
                     return isEdited;
                 }
             }
         }
+
         /// <summary>
         /// Toggle job CO status
         /// </summary>
@@ -1115,16 +1233,19 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <returns></returns>
         public bool ToggleJobCOStatus(int coID, bool active)
         {
-            using (var sqlConnection = new SqlConnection(_connectionString))
+            var dbConnection = new DataAccessFactory();
+            using (var conn = dbConnection.CreateConnection())
+
             {
-                sqlConnection.Open();
-                JobCO jobCO = sqlConnection.Get<JobCO>(coID);
+                conn.Open();
+                var jobCO = conn.Get<JobCO>(coID);
                 jobCO.Active = active;
                 jobCO.DateUpdated = DateTime.Now;
-                var isUpdated = sqlConnection.Update<JobCO>(jobCO);
+                var isUpdated = conn.Update(jobCO);
                 return isUpdated;
             }
         }
+
         /// <summary>
         /// Created Job Change Order document
         /// </summary>
@@ -1134,51 +1255,54 @@ namespace KRF.Persistence.FunctionalContractImplementation
         {
             JobCO jobCO = null;
             Job job = null;
-            KRF.Core.Entities.Sales.Lead cust = null;
+            Core.Entities.Sales.Lead cust = null;
             KRF.Core.Entities.Sales.CustomerAddress custAdd = null;
-            List<COEstimateItem> coEstimates = new List<COEstimateItem>();
-            IEstimateManagementRepository estimateRepo = ObjectFactory.GetInstance<IEstimateManagementRepository>();
+            var coEstimates = new List<COEstimateItem>();
+            var estimateRepo = ObjectFactory.GetInstance<IEstimateManagementRepository>();
             KRF.Core.Entities.ValueList.City city = null;
-            KRF.Core.Entities.ValueList.State state = null;
+            State state = null;
             KRF.Core.Entities.ValueList.City custcity = null;
-            KRF.Core.Entities.ValueList.State custstate = null;
-            KRF.Core.Entities.Employee.Employee rep = null;
-            List<KRF.Core.Entities.Product.Item> items = new List<Core.Entities.Product.Item>();
-            List<KRF.Core.Entities.Product.Assembly> assemblies = new List<Core.Entities.Product.Assembly>();
+            State custstate = null;
+            Employee rep = null;
+            var items = new List<Core.Entities.Product.Item>();
+            var assemblies = new List<Core.Entities.Product.Assembly>();
 
-            using (var sqlConnection = new SqlConnection(_connectionString))
+            var dbConnection = new DataAccessFactory();
+            using (var conn = dbConnection.CreateConnection())
+
             {
-                sqlConnection.Open();
+                conn.Open();
 
-                jobCO = sqlConnection.Get<JobCO>(coID);
-                job = sqlConnection.Get<Job>(jobCO.JobID);
-                cust = sqlConnection.Get<KRF.Core.Entities.Sales.Lead>(job.LeadID);
-                custAdd = sqlConnection.Get<KRF.Core.Entities.Sales.CustomerAddress>(job.JobAddressID);
-                city = sqlConnection.Get<KRF.Core.Entities.ValueList.City>(custAdd.City);
-                state = sqlConnection.Get<KRF.Core.Entities.ValueList.State>(custAdd.State);
-                custcity = sqlConnection.Get<KRF.Core.Entities.ValueList.City>(cust.BillCity);
-                custstate = sqlConnection.Get<KRF.Core.Entities.ValueList.State>(cust.BillState);
-                items = sqlConnection.GetList<Core.Entities.Product.Item>().ToList();
-                assemblies = sqlConnection.GetList<Core.Entities.Product.Assembly>().ToList();
+                jobCO = conn.Get<JobCO>(coID);
+                job = conn.Get<Job>(jobCO.JobID);
+                cust = conn.Get<Core.Entities.Sales.Lead>(job.LeadID);
+                custAdd = conn.Get<KRF.Core.Entities.Sales.CustomerAddress>(job.JobAddressID);
+                city = conn.Get<KRF.Core.Entities.ValueList.City>(custAdd.City);
+                state = conn.Get<State>(custAdd.State);
+                custcity = conn.Get<KRF.Core.Entities.ValueList.City>(cust.BillCity);
+                custstate = conn.Get<State>(cust.BillState);
+                items = conn.GetList<Core.Entities.Product.Item>().ToList();
+                assemblies = conn.GetList<Core.Entities.Product.Assembly>().ToList();
 
 
-                var predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
+                var predicateGroup = new PredicateGroup
+                    {Operator = GroupOperator.And, Predicates = new List<IPredicate>()};
                 predicateGroup.Predicates.Add(Predicates.Field<COEstimateItem>(s => s.COID, Operator.Eq, jobCO.COID));
-                coEstimates = sqlConnection.GetList<COEstimateItem>(predicateGroup).ToList();
+                coEstimates = conn.GetList<COEstimateItem>(predicateGroup).ToList();
 
-                predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
+                predicateGroup = new PredicateGroup {Operator = GroupOperator.And, Predicates = new List<IPredicate>()};
                 predicateGroup.Predicates.Add(Predicates.Field<Employee>(s => s.EmpId, Operator.Eq, jobCO.SalesRepID));
-                rep = sqlConnection.GetList<Employee>(predicateGroup).FirstOrDefault();
+                rep = conn.GetList<Employee>(predicateGroup).FirstOrDefault();
 
             }
 
             var document = GetJobDocumentByType(-2); // -2 = Change Order Document
-            byte[] byteArray = document.Text;
+            var byteArray = document.Text;
 
-            using (MemoryStream mem = new MemoryStream())
+            using (var mem = new MemoryStream())
             {
-                mem.Write(byteArray, 0, (int)byteArray.Length);
-                using (WordprocessingDocument wordDoc =
+                mem.Write(byteArray, 0, (int) byteArray.Length);
+                using (var wordDoc =
                     WordprocessingDocument.Open(mem, true))
                 {
                     XNamespace w =
@@ -1187,16 +1311,17 @@ namespace KRF.Persistence.FunctionalContractImplementation
 
                     IDictionary<String, BookmarkStart> bookmarkMap = new Dictionary<String, BookmarkStart>();
 
-                    foreach (BookmarkStart bookmarkStart in wordDoc.MainDocumentPart.RootElement.Descendants<BookmarkStart>())
+                    foreach (var bookmarkStart in wordDoc.MainDocumentPart.RootElement
+                        .Descendants<BookmarkStart>())
                     {
                         bookmarkMap[bookmarkStart.Name] = bookmarkStart;
                     }
 
-                    foreach (BookmarkStart bookmarkStart in bookmarkMap.Values)
+                    foreach (var bookmarkStart in bookmarkMap.Values)
                     {
                         if (!bookmarkStart.Name.ToString().Trim().StartsWith("_"))
                         {
-                            Run bookmarkText = bookmarkStart.NextSibling<Run>();
+                            var bookmarkText = bookmarkStart.NextSibling<Run>();
                             if (bookmarkText != null)
                             {
                                 if (bookmarkStart.Name.ToString() == "CONO")
@@ -1208,10 +1333,12 @@ namespace KRF.Persistence.FunctionalContractImplementation
                                 {
                                     bookmarkText.GetFirstChild<Text>().Text = jobCO.Date.ToShortDateString();
                                 }
+
                                 if (bookmarkStart.Name.ToString() == "CUSTNAME")
                                 {
                                     bookmarkText.GetFirstChild<Text>().Text = cust.BusinessName;
                                 }
+
                                 if (bookmarkStart.Name.ToString() == "CUSTADDRESS")
                                 {
                                     if (cust != null)
@@ -1222,13 +1349,20 @@ namespace KRF.Persistence.FunctionalContractImplementation
                                             bookmarkText.AppendChild(new Break());
                                             bookmarkText.AppendChild(new Text(cust.BillAddress2));
                                         }
+
                                         bookmarkText.AppendChild(new Break());
-                                        bookmarkText.AppendChild(new Text((custcity != null ? custcity.Description : "") + ", " + (custstate != null ? custstate.Abbreviation.Trim() : "") + " " + cust.BillZipCode));
+                                        bookmarkText.AppendChild(new Text(
+                                            (custcity != null ? custcity.Description : "") + ", " +
+                                            (custstate != null ? custstate.Abbreviation.Trim() : "") + " " +
+                                            cust.BillZipCode));
                                     }
                                 }
+
                                 if (bookmarkStart.Name.ToString() == "PHONE")
                                 {
-                                    bookmarkText.GetFirstChild<Text>().Text = (cust != null ? Common.EncryptDecrypt.formatPhoneNumber(cust.Telephone, "(###) ###-####") : "");
+                                    bookmarkText.GetFirstChild<Text>().Text = (cust != null
+                                        ? Common.EncryptDecrypt.formatPhoneNumber(cust.Telephone, "(###) ###-####")
+                                        : "");
                                 }
 
                                 if (bookmarkStart.Name.ToString() == "SALESREPEMAIL1")
@@ -1238,22 +1372,30 @@ namespace KRF.Persistence.FunctionalContractImplementation
 
                                 if (bookmarkStart.Name.ToString() == "SALESREP")
                                 {
-                                    bookmarkText.GetFirstChild<Text>().Text = (rep != null ? (rep.FirstName + " " + rep.LastName) : string.Empty);
+                                    bookmarkText.GetFirstChild<Text>().Text =
+                                        (rep != null ? (rep.FirstName + " " + rep.LastName) : string.Empty);
                                 }
+
                                 //Job Address
                                 if (bookmarkStart.Name.ToString() == "ADDRESS")
                                 {
                                     bookmarkText.GetFirstChild<Text>().Text = (custAdd != null ? custAdd.Address1 : "");
                                 }
+
                                 if (bookmarkStart.Name.ToString() == "CITYSTATEZIP")
                                 {
-                                    bookmarkText.GetFirstChild<Text>().Text = (city != null ? city.Description + ", " : "") + (state != null ? state.Abbreviation.Trim() : "") + " " + (custAdd != null ? custAdd.ZipCode : "");
+                                    bookmarkText.GetFirstChild<Text>().Text =
+                                        (city != null ? city.Description + ", " : "") +
+                                        (state != null ? state.Abbreviation.Trim() : "") + " " +
+                                        (custAdd != null ? custAdd.ZipCode : "");
                                 }
+
                                 //Job Info
                                 if (bookmarkStart.Name.ToString() == "PROJECTNAME")
                                 {
                                     bookmarkText.GetFirstChild<Text>().Text = job.Title.ToString();
                                 }
+
                                 if (bookmarkStart.Name.ToString() == "NAME")
                                 {
                                     bookmarkText.GetFirstChild<Text>().Text = (cust != null ? cust.LeadName : "");
@@ -1261,27 +1403,29 @@ namespace KRF.Persistence.FunctionalContractImplementation
 
                                 if (bookmarkStart.Name.ToString() == "TOTAL")
                                 {
-                                    bookmarkText.GetFirstChild<Text>().Text = "$" + jobCO.TotalAmount.ToString("N", new CultureInfo("en-US"));
+                                    bookmarkText.GetFirstChild<Text>().Text =
+                                        "$" + jobCO.TotalAmount.ToString("N", new CultureInfo("en-US"));
                                 }
                             }
                         }
                     }
 
-                    int maxrows = coEstimates.Count() < 15 ? coEstimates.Count() : 15;
-                    for (int rowindex = 1; rowindex <= maxrows; rowindex++)
+                    var maxrows = coEstimates.Count() < 15 ? coEstimates.Count() : 15;
+                    for (var rowindex = 1; rowindex <= maxrows; rowindex++)
                     {
-                        BookmarkStart bookmarkStart = bookmarkMap["QTY" + rowindex.ToString()];
-                        Run bookmarkText = bookmarkStart.NextSibling<Run>();
+                        var bookmarkStart = bookmarkMap["QTY" + rowindex.ToString()];
+                        var bookmarkText = bookmarkStart.NextSibling<Run>();
                         if (bookmarkText != null)
                         {
                             bookmarkText.GetFirstChild<Text>().Text = coEstimates[rowindex - 1].Quantity.ToString();
                         }
 
-                        string itemCode = string.Empty;
-                        string itemDesc = string.Empty;
+                        var itemCode = string.Empty;
+                        var itemDesc = string.Empty;
                         if (coEstimates[rowindex - 1].ItemAssemblyType == 1)
                         {
-                            var assembly = assemblies.Where(p => p.Id == coEstimates[rowindex - 1].ItemAssemblyID).FirstOrDefault();
+                            var assembly = assemblies.Where(p => p.Id == coEstimates[rowindex - 1].ItemAssemblyID)
+                                .FirstOrDefault();
                             if (assembly != null)
                             {
                                 itemCode = assembly.Code;
@@ -1290,25 +1434,29 @@ namespace KRF.Persistence.FunctionalContractImplementation
                         }
                         else
                         {
-                            var item = items.Where(p => p.Id == coEstimates[rowindex - 1].ItemAssemblyID).FirstOrDefault();
+                            var item = items.Where(p => p.Id == coEstimates[rowindex - 1].ItemAssemblyID)
+                                .FirstOrDefault();
                             if (item != null)
                             {
                                 itemCode = item.Code;
                                 itemDesc = item.Name;
                             }
                         }
+
                         bookmarkStart = bookmarkMap["DESC" + rowindex.ToString()];
                         bookmarkText = bookmarkStart.NextSibling<Run>();
                         if (bookmarkText != null)
                         {
                             bookmarkText.GetFirstChild<Text>().Text = itemCode + " - " + itemDesc;
                         }
+
                         bookmarkStart = bookmarkMap["COST" + rowindex.ToString()];
                         bookmarkText = bookmarkStart.NextSibling<Run>();
                         if (bookmarkText != null)
                         {
                             bookmarkText.GetFirstChild<Text>().Text = coEstimates[rowindex - 1].Price.ToString();
                         }
+
                         bookmarkStart = bookmarkMap["AMOUNT" + rowindex.ToString()];
                         bookmarkText = bookmarkStart.NextSibling<Run>();
                         if (bookmarkText != null)
@@ -1318,7 +1466,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
                     }
                 }
 
-                JobDocument e = new JobDocument
+                var e = new JobDocument
                 {
                     //JobID = jobCO.JobID,
                     //Name = "Change Order.docx",
@@ -1330,19 +1478,23 @@ namespace KRF.Persistence.FunctionalContractImplementation
                 return e.Text;
             }
         }
+
         /// <summary>
         /// Get List of Job Documents
         /// </summary>
         /// <returns></returns>
         public List<JobDocumentType> GetJobDocumentTypes()
         {
-            using (var sqlConnection = new SqlConnection(_connectionString))
+            var dbConnection = new DataAccessFactory();
+            using (var conn = dbConnection.CreateConnection())
+
             {
-                sqlConnection.Open();
-                IList<JobDocumentType> jobDocumentTypes = sqlConnection.GetList<JobDocumentType>().ToList();
+                conn.Open();
+                IList<JobDocumentType> jobDocumentTypes = conn.GetList<JobDocumentType>().ToList();
                 return jobDocumentTypes.ToList();
             }
         }
+
         /// <summary>
         /// Get List of Job Documents
         /// </summary>
@@ -1350,16 +1502,20 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <returns></returns>
         public List<JobDocument> GetJobDocuments(int jobID)
         {
-            using (var sqlConnection = new SqlConnection(_connectionString))
+            var dbConnection = new DataAccessFactory();
+            using (var conn = dbConnection.CreateConnection())
+
             {
-                sqlConnection.Open();
-                var predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
+                conn.Open();
+                var predicateGroup = new PredicateGroup
+                    {Operator = GroupOperator.And, Predicates = new List<IPredicate>()};
                 predicateGroup.Predicates.Add(Predicates.Field<JobDocument>(s => s.JobID, Operator.Eq, jobID));
                 predicateGroup.Predicates.Add(Predicates.Field<JobDocument>(s => s.Type, Operator.Gt, 0));
-                IList<JobDocument> jobDocuments = sqlConnection.GetList<JobDocument>(predicateGroup).ToList();
+                IList<JobDocument> jobDocuments = conn.GetList<JobDocument>(predicateGroup).ToList();
                 return jobDocuments.ToList();
             }
         }
+
         /// <summary>
         /// Get a job document
         /// </summary>
@@ -1367,12 +1523,15 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <returns></returns>
         public JobDocument GetJobDocument(int jobDocumentID)
         {
-            using (var sqlConnection = new SqlConnection(_connectionString))
+            var dbConnection = new DataAccessFactory();
+            using (var conn = dbConnection.CreateConnection())
+
             {
-                var jobDocument = sqlConnection.Get<JobDocument>(jobDocumentID);
+                var jobDocument = conn.Get<JobDocument>(jobDocumentID);
                 return jobDocument;
             }
         }
+
         /// <summary>
         /// Save Job document
         /// </summary>
@@ -1382,21 +1541,23 @@ namespace KRF.Persistence.FunctionalContractImplementation
         {
             using (var transactionScope = new TransactionScope())
             {
-                using (var sqlConnection = new SqlConnection(_connectionString))
+                var dbConnection = new DataAccessFactory();
+                using (var conn = dbConnection.CreateConnection())
+
                 {
-                    sqlConnection.Open();
+                    conn.Open();
 
                     if (jobDocument.ID > 0)
                     {
-                        var curDoc = sqlConnection.Get<JobDocument>(jobDocument.ID);
+                        var curDoc = conn.Get<JobDocument>(jobDocument.ID);
                         curDoc.Description = jobDocument.Description;
                         curDoc.Type = jobDocument.Type;
 
-                        var isEdited = sqlConnection.Update<JobDocument>(curDoc);
+                        var isEdited = conn.Update(curDoc);
                     }
                     else
                     {
-                        jobDocument.ID = sqlConnection.Insert<JobDocument>(jobDocument);
+                        jobDocument.ID = conn.Insert(jobDocument);
                     }
 
                     transactionScope.Complete();
@@ -1404,6 +1565,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
                 }
             }
         }
+
         /// <summary>
         /// Delete job document by jobDocumentID
         /// </summary>
@@ -1414,13 +1576,16 @@ namespace KRF.Persistence.FunctionalContractImplementation
             var isDeleted = false;
             using (var transactionScope = new TransactionScope())
             {
-                using (var sqlConnection = new SqlConnection(_connectionString))
+                var dbConnection = new DataAccessFactory();
+                using (var conn = dbConnection.CreateConnection())
+
                 {
-                    var predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
+                    var predicateGroup = new PredicateGroup
+                        {Operator = GroupOperator.And, Predicates = new List<IPredicate>()};
                     predicateGroup.Predicates.Add(Predicates.Field<JobDocument>(s => s.ID, Operator.Eq, jobDocumentID));
 
-                    sqlConnection.Open();
-                    isDeleted = sqlConnection.Delete<JobDocument>(predicateGroup);
+                    conn.Open();
+                    isDeleted = conn.Delete<JobDocument>(predicateGroup);
                 }
 
                 transactionScope.Complete();
@@ -1435,13 +1600,16 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <returns></returns>
         public JobDTO GetJobWO(int woID)
         {
-            using (var sqlConnection = new SqlConnection(_connectionString))
+            var dbConnection = new DataAccessFactory();
+            using (var conn = dbConnection.CreateConnection())
+
             {
-                sqlConnection.Open();
-                JobWO jobWO = sqlConnection.Get<JobWO>(woID);
-                var predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
+                conn.Open();
+                var jobWO = conn.Get<JobWO>(woID);
+                var predicateGroup = new PredicateGroup
+                    {Operator = GroupOperator.And, Predicates = new List<IPredicate>()};
                 predicateGroup.Predicates.Add(Predicates.Field<WOEstimateItem>(s => s.WOID, Operator.Eq, woID));
-                IList<WOEstimateItem> jobWOItems = sqlConnection.GetList<WOEstimateItem>(predicateGroup).ToList();
+                IList<WOEstimateItem> jobWOItems = conn.GetList<WOEstimateItem>(predicateGroup).ToList();
 
                 return new JobDTO()
                 {
@@ -1450,6 +1618,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
                 };
             }
         }
+
         /// <summary>
         /// Set Job WO status to active/inactive
         /// </summary>
@@ -1458,16 +1627,19 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <returns></returns>
         public bool ToggleJobWOStatus(int woID, bool active)
         {
-            using (var sqlConnection = new SqlConnection(_connectionString))
+            var dbConnection = new DataAccessFactory();
+            using (var conn = dbConnection.CreateConnection())
+
             {
-                sqlConnection.Open();
-                JobWO jobWO = sqlConnection.Get<JobWO>(woID);
+                conn.Open();
+                var jobWO = conn.Get<JobWO>(woID);
                 jobWO.Active = active;
                 jobWO.DateUpdated = DateTime.Now;
-                var isUpdated = sqlConnection.Update<JobWO>(jobWO);
+                var isUpdated = conn.Update(jobWO);
                 return isUpdated;
             }
         }
+
         /// <summary>
         /// Get JobAssignment List
         /// </summary>
@@ -1475,15 +1647,19 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <returns></returns>
         public List<JobAssignment> GetJobAssignments(int jobID)
         {
-            using (var sqlConnection = new SqlConnection(_connectionString))
+            var dbConnection = new DataAccessFactory();
+            using (var conn = dbConnection.CreateConnection())
+
             {
-                sqlConnection.Open();
-                var predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
+                conn.Open();
+                var predicateGroup = new PredicateGroup
+                    {Operator = GroupOperator.And, Predicates = new List<IPredicate>()};
                 predicateGroup.Predicates.Add(Predicates.Field<JobAssignment>(s => s.JobID, Operator.Eq, jobID));
-                IList<JobAssignment> jobAssignments = sqlConnection.GetList<JobAssignment>(predicateGroup).ToList();
+                IList<JobAssignment> jobAssignments = conn.GetList<JobAssignment>(predicateGroup).ToList();
                 return jobAssignments.ToList();
             }
         }
+
         /// <summary>
         /// Get JobAssignment Crew Leader List
         /// </summary>
@@ -1491,15 +1667,21 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <returns></returns>
         public List<vw_JobAssignmentCrewLeaders> GetJobAssignmentCrewLeaders(int jobID)
         {
-            using (var sqlConnection = new SqlConnection(_connectionString))
+            var dbConnection = new DataAccessFactory();
+            using (var conn = dbConnection.CreateConnection())
+
             {
-                sqlConnection.Open();
-                var predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
-                predicateGroup.Predicates.Add(Predicates.Field<vw_JobAssignmentCrewLeaders>(s => s.JobID, Operator.Eq, jobID));
-                IList<vw_JobAssignmentCrewLeaders> vw_JobAssignmentCrewLeaders = sqlConnection.GetList<vw_JobAssignmentCrewLeaders>(predicateGroup).ToList();
+                conn.Open();
+                var predicateGroup = new PredicateGroup
+                    {Operator = GroupOperator.And, Predicates = new List<IPredicate>()};
+                predicateGroup.Predicates.Add(
+                    Predicates.Field<vw_JobAssignmentCrewLeaders>(s => s.JobID, Operator.Eq, jobID));
+                IList<vw_JobAssignmentCrewLeaders> vw_JobAssignmentCrewLeaders =
+                    conn.GetList<vw_JobAssignmentCrewLeaders>(predicateGroup).ToList();
                 return vw_JobAssignmentCrewLeaders.ToList();
             }
         }
+
         /// <summary>
         /// Get List of Job WOs
         /// </summary>
@@ -1507,16 +1689,20 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <returns></returns>
         public List<JobWO> GetJobWOs(int jobID)
         {
-            using (var sqlConnection = new SqlConnection(_connectionString))
+            var dbConnection = new DataAccessFactory();
+            using (var conn = dbConnection.CreateConnection())
+
             {
-                sqlConnection.Open();
-                var predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
+                conn.Open();
+                var predicateGroup = new PredicateGroup
+                    {Operator = GroupOperator.And, Predicates = new List<IPredicate>()};
                 predicateGroup.Predicates.Add(Predicates.Field<JobWO>(s => s.JobID, Operator.Eq, jobID));
                 predicateGroup.Predicates.Add(Predicates.Field<JobWO>(s => s.Active, Operator.Eq, true));
-                IList<JobWO> jobWOs = sqlConnection.GetList<JobWO>(predicateGroup).ToList();
+                IList<JobWO> jobWOs = conn.GetList<JobWO>(predicateGroup).ToList();
                 return jobWOs.ToList();
             }
         }
+
         /// <summary>
         /// Create Job WO
         /// </summary>
@@ -1527,24 +1713,26 @@ namespace KRF.Persistence.FunctionalContractImplementation
         {
             using (var transactionScope = new TransactionScope())
             {
-                using (var sqlConnection = new SqlConnection(_connectionString))
+                var dbConnection = new DataAccessFactory();
+                using (var conn = dbConnection.CreateConnection())
+
                 {
-                    decimal totalJobBalanceAmount = woEstimateItems.Sum(p => p.Budget * p.Rate);
-                    sqlConnection.Open();
+                    var totalJobBalanceAmount = woEstimateItems.Sum(p => p.Budget * p.Rate);
+                    conn.Open();
                     jobWO.DateCreated = DateTime.Now;
                     jobWO.Active = true;
                     jobWO.TotalJobBalanceAmount = totalJobBalanceAmount;
-                    int id = sqlConnection.Insert<JobWO>(jobWO);
+                    int id = conn.Insert(jobWO);
 
                     //Generate WO ID
-                    JobWO jobWOCurrent = sqlConnection.Get<JobWO>(id);
+                    var jobWOCurrent = conn.Get<JobWO>(id);
                     jobWOCurrent.WOCode = "WO-" + id.ToString();
-                    sqlConnection.Update<JobWO>(jobWOCurrent);
+                    conn.Update(jobWOCurrent);
 
-                    foreach (WOEstimateItem woItem in woEstimateItems)
+                    foreach (var woItem in woEstimateItems)
                     {
                         woItem.WOID = id;
-                        sqlConnection.Insert<WOEstimateItem>(woItem);
+                        conn.Insert(woItem);
                     }
 
                     transactionScope.Complete();
@@ -1552,6 +1740,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
                 }
             }
         }
+
         /// <summary>
         /// Edit JobWO
         /// </summary>
@@ -1562,84 +1751,92 @@ namespace KRF.Persistence.FunctionalContractImplementation
         {
             using (var transactionScope = new TransactionScope())
             {
-                using (var sqlConnection = new SqlConnection(_connectionString))
+                var dbConnection = new DataAccessFactory();
+                using (var conn = dbConnection.CreateConnection())
+
                 {
-                    decimal totalJobBalanceAmount = woEstimateItems.Sum(p => p.Budget * p.Rate);
-                    int id = jobWO.WOID;
-                    JobWO jobWOCurrent = sqlConnection.Get<JobWO>(id);
+                    var totalJobBalanceAmount = woEstimateItems.Sum(p => p.Budget * p.Rate);
+                    var id = jobWO.WOID;
+                    var jobWOCurrent = conn.Get<JobWO>(id);
                     jobWO.DateCreated = jobWOCurrent.DateCreated;
                     jobWO.Active = jobWOCurrent.Active;
                     jobWO.DateUpdated = DateTime.Now;
                     jobWO.TotalJobBalanceAmount = totalJobBalanceAmount;
 
-                    var predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
+                    var predicateGroup = new PredicateGroup
+                        {Operator = GroupOperator.And, Predicates = new List<IPredicate>()};
                     predicateGroup.Predicates.Add(Predicates.Field<WOEstimateItem>(s => s.WOID, Operator.Eq, id));
-                    IList<WOEstimateItem> jobWOItems = sqlConnection.GetList<WOEstimateItem>(predicateGroup).ToList();
-                    foreach (WOEstimateItem jobWOItem in jobWOItems)
+                    IList<WOEstimateItem> jobWOItems = conn.GetList<WOEstimateItem>(predicateGroup).ToList();
+                    foreach (var jobWOItem in jobWOItems)
                     {
-                        sqlConnection.Delete(jobWOItem);
+                        conn.Delete(jobWOItem);
                     }
 
                     if (woEstimateItems != null)
                     {
-                        foreach (WOEstimateItem woItem in woEstimateItems)
+                        foreach (var woItem in woEstimateItems)
                         {
                             woItem.WOID = id;
-                            sqlConnection.Insert<WOEstimateItem>(woItem);
+                            conn.Insert(woItem);
                         }
                     }
 
-                    var isEdited = sqlConnection.Update<JobWO>(jobWO);
+                    var isEdited = conn.Update(jobWO);
                     transactionScope.Complete();
                     return isEdited;
                 }
             }
         }
+
         public JobDocument CreateWODocument(int woID)
         {
             JobWO jobWO = null;
             Job job = null;
             KRF.Core.Entities.Sales.CustomerAddress custSiteAdd = null;
-            KRF.Core.Entities.Sales.Lead lead = null;
-            List<KRF.Core.Entities.ValueList.RoofType> roofTypes = new List<RoofType>();
-            List<WOEstimateItem> woEstimates = new List<WOEstimateItem>();
-            IEstimateManagementRepository estimateRepo = ObjectFactory.GetInstance<IEstimateManagementRepository>();
+            Core.Entities.Sales.Lead lead = null;
+            var roofTypes = new List<RoofType>();
+            var woEstimates = new List<WOEstimateItem>();
+            var estimateRepo = ObjectFactory.GetInstance<IEstimateManagementRepository>();
             KRF.Core.Entities.ValueList.City city = null;
-            KRF.Core.Entities.ValueList.State state = null;
+            State state = null;
             KRF.Core.Entities.ValueList.City custCity = null;
-            KRF.Core.Entities.ValueList.State custState = null;
-            KRF.Core.Entities.Employee.Employee emp = null;
+            State custState = null;
+            Employee emp = null;
 
-            using (var sqlConnection = new SqlConnection(_connectionString))
+            var dbConnection = new DataAccessFactory();
+            using (var conn = dbConnection.CreateConnection())
+
             {
-                sqlConnection.Open();
+                conn.Open();
 
-                jobWO = sqlConnection.Get<JobWO>(woID);
-                job = sqlConnection.Get<Job>(jobWO.JobID);
-                custSiteAdd = sqlConnection.Get<KRF.Core.Entities.Sales.CustomerAddress>(job.JobAddressID);
-                city = sqlConnection.Get<KRF.Core.Entities.ValueList.City>(custSiteAdd.City);
-                state = sqlConnection.Get<KRF.Core.Entities.ValueList.State>(custSiteAdd.State);
-                emp = sqlConnection.Get<KRF.Core.Entities.Employee.Employee>(jobWO.LeadID);
-                roofTypes = sqlConnection.GetList<RoofType>().ToList();
+                jobWO = conn.Get<JobWO>(woID);
+                job = conn.Get<Job>(jobWO.JobID);
+                custSiteAdd = conn.Get<KRF.Core.Entities.Sales.CustomerAddress>(job.JobAddressID);
+                city = conn.Get<KRF.Core.Entities.ValueList.City>(custSiteAdd.City);
+                state = conn.Get<State>(custSiteAdd.State);
+                emp = conn.Get<Employee>(jobWO.LeadID);
+                roofTypes = conn.GetList<RoofType>().ToList();
 
-                lead = sqlConnection.Get<KRF.Core.Entities.Sales.Lead>(job.LeadID);
-                custCity = sqlConnection.Get<KRF.Core.Entities.ValueList.City>(lead.BillCity);
-                custState = sqlConnection.Get<KRF.Core.Entities.ValueList.State>(lead.BillState);
+                lead = conn.Get<Core.Entities.Sales.Lead>(job.LeadID);
+                custCity = conn.Get<KRF.Core.Entities.ValueList.City>(lead.BillCity);
+                custState = conn.Get<State>(lead.BillState);
 
-                var predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
+                var predicateGroup = new PredicateGroup
+                    {Operator = GroupOperator.And, Predicates = new List<IPredicate>()};
                 predicateGroup.Predicates.Add(Predicates.Field<WOEstimateItem>(s => s.WOID, Operator.Eq, jobWO.WOID));
 
-                woEstimates = sqlConnection.GetList<WOEstimateItem>(predicateGroup).ToList();
+                woEstimates = conn.GetList<WOEstimateItem>(predicateGroup).ToList();
             }
-            KRF.Core.DTO.Sales.EstimateDTO estDTO = estimateRepo.Select(jobWO.EstimateID ?? 0);
+
+            var estDTO = estimateRepo.Select(jobWO.EstimateID ?? 0);
 
             var document = GetJobDocumentByType(-3); // -3 = Work Order Document
-            byte[] byteArray = document.Text;
+            var byteArray = document.Text;
 
-            using (MemoryStream mem = new MemoryStream())
+            using (var mem = new MemoryStream())
             {
-                mem.Write(byteArray, 0, (int)byteArray.Length);
-                using (WordprocessingDocument wordDoc =
+                mem.Write(byteArray, 0, (int) byteArray.Length);
+                using (var wordDoc =
                     WordprocessingDocument.Open(mem, true))
                 {
                     XNamespace w =
@@ -1648,59 +1845,76 @@ namespace KRF.Persistence.FunctionalContractImplementation
 
                     IDictionary<String, BookmarkStart> bookmarkMap = new Dictionary<String, BookmarkStart>();
 
-                    foreach (BookmarkStart bookmarkStart in wordDoc.MainDocumentPart.RootElement.Descendants<BookmarkStart>())
+                    foreach (var bookmarkStart in wordDoc.MainDocumentPart.RootElement
+                        .Descendants<BookmarkStart>())
                     {
                         bookmarkMap[bookmarkStart.Name] = bookmarkStart;
                     }
 
-                    foreach (BookmarkStart bookmarkStart in bookmarkMap.Values)
+                    foreach (var bookmarkStart in bookmarkMap.Values)
                     {
                         if (!bookmarkStart.Name.ToString().Trim().StartsWith("_"))
                         {
-                            Run bookmarkText = bookmarkStart.NextSibling<Run>();
+                            var bookmarkText = bookmarkStart.NextSibling<Run>();
                             if (bookmarkText != null)
                             {
                                 if (bookmarkStart.Name.ToString() == "CustContactName")
                                 {
                                     bookmarkText.GetFirstChild<Text>().Text = lead.LeadName;
                                 }
+
                                 if (bookmarkStart.Name.ToString() == "CustAddress1")
                                 {
                                     bookmarkText.GetFirstChild<Text>().Text = lead.BillAddress1;
                                 }
+
                                 if (bookmarkStart.Name.ToString() == "CustCityStateZip")
                                 {
-                                    bookmarkText.GetFirstChild<Text>().Text = custCity.Description.Trim() + ", " + custState.Abbreviation.Trim() + " " + lead.BillZipCode;
+                                    bookmarkText.GetFirstChild<Text>().Text =
+                                        custCity.Description.Trim() + ", " + custState.Abbreviation.Trim() + " " +
+                                        lead.BillZipCode;
                                 }
+
                                 if (bookmarkStart.Name.ToString() == "WO2")
                                 {
                                     bookmarkText.GetFirstChild<Text>().Text = jobWO.WOCode;
                                 }
+
                                 if (bookmarkStart.Name.ToString() == "JobName")
                                 {
                                     bookmarkText.GetFirstChild<Text>().Text = job.Title;
                                 }
+
                                 if (bookmarkStart.Name.ToString() == "LeadName")
                                 {
                                     bookmarkText.GetFirstChild<Text>().Text = emp.FirstName + " " + emp.LastName;
                                 }
+
                                 if (bookmarkStart.Name.ToString() == "TotalJobBalanceAmount")
                                 {
-                                    bookmarkText.GetFirstChild<Text>().Text = "$" + jobWO.TotalJobBalanceAmount.ToString("N", new CultureInfo("en-US"));
+                                    bookmarkText.GetFirstChild<Text>().Text =
+                                        "$" + jobWO.TotalJobBalanceAmount.ToString("N", new CultureInfo("en-US"));
                                 }
+
                                 if (bookmarkStart.Name.ToString() == "TOTALAMOUNT")
                                 {
                                     bookmarkText.GetFirstChild<Text>().Text = "";
-                                    bookmarkText.GetFirstChild<Text>().Text = "$" + jobWO.TotalAmount.ToString("N", new CultureInfo("en-US"));
+                                    bookmarkText.GetFirstChild<Text>().Text =
+                                        "$" + jobWO.TotalAmount.ToString("N", new CultureInfo("en-US"));
                                 }
+
                                 if (bookmarkStart.Name.ToString() == "EMPTOTALAMOUNT")
                                 {
-                                    bookmarkText.GetFirstChild<Text>().Text = "$" + jobWO.TotalAmount.ToString("N", new CultureInfo("en-US"));
+                                    bookmarkText.GetFirstChild<Text>().Text =
+                                        "$" + jobWO.TotalAmount.ToString("N", new CultureInfo("en-US"));
                                 }
+
                                 if (bookmarkStart.Name.ToString() == "CurrentDate")
                                 {
-                                    bookmarkText.GetFirstChild<Text>().Text = String.Format("{0:MM/dd/yyyy}", DateTime.Now);
+                                    bookmarkText.GetFirstChild<Text>().Text =
+                                        String.Format("{0:MM/dd/yyyy}", DateTime.Now);
                                 }
+
                                 //Job Address
                                 if (custSiteAdd != null)
                                 {
@@ -1708,46 +1922,57 @@ namespace KRF.Persistence.FunctionalContractImplementation
                                     {
                                         bookmarkText.GetFirstChild<Text>().Text = lead.LeadName;
                                     }
+
                                     if (bookmarkStart.Name.ToString() == "SiteAddress1")
                                     {
                                         bookmarkText.GetFirstChild<Text>().Text = custSiteAdd.Address1;
                                     }
+
                                     if (bookmarkStart.Name.ToString() == "SiteCityStateZip")
                                     {
-                                        bookmarkText.GetFirstChild<Text>().Text = city.Description + ", " + state.Abbreviation.Trim() + " " + custSiteAdd.ZipCode;
+                                        bookmarkText.GetFirstChild<Text>().Text =
+                                            city.Description + ", " + state.Abbreviation.Trim() + " " +
+                                            custSiteAdd.ZipCode;
                                     }
                                 }
+
                                 if (bookmarkStart.Name.ToString() == "WorkWeekEnding")
                                 {
-                                    bookmarkText.GetFirstChild<Text>().Text = String.Format("{0:MMMM dd, yyyy}", jobWO.WorkWeekEndingDate);
+                                    bookmarkText.GetFirstChild<Text>().Text =
+                                        String.Format("{0:MMMM dd, yyyy}", jobWO.WorkWeekEndingDate);
                                 }
+
                                 if (bookmarkStart.Name.ToString() == "RoofType")
                                 {
-                                    bookmarkText.GetFirstChild<Text>().Text = roofTypes.Where(p => p.ID == lead.RoofType).FirstOrDefault().Description;
+                                    bookmarkText.GetFirstChild<Text>().Text = roofTypes
+                                        .Where(p => p.ID == lead.RoofType).FirstOrDefault().Description;
                                 }
                             }
                         }
                     }
-                    int maxrows = woEstimates.Count() < 21 ? woEstimates.Count() : 21;
+
+                    var maxrows = woEstimates.Count() < 21 ? woEstimates.Count() : 21;
                     decimal totalBalance = 0;
-                    for (int rowindex = 1; rowindex <= maxrows; rowindex++)
+                    for (var rowindex = 1; rowindex <= maxrows; rowindex++)
                     {
-                        BookmarkStart bookmarkStart = bookmarkMap["BAL" + rowindex.ToString()];
-                        Run bookmarkText = bookmarkStart.NextSibling<Run>();
+                        var bookmarkStart = bookmarkMap["BAL" + rowindex.ToString()];
+                        var bookmarkText = bookmarkStart.NextSibling<Run>();
                         if (bookmarkText != null)
                         {
                             bookmarkText.GetFirstChild<Text>().Text = "";
-                            decimal totalJob = woEstimates[rowindex - 1].Budget * woEstimates[rowindex - 1].Rate;
-                            decimal totalBal = totalJob * woEstimates[rowindex - 1].Amount;
+                            var totalJob = woEstimates[rowindex - 1].Budget * woEstimates[rowindex - 1].Rate;
+                            var totalBal = totalJob * woEstimates[rowindex - 1].Amount;
                             totalBalance += totalBal;
-                            bookmarkText.GetFirstChild<Text>().Text = "$" + Math.Round(totalBal, 2).ToString("N", new CultureInfo("en-US"));
+                            bookmarkText.GetFirstChild<Text>().Text =
+                                "$" + Math.Round(totalBal, 2).ToString("N", new CultureInfo("en-US"));
                         }
 
-                        string itemCode = string.Empty;
-                        string itemDesc = string.Empty;
+                        var itemCode = string.Empty;
+                        var itemDesc = string.Empty;
                         if (woEstimates[rowindex - 1].ItemAssemblyType == 1)
                         {
-                            var assembly = estDTO.Assemblies.Where(p => p.Id == woEstimates[rowindex - 1].ItemAssemblyID).FirstOrDefault();
+                            var assembly = estDTO.Assemblies
+                                .Where(p => p.Id == woEstimates[rowindex - 1].ItemAssemblyID).FirstOrDefault();
                             if (assembly != null)
                             {
                                 itemCode = assembly.Code;
@@ -1756,70 +1981,82 @@ namespace KRF.Persistence.FunctionalContractImplementation
                         }
                         else
                         {
-                            var item = estDTO.Items.Where(p => p.Id == woEstimates[rowindex - 1].ItemAssemblyID).FirstOrDefault();
+                            var item = estDTO.Items.Where(p => p.Id == woEstimates[rowindex - 1].ItemAssemblyID)
+                                .FirstOrDefault();
                             if (item != null)
                             {
                                 itemCode = item.Code;
                                 itemDesc = item.Name;
                             }
                         }
+
                         bookmarkStart = bookmarkMap["DESC" + rowindex.ToString()];
                         bookmarkText = bookmarkStart.NextSibling<Run>();
                         if (bookmarkText != null)
                         {
                             bookmarkText.GetFirstChild<Text>().Text = "";
-                            RunProperties runProperties = bookmarkText.AppendChild(new RunProperties());
-                            runProperties.Append(new Text() { Text = itemDesc });
+                            var runProperties = bookmarkText.AppendChild(new RunProperties());
+                            runProperties.Append(new Text() {Text = itemDesc});
                         }
+
                         bookmarkStart = bookmarkMap["BUDGET" + rowindex.ToString()];
                         bookmarkText = bookmarkStart.NextSibling<Run>();
                         if (bookmarkText != null)
                         {
                             bookmarkText.GetFirstChild<Text>().Text = "";
-                            RunProperties runProperties = bookmarkText.AppendChild(new RunProperties());
-                            runProperties.Append(new Text() { Text = woEstimates[rowindex - 1].Budget.ToString() });
+                            var runProperties = bookmarkText.AppendChild(new RunProperties());
+                            runProperties.Append(new Text() {Text = woEstimates[rowindex - 1].Budget.ToString()});
                         }
+
                         bookmarkStart = bookmarkMap["USED" + rowindex.ToString()];
                         bookmarkText = bookmarkStart.NextSibling<Run>();
                         if (bookmarkText != null)
                         {
                             bookmarkText.GetFirstChild<Text>().Text = "";
-                            RunProperties runProperties = bookmarkText.AppendChild(new RunProperties());
-                            runProperties.Append(new Text() { Text = woEstimates[rowindex - 1].Used.ToString() });
+                            var runProperties = bookmarkText.AppendChild(new RunProperties());
+                            runProperties.Append(new Text() {Text = woEstimates[rowindex - 1].Used.ToString()});
                         }
+
                         bookmarkStart = bookmarkMap["RATE" + rowindex.ToString()];
                         bookmarkText = bookmarkStart.NextSibling<Run>();
                         if (bookmarkText != null)
                         {
                             bookmarkText.GetFirstChild<Text>().Text = "";
-                            RunProperties runProperties = bookmarkText.AppendChild(new RunProperties());
-                            runProperties.Append(new Text() { Text = Math.Round(woEstimates[rowindex - 1].Rate, 2).ToString() });
+                            var runProperties = bookmarkText.AppendChild(new RunProperties());
+                            runProperties.Append(new Text()
+                                {Text = Math.Round(woEstimates[rowindex - 1].Rate, 2).ToString()});
                         }
+
                         bookmarkStart = bookmarkMap["BALANCE" + rowindex.ToString()];
                         bookmarkText = bookmarkStart.NextSibling<Run>();
                         if (bookmarkText != null)
                         {
                             bookmarkText.GetFirstChild<Text>().Text = "";
-                            RunProperties runProperties = bookmarkText.AppendChild(new RunProperties());
-                            runProperties.Append(new Text() { Text = woEstimates[rowindex - 1].Balance.ToString() });
+                            var runProperties = bookmarkText.AppendChild(new RunProperties());
+                            runProperties.Append(new Text() {Text = woEstimates[rowindex - 1].Balance.ToString()});
                         }
+
                         bookmarkStart = bookmarkMap["AMOUNT" + rowindex.ToString()];
                         bookmarkText = bookmarkStart.NextSibling<Run>();
                         if (bookmarkText != null)
                         {
                             bookmarkText.GetFirstChild<Text>().Text = "";
-                            bookmarkText.GetFirstChild<Text>().Text = "$" + Math.Round(woEstimates[rowindex - 1].Amount, 2).ToString("N", new CultureInfo("en-US"));
+                            bookmarkText.GetFirstChild<Text>().Text =
+                                "$" + Math.Round(woEstimates[rowindex - 1].Amount, 2)
+                                    .ToString("N", new CultureInfo("en-US"));
                         }
                     }
-                    BookmarkStart bookmarkStartTotalBal = bookmarkMap["TOTALBAL"];
-                    Run bookmarkTextTotalBal = bookmarkStartTotalBal.NextSibling<Run>();
+
+                    var bookmarkStartTotalBal = bookmarkMap["TOTALBAL"];
+                    var bookmarkTextTotalBal = bookmarkStartTotalBal.NextSibling<Run>();
                     if (bookmarkTextTotalBal != null)
                     {
-                        bookmarkTextTotalBal.GetFirstChild<Text>().Text = "$" + totalBalance.ToString("N", new CultureInfo("en-US"));
+                        bookmarkTextTotalBal.GetFirstChild<Text>().Text =
+                            "$" + totalBalance.ToString("N", new CultureInfo("en-US"));
                     }
                 }
 
-                JobDocument e = new JobDocument
+                var e = new JobDocument
                 {
                     JobID = jobWO.JobID,
                     Name = "WorkOrder_" + jobWO.WorkWeekEndingDate.ToString("dd-MMM-yyyy") + ".docx",
@@ -1831,6 +2068,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
                 return e;
             }
         }
+
         /// <summary>
         /// Get List of Job Invoices
         /// </summary>
@@ -1838,16 +2076,20 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <returns></returns>
         public List<JobInvoice> GetJobInvoices(int jobID)
         {
-            using (var sqlConnection = new SqlConnection(_connectionString))
+            var dbConnection = new DataAccessFactory();
+            using (var conn = dbConnection.CreateConnection())
+
             {
-                sqlConnection.Open();
-                var predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
+                conn.Open();
+                var predicateGroup = new PredicateGroup
+                    {Operator = GroupOperator.And, Predicates = new List<IPredicate>()};
                 predicateGroup.Predicates.Add(Predicates.Field<JobInvoice>(s => s.JobID, Operator.Eq, jobID));
                 predicateGroup.Predicates.Add(Predicates.Field<JobInvoice>(s => s.Active, Operator.Eq, true));
-                IList<JobInvoice> jobInvoices = sqlConnection.GetList<JobInvoice>(predicateGroup).ToList();
+                IList<JobInvoice> jobInvoices = conn.GetList<JobInvoice>(predicateGroup).ToList();
                 return jobInvoices.ToList();
             }
         }
+
         /// <summary>
         /// Create Job Invoice
         /// </summary>
@@ -1858,17 +2100,19 @@ namespace KRF.Persistence.FunctionalContractImplementation
         {
             using (var transactionScope = new TransactionScope())
             {
-                using (var sqlConnection = new SqlConnection(_connectionString))
+                var dbConnection = new DataAccessFactory();
+                using (var conn = dbConnection.CreateConnection())
+
                 {
-                    sqlConnection.Open();
+                    conn.Open();
                     jobInvoice.DateCreated = DateTime.Now;
                     jobInvoice.Active = true;
-                    var id = sqlConnection.Insert<JobInvoice>(jobInvoice);
+                    var id = conn.Insert(jobInvoice);
 
-                    foreach (InvoiceItems invoiceItem in invoiceItems)
+                    foreach (var invoiceItem in invoiceItems)
                     {
                         invoiceItem.InvoiceID = id;
-                        sqlConnection.Insert<InvoiceItems>(invoiceItem);
+                        conn.Insert(invoiceItem);
                     }
 
                     transactionScope.Complete();
@@ -1876,6 +2120,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
                 }
             }
         }
+
         /// <summary>
         /// Edit Job Invoice
         /// </summary>
@@ -1886,38 +2131,42 @@ namespace KRF.Persistence.FunctionalContractImplementation
         {
             using (var transactionScope = new TransactionScope())
             {
-                using (var sqlConnection = new SqlConnection(_connectionString))
+                var dbConnection = new DataAccessFactory();
+                using (var conn = dbConnection.CreateConnection())
+
                 {
-                    int id = jobInvoice.InvoiceID;
-                    JobInvoice jobInvoiceCurrent = sqlConnection.Get<JobInvoice>(id);
+                    var id = jobInvoice.InvoiceID;
+                    var jobInvoiceCurrent = conn.Get<JobInvoice>(id);
                     jobInvoice.DateCreated = jobInvoiceCurrent.DateCreated;
                     jobInvoice.Active = jobInvoiceCurrent.Active;
                     jobInvoice.DateUpdated = DateTime.Now;
 
 
-                    var predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
+                    var predicateGroup = new PredicateGroup
+                        {Operator = GroupOperator.And, Predicates = new List<IPredicate>()};
                     predicateGroup.Predicates.Add(Predicates.Field<InvoiceItems>(s => s.InvoiceID, Operator.Eq, id));
-                    IList<InvoiceItems> jobInvoiceItems = sqlConnection.GetList<InvoiceItems>(predicateGroup).ToList();
-                    foreach (InvoiceItems jobInvoiceItem in jobInvoiceItems)
+                    IList<InvoiceItems> jobInvoiceItems = conn.GetList<InvoiceItems>(predicateGroup).ToList();
+                    foreach (var jobInvoiceItem in jobInvoiceItems)
                     {
-                        sqlConnection.Delete(jobInvoiceItem);
+                        conn.Delete(jobInvoiceItem);
                     }
 
                     if (invoiceItems != null)
                     {
-                        foreach (InvoiceItems invoiceItem in invoiceItems)
+                        foreach (var invoiceItem in invoiceItems)
                         {
                             invoiceItem.InvoiceID = id;
-                            sqlConnection.Insert<InvoiceItems>(invoiceItem);
+                            conn.Insert(invoiceItem);
                         }
                     }
 
-                    var isEdited = sqlConnection.Update<JobInvoice>(jobInvoice);
+                    var isEdited = conn.Update(jobInvoice);
                     transactionScope.Complete();
                     return isEdited;
                 }
             }
         }
+
         /// <summary>
         /// Get Job Invoice Detail
         /// </summary>
@@ -1925,13 +2174,16 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <returns></returns>
         public JobDTO GetJobInvoice(int invoiceID)
         {
-            using (var sqlConnection = new SqlConnection(_connectionString))
+            var dbConnection = new DataAccessFactory();
+            using (var conn = dbConnection.CreateConnection())
+
             {
-                sqlConnection.Open();
-                JobInvoice jobInvoice = sqlConnection.Get<JobInvoice>(invoiceID);
-                var predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
+                conn.Open();
+                var jobInvoice = conn.Get<JobInvoice>(invoiceID);
+                var predicateGroup = new PredicateGroup
+                    {Operator = GroupOperator.And, Predicates = new List<IPredicate>()};
                 predicateGroup.Predicates.Add(Predicates.Field<InvoiceItems>(s => s.InvoiceID, Operator.Eq, invoiceID));
-                IList<InvoiceItems> jobInvoiceItems = sqlConnection.GetList<InvoiceItems>(predicateGroup).ToList();
+                IList<InvoiceItems> jobInvoiceItems = conn.GetList<InvoiceItems>(predicateGroup).ToList();
 
                 return new JobDTO()
                 {
@@ -1940,6 +2192,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
                 };
             }
         }
+
         /// <summary>
         /// Toggle Job Invoice status
         /// </summary>
@@ -1948,16 +2201,19 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <returns></returns>
         public bool ToggleJobInvoiceStatus(int invoiceID, bool active)
         {
-            using (var sqlConnection = new SqlConnection(_connectionString))
+            var dbConnection = new DataAccessFactory();
+            using (var conn = dbConnection.CreateConnection())
+
             {
-                sqlConnection.Open();
-                JobInvoice jobInvoice = sqlConnection.Get<JobInvoice>(invoiceID);
+                conn.Open();
+                var jobInvoice = conn.Get<JobInvoice>(invoiceID);
                 jobInvoice.Active = active;
                 jobInvoice.DateUpdated = DateTime.Now;
-                var isUpdated = sqlConnection.Update<JobInvoice>(jobInvoice);
+                var isUpdated = conn.Update(jobInvoice);
                 return isUpdated;
             }
         }
+
         /// <summary>
         /// Create Invoice Document
         /// </summary>
@@ -1968,43 +2224,48 @@ namespace KRF.Persistence.FunctionalContractImplementation
             JobInvoice jobInvoice = null;
             Job job = null;
             KRF.Core.Entities.Sales.CustomerAddress custSiteAdd = null;
-            List<InvoiceItems> invoiceItems = new List<InvoiceItems>();
-            IEstimateManagementRepository estimateRepo = ObjectFactory.GetInstance<IEstimateManagementRepository>();
+            var invoiceItems = new List<InvoiceItems>();
+            var estimateRepo = ObjectFactory.GetInstance<IEstimateManagementRepository>();
             KRF.Core.Entities.ValueList.City city = null;
-            KRF.Core.Entities.ValueList.State state = null;
+            State state = null;
             KRF.Core.Entities.ValueList.City custCity = null;
-            KRF.Core.Entities.ValueList.State custState = null;
-            KRF.Core.Entities.Sales.Lead lead = null;
-            KRF.Core.Entities.Employee.Employee emp = null;
+            State custState = null;
+            Core.Entities.Sales.Lead lead = null;
+            Employee emp = null;
 
-            using (var sqlConnection = new SqlConnection(_connectionString))
+            var dbConnection = new DataAccessFactory();
+            using (var conn = dbConnection.CreateConnection())
+
             {
-                sqlConnection.Open();
+                conn.Open();
 
-                jobInvoice = sqlConnection.Get<JobInvoice>(invoiceID);
-                job = sqlConnection.Get<Job>(jobInvoice.JobID);
-                custSiteAdd = sqlConnection.Get<KRF.Core.Entities.Sales.CustomerAddress>(job.JobAddressID);
-                city = sqlConnection.Get<KRF.Core.Entities.ValueList.City>(custSiteAdd.City);
-                state = sqlConnection.Get<KRF.Core.Entities.ValueList.State>(custSiteAdd.State);
+                jobInvoice = conn.Get<JobInvoice>(invoiceID);
+                job = conn.Get<Job>(jobInvoice.JobID);
+                custSiteAdd = conn.Get<KRF.Core.Entities.Sales.CustomerAddress>(job.JobAddressID);
+                city = conn.Get<KRF.Core.Entities.ValueList.City>(custSiteAdd.City);
+                state = conn.Get<State>(custSiteAdd.State);
 
-                lead = sqlConnection.Get<KRF.Core.Entities.Sales.Lead>(job.LeadID);
-                custCity = sqlConnection.Get<KRF.Core.Entities.ValueList.City>(lead.BillCity);
-                custState = sqlConnection.Get<KRF.Core.Entities.ValueList.State>(lead.BillState);
+                lead = conn.Get<Core.Entities.Sales.Lead>(job.LeadID);
+                custCity = conn.Get<KRF.Core.Entities.ValueList.City>(lead.BillCity);
+                custState = conn.Get<State>(lead.BillState);
 
-                var predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
-                predicateGroup.Predicates.Add(Predicates.Field<InvoiceItems>(s => s.InvoiceID, Operator.Eq, jobInvoice.InvoiceID));
+                var predicateGroup = new PredicateGroup
+                    {Operator = GroupOperator.And, Predicates = new List<IPredicate>()};
+                predicateGroup.Predicates.Add(Predicates.Field<InvoiceItems>(s => s.InvoiceID, Operator.Eq,
+                    jobInvoice.InvoiceID));
 
-                invoiceItems = sqlConnection.GetList<InvoiceItems>(predicateGroup).ToList();
+                invoiceItems = conn.GetList<InvoiceItems>(predicateGroup).ToList();
             }
-            KRF.Core.DTO.Sales.EstimateDTO estDTO = estimateRepo.Select(jobInvoice.EstimateID ?? 0);
+
+            var estDTO = estimateRepo.Select(jobInvoice.EstimateID ?? 0);
 
             var document = GetJobDocumentByType(-4); // -4 = Invoice Document
-            byte[] byteArray = document.Text;
+            var byteArray = document.Text;
 
-            using (MemoryStream mem = new MemoryStream())
+            using (var mem = new MemoryStream())
             {
-                mem.Write(byteArray, 0, (int)byteArray.Length);
-                using (WordprocessingDocument wordDoc =
+                mem.Write(byteArray, 0, (int) byteArray.Length);
+                using (var wordDoc =
                     WordprocessingDocument.Open(mem, true))
                 {
                     XNamespace w =
@@ -2013,58 +2274,76 @@ namespace KRF.Persistence.FunctionalContractImplementation
 
                     IDictionary<String, BookmarkStart> bookmarkMap = new Dictionary<String, BookmarkStart>();
 
-                    foreach (BookmarkStart bookmarkStart in wordDoc.MainDocumentPart.RootElement.Descendants<BookmarkStart>())
+                    foreach (var bookmarkStart in wordDoc.MainDocumentPart.RootElement
+                        .Descendants<BookmarkStart>())
                     {
                         bookmarkMap[bookmarkStart.Name] = bookmarkStart;
                     }
 
-                    foreach (BookmarkStart bookmarkStart in bookmarkMap.Values)
+                    foreach (var bookmarkStart in bookmarkMap.Values)
                     {
                         if (!bookmarkStart.Name.ToString().Trim().StartsWith("_"))
                         {
-                            Run bookmarkText = bookmarkStart.NextSibling<Run>();
+                            var bookmarkText = bookmarkStart.NextSibling<Run>();
                             if (bookmarkText != null)
                             {
                                 if (bookmarkStart.Name.ToString() == "InvoiceNo")
                                 {
                                     bookmarkText.GetFirstChild<Text>().Text = jobInvoice.InvoiceCode;
                                 }
+
                                 if (bookmarkStart.Name.ToString() == "InvoiceDate")
                                 {
-                                    bookmarkText.GetFirstChild<Text>().Text = String.Format("{0:MMMM dd, yyyy}", jobInvoice.InvoiceDate);
+                                    bookmarkText.GetFirstChild<Text>().Text =
+                                        String.Format("{0:MMMM dd, yyyy}", jobInvoice.InvoiceDate);
                                 }
+
                                 if (bookmarkStart.Name.ToString() == "CustomerContact")
                                 {
                                     bookmarkText.GetFirstChild<Text>().Text = lead.LeadName;
                                 }
+
                                 if (bookmarkStart.Name.ToString() == "CustomerAddress1")
                                 {
                                     bookmarkText.GetFirstChild<Text>().Text = lead.BillAddress1;
                                 }
+
                                 if (bookmarkStart.Name.ToString() == "CustomerCityStateZip")
                                 {
-                                    bookmarkText.GetFirstChild<Text>().Text = custCity.Description.Trim() + ", " + custState.Abbreviation.Trim() + " " + lead.BillZipCode;
+                                    bookmarkText.GetFirstChild<Text>().Text =
+                                        custCity.Description.Trim() + ", " + custState.Abbreviation.Trim() + " " +
+                                        lead.BillZipCode;
                                 }
+
                                 if (bookmarkStart.Name.ToString() == "CustomerEmail")
                                 {
                                     bookmarkText.GetFirstChild<Text>().Text = lead.Email ?? "";
                                 }
+
                                 if (bookmarkStart.Name.ToString() == "CustomerPhone")
                                 {
-                                    bookmarkText.GetFirstChild<Text>().Text = Common.EncryptDecrypt.formatPhoneNumber(lead.Telephone, "(###) ###-####");
+                                    bookmarkText.GetFirstChild<Text>().Text =
+                                        Common.EncryptDecrypt.formatPhoneNumber(lead.Telephone, "(###) ###-####");
                                 }
+
                                 if (bookmarkStart.Name.ToString() == "CustomerFax")
                                 {
-                                    bookmarkText.GetFirstChild<Text>().Text = Common.EncryptDecrypt.formatPhoneNumber(lead.Telephone, "(###) ###-####");
+                                    bookmarkText.GetFirstChild<Text>().Text =
+                                        Common.EncryptDecrypt.formatPhoneNumber(lead.Telephone, "(###) ###-####");
                                 }
+
                                 if (bookmarkStart.Name.ToString() == "CustomerCell")
                                 {
-                                    bookmarkText.GetFirstChild<Text>().Text = Common.EncryptDecrypt.formatPhoneNumber(lead.Telephone, "(###) ###-####");
+                                    bookmarkText.GetFirstChild<Text>().Text =
+                                        Common.EncryptDecrypt.formatPhoneNumber(lead.Telephone, "(###) ###-####");
                                 }
+
                                 if (bookmarkStart.Name.ToString() == "TOTALAMOUNT")
                                 {
-                                    bookmarkText.GetFirstChild<Text>().Text = "$" + jobInvoice.TotalAmount.ToString("N", new CultureInfo("en-US"));
+                                    bookmarkText.GetFirstChild<Text>().Text =
+                                        "$" + jobInvoice.TotalAmount.ToString("N", new CultureInfo("en-US"));
                                 }
+
                                 //Job Address
                                 if (custSiteAdd != null)
                                 {
@@ -2072,37 +2351,45 @@ namespace KRF.Persistence.FunctionalContractImplementation
                                     {
                                         bookmarkText.GetFirstChild<Text>().Text = lead.LeadName;
                                     }
+
                                     if (bookmarkStart.Name.ToString() == "JobSiteAddress1")
                                     {
                                         bookmarkText.GetFirstChild<Text>().Text = custSiteAdd.Address1;
                                     }
+
                                     if (bookmarkStart.Name.ToString() == "JobSiteAddress2")
                                     {
                                         bookmarkText.GetFirstChild<Text>().Text = custSiteAdd.Address2;
                                     }
+
                                     if (bookmarkStart.Name.ToString() == "JobSiteCityStateZip")
                                     {
-                                        bookmarkText.GetFirstChild<Text>().Text = city.Description + ", " + state.Abbreviation.Trim() + " " + custSiteAdd.ZipCode;
+                                        bookmarkText.GetFirstChild<Text>().Text =
+                                            city.Description + ", " + state.Abbreviation.Trim() + " " +
+                                            custSiteAdd.ZipCode;
                                     }
                                 }
                             }
                         }
                     }
-                    int maxrows = invoiceItems.Count() < 21 ? invoiceItems.Count() : 21;
-                    for (int rowindex = 1; rowindex <= maxrows; rowindex++)
+
+                    var maxrows = invoiceItems.Count() < 21 ? invoiceItems.Count() : 21;
+                    for (var rowindex = 1; rowindex <= maxrows; rowindex++)
                     {
-                        BookmarkStart bookmarkStart = bookmarkMap["QTY" + rowindex.ToString()];
-                        Run bookmarkText = bookmarkStart.NextSibling<Run>();
+                        var bookmarkStart = bookmarkMap["QTY" + rowindex.ToString()];
+                        var bookmarkText = bookmarkStart.NextSibling<Run>();
                         if (bookmarkText != null)
                         {
-                            bookmarkText.GetFirstChild<Text>().Text = Convert.ToString(invoiceItems[rowindex - 1].Quantity);
+                            bookmarkText.GetFirstChild<Text>().Text =
+                                Convert.ToString(invoiceItems[rowindex - 1].Quantity);
                         }
 
-                        string itemCode = string.Empty;
-                        string itemDesc = string.Empty;
+                        var itemCode = string.Empty;
+                        var itemDesc = string.Empty;
                         if (invoiceItems[rowindex - 1].ItemAssemblyType == 1)
                         {
-                            var assembly = estDTO.Assemblies.Where(p => p.Id == invoiceItems[rowindex - 1].ItemAssemblyID).FirstOrDefault();
+                            var assembly = estDTO.Assemblies
+                                .Where(p => p.Id == invoiceItems[rowindex - 1].ItemAssemblyID).FirstOrDefault();
                             if (assembly != null)
                             {
                                 itemCode = assembly.Code;
@@ -2111,40 +2398,46 @@ namespace KRF.Persistence.FunctionalContractImplementation
                         }
                         else
                         {
-                            var item = estDTO.Items.Where(p => p.Id == invoiceItems[rowindex - 1].ItemAssemblyID).FirstOrDefault();
+                            var item = estDTO.Items.Where(p => p.Id == invoiceItems[rowindex - 1].ItemAssemblyID)
+                                .FirstOrDefault();
                             if (item != null)
                             {
                                 itemCode = item.Code;
                                 itemDesc = item.Name;
                             }
                         }
+
                         bookmarkStart = bookmarkMap["DESC" + rowindex.ToString()];
                         bookmarkText = bookmarkStart.NextSibling<Run>();
                         if (bookmarkText != null)
                         {
                             bookmarkText.GetFirstChild<Text>().Text = "";
-                            RunProperties runProperties = bookmarkText.AppendChild(new RunProperties());
-                            runProperties.Append(new Text() { Text = itemDesc });
+                            var runProperties = bookmarkText.AppendChild(new RunProperties());
+                            runProperties.Append(new Text() {Text = itemDesc});
                         }
+
                         bookmarkStart = bookmarkMap["UC" + rowindex.ToString()];
                         bookmarkText = bookmarkStart.NextSibling<Run>();
                         if (bookmarkText != null)
                         {
                             bookmarkText.GetFirstChild<Text>().Text = "";
-                            RunProperties runProperties = bookmarkText.AppendChild(new RunProperties());
-                            runProperties.Append(new Text() { Text = invoiceItems[rowindex - 1].Price.ToString() });
+                            var runProperties = bookmarkText.AppendChild(new RunProperties());
+                            runProperties.Append(new Text() {Text = invoiceItems[rowindex - 1].Price.ToString()});
                         }
+
                         bookmarkStart = bookmarkMap["AMOUNT" + rowindex.ToString()];
                         bookmarkText = bookmarkStart.NextSibling<Run>();
                         if (bookmarkText != null)
                         {
                             bookmarkText.GetFirstChild<Text>().Text = "";
-                            bookmarkText.GetFirstChild<Text>().Text = "$" + Math.Round(invoiceItems[rowindex - 1].Cost, 2).ToString("N", new CultureInfo("en-US"));
+                            bookmarkText.GetFirstChild<Text>().Text =
+                                "$" + Math.Round(invoiceItems[rowindex - 1].Cost, 2)
+                                    .ToString("N", new CultureInfo("en-US"));
                         }
                     }
                 }
 
-                JobDocument e = new JobDocument
+                var e = new JobDocument
                 {
                     JobID = jobInvoice.JobID,
                     Name = "Invoice_" + jobInvoice.InvoiceDate.ToString("dd-MMM-yyyy") + ".docx",
@@ -2164,10 +2457,12 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <returns></returns>
         public JobDTO GetJobInspection(int inspID)
         {
-            using (var sqlConnection = new SqlConnection(_connectionString))
+            var dbConnection = new DataAccessFactory();
+            using (var conn = dbConnection.CreateConnection())
+
             {
-                sqlConnection.Open();
-                JobInspection jobInspection = sqlConnection.Get<JobInspection>(inspID);
+                conn.Open();
+                var jobInspection = conn.Get<JobInspection>(inspID);
 
                 return new JobDTO()
                 {
@@ -2175,6 +2470,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
                 };
             }
         }
+
         /// <summary>
         /// Toggle job Inspection status
         /// </summary>
@@ -2183,13 +2479,15 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <returns></returns>
         public bool ToggleJobInspectionStatus(int inspID, bool active)
         {
-            using (var sqlConnection = new SqlConnection(_connectionString))
+            var dbConnection = new DataAccessFactory();
+            using (var conn = dbConnection.CreateConnection())
+
             {
-                sqlConnection.Open();
-                JobInspection jobInspection = sqlConnection.Get<JobInspection>(inspID);
+                conn.Open();
+                var jobInspection = conn.Get<JobInspection>(inspID);
                 jobInspection.Active = active;
                 jobInspection.DateUpdated = DateTime.Now;
-                var isUpdated = sqlConnection.Update<JobInspection>(jobInspection);
+                var isUpdated = conn.Update(jobInspection);
                 return isUpdated;
             }
         }
@@ -2201,16 +2499,20 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <returns></returns>
         public List<JobInspection> GetJobInspections(int jobID)
         {
-            using (var sqlConnection = new SqlConnection(_connectionString))
+            var dbConnection = new DataAccessFactory();
+            using (var conn = dbConnection.CreateConnection())
+
             {
-                sqlConnection.Open();
-                var predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
+                conn.Open();
+                var predicateGroup = new PredicateGroup
+                    {Operator = GroupOperator.And, Predicates = new List<IPredicate>()};
                 predicateGroup.Predicates.Add(Predicates.Field<JobInspection>(s => s.JobID, Operator.Eq, jobID));
                 predicateGroup.Predicates.Add(Predicates.Field<JobInspection>(s => s.Active, Operator.Eq, true));
-                IList<JobInspection> jobInspections = sqlConnection.GetList<JobInspection>(predicateGroup).ToList();
+                IList<JobInspection> jobInspections = conn.GetList<JobInspection>(predicateGroup).ToList();
                 return jobInspections.ToList();
             }
         }
+
         /// <summary>
         /// Create Job Inspection
         /// </summary>
@@ -2220,19 +2522,24 @@ namespace KRF.Persistence.FunctionalContractImplementation
         {
             using (var transactionScope = new TransactionScope())
             {
-                using (var sqlConnection = new SqlConnection(_connectionString))
+                var dbConnection = new DataAccessFactory();
+                using (var conn = dbConnection.CreateConnection())
+
                 {
-                    sqlConnection.Open();
+                    conn.Open();
                     jobInspection.DateCreated = DateTime.Now;
-                    jobInspection.ResultDate = Convert.ToDateTime(jobInspection.ResultDate).Year < 1000 ? null : jobInspection.ResultDate;
+                    jobInspection.ResultDate = Convert.ToDateTime(jobInspection.ResultDate).Year < 1000
+                        ? null
+                        : jobInspection.ResultDate;
                     jobInspection.StatusID = (jobInspection.StatusID == 0 ? null : jobInspection.StatusID);
                     jobInspection.Active = true;
-                    int id = sqlConnection.Insert<JobInspection>(jobInspection);
+                    int id = conn.Insert(jobInspection);
                     transactionScope.Complete();
                     return id;
                 }
             }
         }
+
         /// <summary>
         /// Edit Job Inspection
         /// </summary>
@@ -2242,64 +2549,80 @@ namespace KRF.Persistence.FunctionalContractImplementation
         {
             using (var transactionScope = new TransactionScope())
             {
-                using (var sqlConnection = new SqlConnection(_connectionString))
+                var dbConnection = new DataAccessFactory();
+                using (var conn = dbConnection.CreateConnection())
+
                 {
-                    int id = jobInspection.InspID;
-                    JobInspection jobInspCurrent = sqlConnection.Get<JobInspection>(id);
+                    var id = jobInspection.InspID;
+                    var jobInspCurrent = conn.Get<JobInspection>(id);
                     jobInspection.DateCreated = jobInspCurrent.DateCreated;
                     jobInspection.Active = jobInspCurrent.Active;
                     jobInspection.DateUpdated = DateTime.Now;
-                    jobInspection.ResultDate = Convert.ToDateTime(jobInspection.ResultDate).Year < 1000 ? null : jobInspection.ResultDate;
+                    jobInspection.ResultDate = Convert.ToDateTime(jobInspection.ResultDate).Year < 1000
+                        ? null
+                        : jobInspection.ResultDate;
                     jobInspection.StatusID = (jobInspection.StatusID == 0 ? null : jobInspection.StatusID);
 
-                    var isEdited = sqlConnection.Update<JobInspection>(jobInspection);
+                    var isEdited = conn.Update(jobInspection);
                     transactionScope.Complete();
                     return isEdited;
                 }
             }
         }
+
         /// <summary>
         /// Get Permit List
         /// </summary>
         /// <returns></returns>
         public List<Permit> GetPrmitList()
         {
-            using (var sqlConnection = new SqlConnection(_connectionString))
+            var dbConnection = new DataAccessFactory();
+            using (var conn = dbConnection.CreateConnection())
+
             {
-                sqlConnection.Open();
-                var predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
+                conn.Open();
+                var predicateGroup = new PredicateGroup
+                    {Operator = GroupOperator.And, Predicates = new List<IPredicate>()};
                 predicateGroup.Predicates.Add(Predicates.Field<Permit>(s => s.Active, Operator.Eq, true));
-                IList<Permit> permits = sqlConnection.GetList<Permit>(predicateGroup).ToList();
+                IList<Permit> permits = conn.GetList<Permit>(predicateGroup).ToList();
                 return permits.ToList();
             }
         }
+
         /// <summary>
         /// Get Permit Inspection List
         /// </summary>
         /// <returns></returns>
         public List<PermitInspection> GetPrmitInspectionList()
         {
-            using (var sqlConnection = new SqlConnection(_connectionString))
+            var dbConnection = new DataAccessFactory();
+            using (var conn = dbConnection.CreateConnection())
+
             {
-                sqlConnection.Open();
-                var predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
+                conn.Open();
+                var predicateGroup = new PredicateGroup
+                    {Operator = GroupOperator.And, Predicates = new List<IPredicate>()};
                 predicateGroup.Predicates.Add(Predicates.Field<PermitInspection>(s => s.Active, Operator.Eq, true));
-                IList<PermitInspection> permitInspection = sqlConnection.GetList<PermitInspection>(predicateGroup).ToList();
+                IList<PermitInspection> permitInspection = conn.GetList<PermitInspection>(predicateGroup).ToList();
                 return permitInspection.ToList();
             }
         }
+
         /// <summary>
         /// Get Permit Status List
         /// </summary>
         /// <returns></returns>
         public List<PermitStatus> GetPrmitStatusList()
         {
-            using (var sqlConnection = new SqlConnection(_connectionString))
+            var dbConnection = new DataAccessFactory();
+            using (var conn = dbConnection.CreateConnection())
+
             {
-                sqlConnection.Open();
-                var predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
+                conn.Open();
+                var predicateGroup = new PredicateGroup
+                    {Operator = GroupOperator.And, Predicates = new List<IPredicate>()};
                 predicateGroup.Predicates.Add(Predicates.Field<PermitStatus>(s => s.Active, Operator.Eq, true));
-                IList<PermitStatus> permitStatus = sqlConnection.GetList<PermitStatus>(predicateGroup).ToList();
+                IList<PermitStatus> permitStatus = conn.GetList<PermitStatus>(predicateGroup).ToList();
                 return permitStatus.ToList();
             }
         }
@@ -2309,18 +2632,25 @@ namespace KRF.Persistence.FunctionalContractImplementation
             Job job = null;
             KRF.Core.Entities.Sales.CustomerAddress custAdd = null;
             KRF.Core.Entities.ValueList.City city = null;
-            KRF.Core.Entities.ValueList.State state = null;
-            string jobAddress = string.Empty;
-            using (var sqlConnection = new SqlConnection(_connectionString))
-            {
-                sqlConnection.Open();
+            State state = null;
+            var jobAddress = string.Empty;
+            var dbConnection = new DataAccessFactory();
+            using (var conn = dbConnection.CreateConnection())
 
-                job = sqlConnection.Get<Job>(jobID);
-                custAdd = sqlConnection.Get<KRF.Core.Entities.Sales.CustomerAddress>(job.JobAddressID);
-                city = sqlConnection.Get<KRF.Core.Entities.ValueList.City>(custAdd.City);
-                state = sqlConnection.Get<KRF.Core.Entities.ValueList.State>(custAdd.State);
-                jobAddress = " " +custAdd.Address1.Trim() + (custAdd.Address2 != null ? ",\n " + custAdd.Address2.Trim() : "") + ",\n " + (city != null ?  city.Description.Trim() : "") + (state != null ? ", " + state.Abbreviation.Trim() : "") + (custAdd.ZipCode != null ? ", " + custAdd.ZipCode.Trim() : "");
+            {
+                conn.Open();
+
+                job = conn.Get<Job>(jobID);
+                custAdd = conn.Get<KRF.Core.Entities.Sales.CustomerAddress>(job.JobAddressID);
+                city = conn.Get<KRF.Core.Entities.ValueList.City>(custAdd.City);
+                state = conn.Get<State>(custAdd.State);
+                jobAddress = " " + custAdd.Address1.Trim() +
+                             (custAdd.Address2 != null ? ",\n " + custAdd.Address2.Trim() : "") + ",\n " +
+                             (city != null ? city.Description.Trim() : "") +
+                             (state != null ? ", " + state.Abbreviation.Trim() : "") +
+                             (custAdd.ZipCode != null ? ", " + custAdd.ZipCode.Trim() : "");
             }
+
             return jobAddress;
         }
     }

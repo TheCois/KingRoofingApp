@@ -36,9 +36,9 @@ namespace KRF.Core.Repository
         /// <summary>
         /// Get List of Job Tasks
         /// </summary>
-        /// <param name="jobID"></param>
+        /// <param name="jobId"></param>
         /// <returns></returns>
-        List<JobTask> GetJobTasks(int jobID);
+        List<JobTask> GetJobTasks(int jobId);
         /// <summary>
         /// Create Job Task
         /// </summary>
@@ -54,10 +54,10 @@ namespace KRF.Core.Repository
         /// <summary>
         /// Set Task status
         /// </summary>
-        /// <param name="taskID"></param>
+        /// <param name="jobId"></param>
         /// <param name="isCompleted"></param>
         /// <returns></returns>
-        bool UpdateTaskStatus(int taskID, bool isCompleted);
+        bool UpdateTaskStatus(int jobId, bool isCompleted);
         /// <summary>
         /// Get Job Detail by JobID
         /// </summary>
@@ -72,104 +72,104 @@ namespace KRF.Core.Repository
         /// <summary>
         /// Calculate Estimated Labor Cost
         /// </summary>
-        /// <param name="jobID"></param>
+        /// <param name="jobId"></param>
         /// <param name="jobStartDate"></param>
-        /// <param name="jobAssigments"></param>
+        /// <param name="jobAssignments"></param>
         /// <returns></returns>
-        decimal CalculateEstimatedLaborCost(int jobID, DateTime jobStartDate, List<JobAssignment> jobAssigments);
+        decimal CalculateEstimatedLaborCost(int jobId, DateTime jobStartDate, List<JobAssignment> jobAssignments);
         /// <summary>
         /// Calculate Job End Date from estimated Labor hours
         /// </summary>
         /// <param name="jobStartDate"></param>
-        /// <param name="estimatedWorkgHours"></param>
+        /// <param name="estimatedWorkingHours"></param>
         /// <param name="avgWorkingHours"></param>
         /// <returns></returns>
-        DateTime CalculateJobEndDate(DateTime jobStartDate, decimal estimatedWorkgHours, int avgWorkingHours);
+        DateTime CalculateJobEndDate(DateTime jobStartDate, decimal estimatedWorkingHours, int avgWorkingHours);
         /// <summary>
         /// Mark job status as complete
         /// </summary>
-        /// <param name="jobID"></param>
+        /// <param name="jobId"></param>
         /// <param name="tobeEnabled"></param>
         /// <returns></returns>
-        bool ToggleJobStatus(int jobID, bool tobeEnabled);
+        bool ToggleJobStatus(int jobId, bool tobeEnabled);
         /// <summary>
         /// Toggle job PO status
         /// </summary>
-        /// <param name="poID"></param>
+        /// <param name="poId"></param>
         /// <param name="active"></param>
         /// <returns></returns>
-        bool ToggleJobPOStatus(int poID, bool active);
+        bool ToggleJobPOStatus(int poId, bool active);
         /// <summary>
         /// Get List of Job PO
         /// </summary>
-        /// <param name="poID"></param>
+        /// <param name="poId"></param>
         /// <returns></returns>
-        JobDTO GetJobPO(int poID);
+        JobDTO GetJobPO(int poId);
         /// <summary>
         /// Get List of Job POs
         /// </summary>
-        /// <param name="jobID"></param>
+        /// <param name="jobId"></param>
         /// <returns></returns>
-        List<JobPO> GetJobPOs(int jobID);
+        List<JobPO> GetJobPOs(int jobId);
         /// <summary>
         /// Create Job PO
         /// </summary>
-        /// <param name="jobPO"></param>
+        /// <param name="jobPo"></param>
         /// <param name="poEstimateItems"></param>
         /// <returns></returns>
-        int CreateJobPO(JobPO jobPO, List<POEstimateItem> poEstimateItems);
+        int CreateJobPO(JobPO jobPo, List<POEstimateItem> poEstimateItems);
         /// <summary>
         /// Edit Job PO
         /// </summary>
-        /// <param name="jobPO"></param>
+        /// <param name="jobPo"></param>
         /// <param name="poEstimateItems"></param>
         /// <returns></returns>
-        bool EditJobPO(JobPO jobPO, List<POEstimateItem> poEstimateItems);
+        bool EditJobPO(JobPO jobPo, List<POEstimateItem> poEstimateItems);
         /// <summary>
         /// Create PO Document
         /// </summary>
-        /// <param name="poID"></param>
+        /// <param name="poId"></param>
         /// <returns></returns>
-        byte[] CreatePODocument(int poID);
+        byte[] CreatePODocument(int poId);
         /// <summary>
         /// Get List of Job CO
         /// </summary>
-        /// <param name="coID"></param>
+        /// <param name="coId"></param>
         /// <returns></returns>
-        JobDTO GetJobCO(int coID);
+        JobDTO GetJobCO(int coId);
         /// <summary>
         /// Get List of Job COs
         /// </summary>
-        /// <param name="jobID"></param>
+        /// <param name="jobId"></param>
         /// <returns></returns>
-        List<JobCO> GetJobCOs(int jobID);
+        List<JobCO> GetJobCOs(int jobId);
         /// <summary>
         /// Create Job CO
         /// </summary>
-        /// <param name="jobCO"></param>
+        /// <param name="jobCo"></param>
         /// <param name="coEstimateItems"></param>
         /// <returns></returns>
-        int CreateJobCO(JobCO jobCO, List<COEstimateItem> coEstimateItems);
+        int CreateJobCO(JobCO jobCo, List<COEstimateItem> coEstimateItems);
         /// <summary>
         /// Edit Job CO
         /// </summary>
-        /// <param name="jobCO"></param>
+        /// <param name="jobCo"></param>
         /// <param name="coEstimateItems"></param>
         /// <returns></returns>
-        bool EditJobCO(JobCO jobCO, List<COEstimateItem> coEstimateItems);
+        bool EditJobCO(JobCO jobCo, List<COEstimateItem> coEstimateItems);
         /// <summary>
         /// Toggle job CO status
         /// </summary>
-        /// <param name="coID"></param>
+        /// <param name="coId"></param>
         /// <param name="active"></param>
         /// <returns></returns>
-        bool ToggleJobCOStatus(int coID, bool active);
+        bool ToggleJobCOStatus(int coId, bool active);
         /// <summary>
         /// Create CO Document
         /// </summary>
-        /// <param name="coID"></param>
+        /// <param name="coId"></param>
         /// <returns></returns>
-        byte[] CreateCODocument(int coID);
+        byte[] CreateCODocument(int coId);
         /// <summary>
         /// Get List of Job Documents
         /// </summary>
@@ -178,15 +178,15 @@ namespace KRF.Core.Repository
         /// <summary>
         /// Get List of Job Documents
         /// </summary>
-        /// <param name="jobID"></param>
+        /// <param name="jobId"></param>
         /// <returns></returns>
-        List<JobDocument> GetJobDocuments(int jobID);
+        List<JobDocument> GetJobDocuments(int jobId);
         /// <summary>
         /// Get a job document
         /// </summary>
-        /// <param name="jobDocumentID"></param>
+        /// <param name="jobDocumentId"></param>
         /// <returns></returns>
-        JobDocument GetJobDocument(int jobDocumentID);
+        JobDocument GetJobDocument(int jobDocumentId);
         /// <summary>
         /// Save Job document
         /// </summary>
@@ -196,66 +196,66 @@ namespace KRF.Core.Repository
         /// <summary>
         /// Delete job document by jobDocumentID
         /// </summary>
-        /// <param name="jobDocumentID"></param>
+        /// <param name="jobDocumentId"></param>
         /// <returns></returns>
-        bool DeleteJobDocument(int jobDocumentID);
+        bool DeleteJobDocument(int jobDocumentId);
         /// <summary>
         /// Get List of Job WO
         /// </summary>
-        /// <param name="woID"></param>
+        /// <param name="woId"></param>
         /// <returns></returns>
-        JobDTO GetJobWO(int woID);
+        JobDTO GetJobWO(int woId);
         /// <summary>
         /// Toggle job PO status
         /// </summary>
-        /// <param name="woID"></param>
+        /// <param name="woId"></param>
         /// <param name="active"></param>
         /// <returns></returns>
-        bool ToggleJobWOStatus(int woID, bool active);
+        bool ToggleJobWOStatus(int woId, bool active);
         /// <summary>
         /// Get JobAssignment List
         /// </summary>
-        /// <param name="jobID"></param>
+        /// <param name="jobId"></param>
         /// <returns></returns>
-        List<JobAssignment> GetJobAssignments(int jobID);
+        List<JobAssignment> GetJobAssignments(int jobId);
         /// <summary>
         /// Get JobAssignment Crew Leader List
         /// </summary>
-        /// <param name="jobID"></param>
+        /// <param name="jobId"></param>
         /// <returns></returns>
-        List<vw_JobAssignmentCrewLeaders> GetJobAssignmentCrewLeaders(int jobID);
+        List<vw_JobAssignmentCrewLeaders> GetJobAssignmentCrewLeaders(int jobId);
         /// <summary>
         /// Get List of Job WOs
         /// </summary>
-        /// <param name="jobID"></param>
+        /// <param name="jobId"></param>
         /// <returns></returns>
-        List<JobWO> GetJobWOs(int jobID);
+        List<JobWO> GetJobWOs(int jobId);
         /// <summary>
         /// Create Job WO
         /// </summary>
-        /// <param name="jobWO"></param>
+        /// <param name="jobWo"></param>
         /// <param name="woEstimateItems"></param>
         /// <returns></returns>
-        int CreateJobWO(JobWO jobWO, List<WOEstimateItem> woEstimateItems);
+        int CreateJobWO(JobWO jobWo, List<WOEstimateItem> woEstimateItems);
         /// <summary>
         /// Edit Job WO
         /// </summary>
-        /// <param name="jobWO"></param>
+        /// <param name="jobWo"></param>
         /// <param name="woEstimateItems"></param>
         /// <returns></returns>
-        bool EditJobWO(JobWO jobWO, List<WOEstimateItem> woEstimateItems);
+        bool EditJobWO(JobWO jobWo, List<WOEstimateItem> woEstimateItems);
         /// <summary>
         /// Create WO Document
         /// </summary>
-        /// <param name="woID"></param>
+        /// <param name="woId"></param>
         /// <returns></returns>
-        JobDocument CreateWODocument(int woID);
+        JobDocument CreateWODocument(int woId);
         /// <summary>
         /// Get List of Job Invoices
         /// </summary>
-        /// <param name="jobID"></param>
+        /// <param name="jobId"></param>
         /// <returns></returns>
-        List<JobInvoice> GetJobInvoices(int jobID);
+        List<JobInvoice> GetJobInvoices(int jobId);
         /// <summary>
         /// Create Job Invoice
         /// </summary>
@@ -273,42 +273,42 @@ namespace KRF.Core.Repository
         /// <summary>
         /// Get Job Invoice Detail
         /// </summary>
-        /// <param name="invoiceID"></param>
+        /// <param name="invoiceId"></param>
         /// <returns></returns>
-        JobDTO GetJobInvoice(int invoiceID);
+        JobDTO GetJobInvoice(int invoiceId);
         /// <summary>
         /// Toggle Job Invoice status
         /// </summary>
-        /// <param name="invoiceID"></param>
+        /// <param name="invoiceId"></param>
         /// <param name="active"></param>
         /// <returns></returns>
-        bool ToggleJobInvoiceStatus(int invoiceID, bool active);
+        bool ToggleJobInvoiceStatus(int invoiceId, bool active);
         /// <summary>
         /// Create Invoice Document
         /// </summary>
-        /// <param name="invoiceID"></param>
+        /// <param name="invoiceId"></param>
         /// <returns></returns>
-        JobDocument CreateInvoiceDocument(int invoiceID);
+        JobDocument CreateInvoiceDocument(int invoiceId);
 
         /// <summary>
         /// Get List of Job Inspection
         /// </summary>
-        /// <param name="inspID"></param>
+        /// <param name="inspectionId"></param>
         /// <returns></returns>
-        JobDTO GetJobInspection(int inspID);
+        JobDTO GetJobInspection(int inspectionId);
         /// <summary>
         /// Toggle job Inspection status
         /// </summary>
-        /// <param name="inspID"></param>
+        /// <param name="inspectionId"></param>
         /// <param name="active"></param>
         /// <returns></returns>
-        bool ToggleJobInspectionStatus(int inspID, bool active);
+        bool ToggleJobInspectionStatus(int inspectionId, bool active);
         /// <summary>
         /// Get List of Job Inspections
         /// </summary>
-        /// <param name="jobID"></param>
+        /// <param name="jobId"></param>
         /// <returns></returns>
-        List<JobInspection> GetJobInspections(int jobID);
+        List<JobInspection> GetJobInspections(int jobId);
         /// <summary>
         /// Create Job Inspection
         /// </summary>
@@ -325,17 +325,17 @@ namespace KRF.Core.Repository
         /// Get Permit List
         /// </summary>
         /// <returns></returns>
-        List<Permit> GetPrmitList();
+        List<Permit> GetPermitList();
         /// <summary>
         /// Get Permit Inspection List
         /// </summary>
         /// <returns></returns>
-        List<PermitInspection> GetPrmitInspectionList();
+        List<PermitInspection> GetPermitInspectionList();
         /// <summary>
         /// Get Permit Status List
         /// </summary>
         /// <returns></returns>
-        List<PermitStatus> GetPrmitStatusList();
-        string GetJobAddress(int jobID);
+        List<PermitStatus> GetPermitStatusList();
+        string GetJobAddress(int jobId);
     }
 }

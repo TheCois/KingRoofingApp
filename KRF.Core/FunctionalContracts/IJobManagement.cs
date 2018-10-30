@@ -37,9 +37,9 @@ namespace KRF.Core.FunctionalContracts
         /// <summary>
         /// Get List of Job Tasks
         /// </summary>
-        /// <param name="jobID"></param>
+        /// <param name="jobId"></param>
         /// <returns></returns>
-        List<JobTask> GetJobTasks(int jobID);
+        List<JobTask> GetJobTasks(int jobId);
         /// <summary>
         /// Create Job Task
         /// </summary>

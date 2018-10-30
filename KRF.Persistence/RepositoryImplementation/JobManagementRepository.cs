@@ -1,33 +1,32 @@
-﻿using KRF.Core.DTO.Job;
+﻿using System;
+using System.Collections.Generic;
+using KRF.Core.DTO.Job;
 using KRF.Core.Entities.Customer;
 using KRF.Core.Entities.ValueList;
 using KRF.Core.FunctionalContracts;
 using KRF.Core.Repository;
-using StructureMap;
-using System;
-using System.Collections.Generic;
 
-namespace KRF.Persistence.FunctionalContractImplementation
+namespace KRF.Persistence.RepositoryImplementation
 {
     public class JobManagementRepository : IJobManagementRepository
     {
-        private readonly IJobManagement _JobManagement;
+        private readonly IJobManagement jobManagement_;
 
         /// <summary>
         /// Constructor
         /// </summary>
         public JobManagementRepository()
         {
-            _JobManagement = ObjectFactory.GetInstance<IJobManagement>();
+            jobManagement_ = ObjectFactory.GetInstance<IJobManagement>();
         }
         /// <summary>
         /// Get Job Detail by JobID
         /// </summary>
-        /// <param name="jobID"></param>
+        /// <param name="jobId"></param>
         /// <returns></returns>
-        public JobDTO GetJobDetail(int jobID)
+        public JobDTO GetJobDetail(int jobId)
         {
-            return _JobManagement.GetJobDetail(jobID);
+            return jobManagement_.GetJobDetail(jobId);
         }
         /// <summary>
         /// Get Job List
@@ -35,7 +34,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <returns></returns>
         public JobDTO GetJobs()
         {
-            return _JobManagement.GetJobs();
+            return jobManagement_.GetJobs();
         }
 
         /// <summary>
@@ -45,7 +44,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <returns></returns>
         public int CreateJobInformation(Job job)
         {
-            return _JobManagement.CreateJobInformation(job);
+            return jobManagement_.CreateJobInformation(job);
         }
         /// <summary>
         /// Update Job Information record
@@ -54,7 +53,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <returns></returns>
         public bool EditJobInformation(Job job)
         {
-            return _JobManagement.EditJobInformation(job);
+            return jobManagement_.EditJobInformation(job);
         }
         /// <summary>
         /// Update Job Summary record
@@ -63,16 +62,16 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <returns></returns>
         public bool EditJobSummary(Job job)
         {
-            return _JobManagement.EditJobSummary(job);
+            return jobManagement_.EditJobSummary(job);
         }
         /// <summary>
         /// Get List of Job Tasks
         /// </summary>
-        /// <param name="jobID"></param>
+        /// <param name="jobId"></param>
         /// <returns></returns>
-        public List<JobTask> GetJobTasks(int jobID)
+        public List<JobTask> GetJobTasks(int jobId)
         {
-            return _JobManagement.GetJobTasks(jobID);
+            return jobManagement_.GetJobTasks(jobId);
         }
         /// <summary>
         /// Create Job Task
@@ -81,7 +80,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <returns></returns>
         public int CreateJobTask(JobTask jobTask)
         {
-            return _JobManagement.CreateJobTask(jobTask);
+            return jobManagement_.CreateJobTask(jobTask);
         }
         /// <summary>
         /// Edit Job Task
@@ -90,17 +89,17 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <returns></returns>
         public bool EditJobTask(JobTask jobTask)
         {
-            return _JobManagement.EditJobTask(jobTask);
+            return jobManagement_.EditJobTask(jobTask);
         }
         /// <summary>
         /// Set Task status
         /// </summary>
-        /// <param name="jobID"></param>
+        /// <param name="jobId"></param>
         /// <param name="isCompleted"></param>
         /// <returns></returns>
-        public bool UpdateTaskStatus(int jobID, bool isCompleted)
+        public bool UpdateTaskStatus(int jobId, bool isCompleted)
         {
-            return _JobManagement.UpdateTaskStatus(jobID, isCompleted);
+            return jobManagement_.UpdateTaskStatus(jobId, isCompleted);
         }
         /// <summary>
         /// Edit Job Assignment records
@@ -110,154 +109,154 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <returns></returns>
         public bool EditJobAssignment(Job job, List<JobAssignment> jobAssignments)
         {
-            return _JobManagement.EditJobAssignment(job, jobAssignments);
+            return jobManagement_.EditJobAssignment(job, jobAssignments);
         }
 
         /// <summary>
         /// Calculate Estimated Labor Hours
         /// </summary>
-        /// <param name="jobID"></param>
+        /// <param name="jobId"></param>
         /// <param name="jobStartDate"></param>
-        /// <param name="jobAssigments"></param>
+        /// <param name="jobAssignments"></param>
         /// <returns></returns>
-        public decimal CalculateEstimatedLaborCost(int jobID, System.DateTime jobStartDate, List<JobAssignment> jobAssigments)
+        public decimal CalculateEstimatedLaborCost(int jobId, DateTime jobStartDate, List<JobAssignment> jobAssignments)
         {
-            return _JobManagement.CalculateEstimatedLaborCost(jobID, jobStartDate, jobAssigments);
+            return jobManagement_.CalculateEstimatedLaborCost(jobId, jobStartDate, jobAssignments);
         }
         /// <summary>
         /// Calculate Job End Date from estimated Labor hours
         /// </summary>
         /// <param name="jobStartDate"></param>
-        /// <param name="estimatedWorkgHours"></param>
+        /// <param name="estimatedWorkingHours"></param>
         /// <param name="avgWorkingHours"></param>
         /// <returns></returns>
-        public DateTime CalculateJobEndDate(DateTime jobStartDate, decimal estimatedWorkgHours, int avgWorkingHours)
+        public DateTime CalculateJobEndDate(DateTime jobStartDate, decimal estimatedWorkingHours, int avgWorkingHours)
         {
-            return _JobManagement.CalculateJobEndDate(jobStartDate, estimatedWorkgHours, avgWorkingHours);
+            return jobManagement_.CalculateJobEndDate(jobStartDate, estimatedWorkingHours, avgWorkingHours);
         }
         /// <summary>
         /// Mark job status as complete
         /// </summary>
-        /// <param name="jobID"></param>
+        /// <param name="jobId"></param>
         /// <param name="tobeEnabled"></param>
         /// <returns></returns>
-        public bool ToggleJobStatus(int jobID, bool tobeEnabled)
+        public bool ToggleJobStatus(int jobId, bool tobeEnabled)
         {
-            return _JobManagement.ToggleJobStatus(jobID, tobeEnabled);
+            return jobManagement_.ToggleJobStatus(jobId, tobeEnabled);
         }
         /// <summary>
         /// Toggle job PO status
         /// </summary>
-        /// <param name="poID"></param>
+        /// <param name="poId"></param>
         /// <param name="active"></param>
         /// <returns></returns>
-        public bool ToggleJobPOStatus(int poID, bool active)
+        public bool ToggleJobPOStatus(int poId, bool active)
         {
-            return _JobManagement.ToggleJobPOStatus(poID, active);
+            return jobManagement_.ToggleJobPOStatus(poId, active);
         }
         /// <summary>
         /// Get List of Job PO
         /// </summary>
-        /// <param name="poID"></param>
+        /// <param name="poId"></param>
         /// <returns></returns>
-        public JobDTO GetJobPO(int poID)
+        public JobDTO GetJobPO(int poId)
         {
-            return _JobManagement.GetJobPO(poID);
+            return jobManagement_.GetJobPO(poId);
         }
         /// <summary>
         /// Get List of Job POs
         /// </summary>
-        /// <param name="jobID"></param>
+        /// <param name="jobId"></param>
         /// <returns></returns>
-        public List<JobPO> GetJobPOs(int jobID)
+        public List<JobPO> GetJobPOs(int jobId)
         {
-            return _JobManagement.GetJobPOs(jobID);
+            return jobManagement_.GetJobPOs(jobId);
         }
         /// <summary>
         /// Create Job PO
         /// </summary>
-        /// <param name="jobPO"></param>
+        /// <param name="jobPo"></param>
         /// <param name="poEstimateItems"></param>
         /// <returns></returns>
-        public int CreateJobPO(JobPO jobPO, List<POEstimateItem> poEstimateItems)
+        public int CreateJobPO(JobPO jobPo, List<POEstimateItem> poEstimateItems)
         {
-            return _JobManagement.CreateJobPO(jobPO, poEstimateItems);
+            return jobManagement_.CreateJobPO(jobPo, poEstimateItems);
         }
         /// <summary>
         /// Edit Job PO
         /// </summary>
-        /// <param name="jobPO"></param>
+        /// <param name="jobPo"></param>
         /// <param name="poEstimateItems"></param>
         /// <returns></returns>
-        public bool EditJobPO(JobPO jobPO, List<POEstimateItem> poEstimateItems)
+        public bool EditJobPO(JobPO jobPo, List<POEstimateItem> poEstimateItems)
         {
-            return _JobManagement.EditJobPO(jobPO, poEstimateItems);
+            return jobManagement_.EditJobPO(jobPo, poEstimateItems);
         }
         /// <summary>
         /// Create PO Document
         /// </summary>
-        /// <param name="poID"></param>
+        /// <param name="poId"></param>
         /// <returns></returns>
-        public byte[] CreatePODocument(int poID)
+        public byte[] CreatePODocument(int poId)
         {
-            return _JobManagement.CreatePODocument(poID);
+            return jobManagement_.CreatePODocument(poId);
         }
         /// <summary>
         /// Get List of Job CO
         /// </summary>
-        /// <param name="coID"></param>
+        /// <param name="coId"></param>
         /// <returns></returns>
-        public JobDTO GetJobCO(int coID)
+        public JobDTO GetJobCO(int coId)
         {
-            return _JobManagement.GetJobCO(coID);
+            return jobManagement_.GetJobCO(coId);
         }
         /// <summary>
         /// Get List of Job COs
         /// </summary>
-        /// <param name="jobID"></param>
+        /// <param name="jobId"></param>
         /// <returns></returns>
-        public List<JobCO> GetJobCOs(int jobID)
+        public List<JobCO> GetJobCOs(int jobId)
         {
-            return _JobManagement.GetJobCOs(jobID);
+            return jobManagement_.GetJobCOs(jobId);
         }
         /// <summary>
         /// Create Job CO
         /// </summary>
-        /// <param name="jobCO"></param>
+        /// <param name="jobCo"></param>
         /// <param name="coEstimateItems"></param>
         /// <returns></returns>
-        public int CreateJobCO(JobCO jobCO, List<COEstimateItem> coEstimateItems)
+        public int CreateJobCO(JobCO jobCo, List<COEstimateItem> coEstimateItems)
         {
-            return _JobManagement.CreateJobCO(jobCO, coEstimateItems);
+            return jobManagement_.CreateJobCO(jobCo, coEstimateItems);
         }
         /// <summary>
         /// Edit Job CO
         /// </summary>
-        /// <param name="jobCO"></param>
+        /// <param name="jobCo"></param>
         /// <param name="coEstimateItems"></param>
         /// <returns></returns>
-        public bool EditJobCO(JobCO jobCO, List<COEstimateItem> coEstimateItems)
+        public bool EditJobCO(JobCO jobCo, List<COEstimateItem> coEstimateItems)
         {
-            return _JobManagement.EditJobCO(jobCO, coEstimateItems);
+            return jobManagement_.EditJobCO(jobCo, coEstimateItems);
         }
         /// <summary>
         /// Toggle job CO status
         /// </summary>
-        /// <param name="coID"></param>
+        /// <param name="coId"></param>
         /// <param name="active"></param>
         /// <returns></returns>
-        public bool ToggleJobCOStatus(int coID, bool active)
+        public bool ToggleJobCOStatus(int coId, bool active)
         {
-            return _JobManagement.ToggleJobCOStatus(coID, active);
+            return jobManagement_.ToggleJobCOStatus(coId, active);
         }
         /// <summary>
         /// Create CO Document
         /// </summary>
-        /// <param name="coID"></param>
+        /// <param name="coId"></param>
         /// <returns></returns>
-        public byte[] CreateCODocument(int coID)
+        public byte[] CreateCODocument(int coId)
         {
-            return _JobManagement.CreateCODocument(coID);
+            return jobManagement_.CreateCODocument(coId);
         }
         /// <summary>
         /// Get List of Job Documents
@@ -265,25 +264,25 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <returns></returns>
         public List<JobDocumentType> GetJobDocumentTypes()
         {
-            return _JobManagement.GetJobDocumentTypes();
+            return jobManagement_.GetJobDocumentTypes();
         }
         /// <summary>
         /// Get List of Job Documents
         /// </summary>
-        /// <param name="jobID"></param>
+        /// <param name="jobId"></param>
         /// <returns></returns>
-        public List<JobDocument> GetJobDocuments(int jobID)
+        public List<JobDocument> GetJobDocuments(int jobId)
         {
-            return _JobManagement.GetJobDocuments(jobID);
+            return jobManagement_.GetJobDocuments(jobId);
         }
         /// <summary>
         /// Get a job document
         /// </summary>
-        /// <param name="jobDocumentID"></param>
+        /// <param name="jobDocumentId"></param>
         /// <returns></returns>
-        public JobDocument GetJobDocument(int jobDocumentID)
+        public JobDocument GetJobDocument(int jobDocumentId)
         {
-            return _JobManagement.GetJobDocument(jobDocumentID);
+            return jobManagement_.GetJobDocument(jobDocumentId);
         }
         /// <summary>
         /// Save Job document
@@ -292,101 +291,101 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <returns></returns>
         public int SaveDocument(JobDocument jobDocument)
         {
-            return _JobManagement.SaveDocument(jobDocument);
+            return jobManagement_.SaveDocument(jobDocument);
         }
         /// <summary>
         /// Delete job document by jobDocumentID
         /// </summary>
-        /// <param name="jobDocumentID"></param>
+        /// <param name="jobDocumentId"></param>
         /// <returns></returns>
-        public bool DeleteJobDocument(int jobDocumentID)
+        public bool DeleteJobDocument(int jobDocumentId)
         {
-            return _JobManagement.DeleteJobDocument(jobDocumentID);
+            return jobManagement_.DeleteJobDocument(jobDocumentId);
         }
         /// <summary>
         /// Get List of Job WO
         /// </summary>
-        /// <param name="woID"></param>
+        /// <param name="woId"></param>
         /// <returns></returns>
-        public JobDTO GetJobWO(int woID)
+        public JobDTO GetJobWO(int woId)
         {
-            return _JobManagement.GetJobWO(woID);
+            return jobManagement_.GetJobWO(woId);
         }
         /// <summary>
         /// Toggle job PO status
         /// </summary>
-        /// <param name="woID"></param>
+        /// <param name="woId"></param>
         /// <param name="active"></param>
         /// <returns></returns>
-        public bool ToggleJobWOStatus(int woID, bool active)
+        public bool ToggleJobWOStatus(int woId, bool active)
         {
-            return _JobManagement.ToggleJobWOStatus(woID, active);
+            return jobManagement_.ToggleJobWOStatus(woId, active);
         }
         /// <summary>
         /// Get JobAssignment List
         /// </summary>
-        /// <param name="jobID"></param>
+        /// <param name="jobId"></param>
         /// <returns></returns>
-        public List<JobAssignment> GetJobAssignments(int jobID)
+        public List<JobAssignment> GetJobAssignments(int jobId)
         {
-            return _JobManagement.GetJobAssignments(jobID);
+            return jobManagement_.GetJobAssignments(jobId);
         }
         /// <summary>
         /// Get JobAssignment Crew Leader List
         /// </summary>
-        /// <param name="jobID"></param>
+        /// <param name="jobId"></param>
         /// <returns></returns>
-        public List<vw_JobAssignmentCrewLeaders> GetJobAssignmentCrewLeaders(int jobID)
+        public List<vw_JobAssignmentCrewLeaders> GetJobAssignmentCrewLeaders(int jobId)
         {
-            return _JobManagement.GetJobAssignmentCrewLeaders(jobID);
+            return jobManagement_.GetJobAssignmentCrewLeaders(jobId);
         }
 
         /// <summary>
         /// Get List of Job WOs
         /// </summary>
-        /// <param name="jobID"></param>
+        /// <param name="jobId"></param>
         /// <returns></returns>
-        public List<JobWO> GetJobWOs(int jobID)
+        public List<JobWO> GetJobWOs(int jobId)
         {
-            return _JobManagement.GetJobWOs(jobID);
+            return jobManagement_.GetJobWOs(jobId);
         }
         /// <summary>
         /// Create Job WO
         /// </summary>
-        /// <param name="jobWO"></param>
+        /// <param name="jobWo"></param>
         /// <param name="woEstimateItems"></param>
         /// <returns></returns>
-        public int CreateJobWO(JobWO jobWO, List<WOEstimateItem> woEstimateItems)
+        public int CreateJobWO(JobWO jobWo, List<WOEstimateItem> woEstimateItems)
         {
-            return _JobManagement.CreateJobWO(jobWO, woEstimateItems);
+            return jobManagement_.CreateJobWO(jobWo, woEstimateItems);
         }
         /// <summary>
         /// Edit Job WO
         /// </summary>
-        /// <param name="jobWO"></param>
+        /// <param name="jobWo"></param>
         /// <param name="woEstimateItems"></param>
         /// <returns></returns>
-        public bool EditJobWO(JobWO jobWO, List<WOEstimateItem> woEstimateItems)
+        public bool EditJobWO(JobWO jobWo, List<WOEstimateItem> woEstimateItems)
         {
-            return _JobManagement.EditJobWO(jobWO, woEstimateItems);
+            return jobManagement_.EditJobWO(jobWo, woEstimateItems);
         }
         /// <summary>
         /// Create WO Document
         /// </summary>
-        /// <param name="woID"></param>
+        /// <param name="woId"></param>
         /// <returns></returns>
-        public JobDocument CreateWODocument(int woID)
+        public JobDocument CreateWODocument(int woId)
         {
-            return _JobManagement.CreateWODocument(woID);
+            return jobManagement_.CreateWODocument(woId);
         }
         /// <summary>
         /// Get List of Job Invoices
         /// </summary>
-        /// <param name="jobID"></param>
+        /// <param name="jobId"></param>
         /// <returns></returns>
-        public List<JobInvoice> GetJobInvoices(int jobID)
+        public List<JobInvoice> GetJobInvoices(int jobId)
         {
-            return _JobManagement.GetJobInvoices(jobID);
+            return jobManagement_.GetJobInvoices(jobId);
         }
         /// <summary>
         /// Create Job Invoice
@@ -396,7 +395,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <returns></returns>
         public int CreateJobInvoice(JobInvoice jobInvoice, List<InvoiceItems> invoiceItems)
         {
-            return _JobManagement.CreateJobInvoice(jobInvoice, invoiceItems);
+            return jobManagement_.CreateJobInvoice(jobInvoice, invoiceItems);
         }
 
         /// <summary>
@@ -407,64 +406,64 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <returns></returns>
         public bool EditJobInvoice(JobInvoice jobInvoice, List<InvoiceItems> invoiceItems)
         {
-            return _JobManagement.EditJobInvoice(jobInvoice, invoiceItems);
+            return jobManagement_.EditJobInvoice(jobInvoice, invoiceItems);
         }
         /// <summary>
         /// Get Job Invoice Detail
         /// </summary>
-        /// <param name="invoiceID"></param>
+        /// <param name="invoiceId"></param>
         /// <returns></returns>
-        public JobDTO GetJobInvoice(int invoiceID)
+        public JobDTO GetJobInvoice(int invoiceId)
         {
-            return _JobManagement.GetJobInvoice(invoiceID);
+            return jobManagement_.GetJobInvoice(invoiceId);
         }
         /// <summary>
         /// Toggle Job Invoice status
         /// </summary>
-        /// <param name="invoiceID"></param>
+        /// <param name="invoiceId"></param>
         /// <param name="active"></param>
         /// <returns></returns>
-        public bool ToggleJobInvoiceStatus(int invoiceID, bool active)
+        public bool ToggleJobInvoiceStatus(int invoiceId, bool active)
         {
-            return _JobManagement.ToggleJobInvoiceStatus(invoiceID, active);
+            return jobManagement_.ToggleJobInvoiceStatus(invoiceId, active);
         }
         /// <summary>
         /// Create Invoice Document
         /// </summary>
-        /// <param name="invoiceID"></param>
+        /// <param name="invoiceId"></param>
         /// <returns></returns>
-        public JobDocument CreateInvoiceDocument(int invoiceID)
+        public JobDocument CreateInvoiceDocument(int invoiceId)
         {
-            return _JobManagement.CreateInvoiceDocument(invoiceID);
+            return jobManagement_.CreateInvoiceDocument(invoiceId);
         }
 
         /// <summary>
         /// Get List of Job Inspection
         /// </summary>
-        /// <param name="inspID"></param>
+        /// <param name="inspectionId"></param>
         /// <returns></returns>
-        public JobDTO GetJobInspection(int inspID)
+        public JobDTO GetJobInspection(int inspectionId)
         {
-            return _JobManagement.GetJobInspection(inspID);
+            return jobManagement_.GetJobInspection(inspectionId);
         }
         /// <summary>
         /// Toggle job Inspection status
         /// </summary>
-        /// <param name="inspID"></param>
+        /// <param name="inspectionId"></param>
         /// <param name="active"></param>
         /// <returns></returns>
-        public bool ToggleJobInspectionStatus(int inspID, bool active)
+        public bool ToggleJobInspectionStatus(int inspectionId, bool active)
         {
-            return _JobManagement.ToggleJobInspectionStatus(inspID, active);
+            return jobManagement_.ToggleJobInspectionStatus(inspectionId, active);
         }
         /// <summary>
         /// Get List of Job Inspections
         /// </summary>
-        /// <param name="jobID"></param>
+        /// <param name="jobId"></param>
         /// <returns></returns>
-        public List<JobInspection> GetJobInspections(int jobID)
+        public List<JobInspection> GetJobInspections(int jobId)
         {
-            return _JobManagement.GetJobInspections(jobID);
+            return jobManagement_.GetJobInspections(jobId);
         }
         /// <summary>
         /// Create Job Inspection
@@ -473,7 +472,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <returns></returns>
         public int CreateJobInspection(JobInspection jobInspection)
         {
-            return _JobManagement.CreateJobInspection(jobInspection);
+            return jobManagement_.CreateJobInspection(jobInspection);
         }
         /// <summary>
         /// Edit Job Inspection
@@ -482,35 +481,35 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <returns></returns>
         public bool EditJobInspection(JobInspection jobInspection)
         {
-            return _JobManagement.EditJobInspection(jobInspection);
+            return jobManagement_.EditJobInspection(jobInspection);
         }
         /// <summary>
         /// Get Permit List
         /// </summary>
         /// <returns></returns>
-        public List<Permit> GetPrmitList()
+        public List<Permit> GetPermitList()
         {
-            return _JobManagement.GetPrmitList();
+            return jobManagement_.GetPrmitList();
         }
         /// <summary>
         /// Get Permit Inspection List
         /// </summary>
         /// <returns></returns>
-        public List<PermitInspection> GetPrmitInspectionList()
+        public List<PermitInspection> GetPermitInspectionList()
         {
-            return _JobManagement.GetPrmitInspectionList();
+            return jobManagement_.GetPrmitInspectionList();
         }
         /// <summary>
         /// Get Permit Status List
         /// </summary>
         /// <returns></returns>
-        public List<PermitStatus> GetPrmitStatusList()
+        public List<PermitStatus> GetPermitStatusList()
         {
-            return _JobManagement.GetPrmitStatusList();
+            return jobManagement_.GetPrmitStatusList();
         }
-        public string GetJobAddress(int jobID)
+        public string GetJobAddress(int jobId)
         {
-            return _JobManagement.GetJobAddress(jobID);
+            return jobManagement_.GetJobAddress(jobId);
         }
     }
 }
