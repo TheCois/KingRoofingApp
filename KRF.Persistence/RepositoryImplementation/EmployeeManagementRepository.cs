@@ -1,22 +1,21 @@
-﻿using KRF.Core.DTO.Employee;
+﻿using System.Collections.Generic;
+using KRF.Core.DTO.Employee;
 using KRF.Core.Entities.Employee;
 using KRF.Core.FunctionalContracts;
 using KRF.Core.Repository;
-using StructureMap;
-using System.Collections.Generic;
 
-namespace KRF.Persistence.FunctionalContractImplementation
+namespace KRF.Persistence.RepositoryImplementation
 {
     public class EmployeeManagementRepository : IEmployeeManagementRepository
     {
-        private readonly IEmployeeManagement _EmployeeManagement;
+        private readonly IEmployeeManagement employeeManagement_;
 
         /// <summary>
         /// Constructor
         /// </summary>
         public EmployeeManagementRepository()
         {
-            _EmployeeManagement = ObjectFactory.GetInstance<IEmployeeManagement>();
+            employeeManagement_ = ObjectFactory.GetInstance<IEmployeeManagement>();
         }
         /// <summary>
         /// Create an employee
@@ -25,9 +24,9 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <param name="skillItems"></param>
         /// <param name="crewItems"></param>
         /// <returns></returns>
-        public int Create(Employee Employee, List<tbl_EmpSkillDetails> skillItems, List<EmployeeCrewDetails> crewItems)
+        public int Create(Employee employee, List<tbl_EmpSkillDetails> skillItems, List<EmployeeCrewDetails> crewItems)
         {
-            return _EmployeeManagement.CreateEmployee(Employee, skillItems, crewItems);
+            return employeeManagement_.CreateEmployee(employee, skillItems, crewItems);
         }
         /// <summary>
         /// Edit employee
@@ -36,9 +35,9 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <param name="skillItems"></param>
         /// <param name="crewItems"></param>
         /// <returns></returns>
-        public Employee Edit(Employee Employee, List<tbl_EmpSkillDetails> skillItems, List<EmployeeCrewDetails> crewItems)
+        public Employee Edit(Employee employee, List<tbl_EmpSkillDetails> skillItems, List<EmployeeCrewDetails> crewItems)
         {
-            return _EmployeeManagement.EditEmployee(Employee, skillItems, crewItems);
+            return employeeManagement_.EditEmployee(employee, skillItems, crewItems);
         }
 
         /// <summary>
@@ -49,16 +48,16 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <returns></returns>
         public bool ToggleEmployeeStatus(int empId, bool tobeEnabled)
         {
-            return _EmployeeManagement.ToggleEmployeeStatus(empId, tobeEnabled);
+            return employeeManagement_.ToggleEmployeeStatus(empId, tobeEnabled);
         }
 
         /// <summary>
         /// Get all employees
         /// </summary>
         /// <returns></returns>
-        public EmployeeDTO GetEmployes()
+        public EmployeeDTO GetEmployees()
         {
-            return _EmployeeManagement.ListAllEmployees();
+            return employeeManagement_.ListAllEmployees();
         }
 
         /// <summary>
@@ -66,18 +65,18 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// </summary>
         /// <param name="empId"></param>
         /// <returns></returns>
-        public EmployeeDTO GetEmploye(int empId)
+        public EmployeeDTO GetEmployee(int empId)
         {
-            return _EmployeeManagement.GetEmployeeDetails(empId);
+            return employeeManagement_.GetEmployeeDetails(empId);
         }
         /// <summary>
         /// Get Employee By UserID
         /// </summary>
-        /// <param name="userID"></param>
+        /// <param name="userId"></param>
         /// <returns></returns>
-        public EmployeeDTO GetEmployeByUserID(int userID)
+        public EmployeeDTO GetEmployeeByUserID(int userId)
         {
-            return _EmployeeManagement.GetEmployeByUserID(userID);
+            return employeeManagement_.GetEmployeeByUserID(userId);
         }
     }
 }

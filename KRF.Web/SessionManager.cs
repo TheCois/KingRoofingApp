@@ -88,12 +88,12 @@ namespace KRF.Web
         /// <summary>
         /// Session for LoggedInUser
         /// </summary>
-        public static KRF.Core.Entities.Actors.User LoggedInUser
+        public static Core.Entities.Actors.User LoggedInUser
         {
             set { HttpContext.Current.Session[LOGGEDINUSER] = value; }
             get
             {
-                return (KRF.Core.Entities.Actors.User)HttpContext.Current.Session[LOGGEDINUSER];
+                return (Core.Entities.Actors.User)HttpContext.Current.Session[LOGGEDINUSER];
             }
         }
         /// <summary>

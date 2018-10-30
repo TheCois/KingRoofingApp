@@ -1,53 +1,51 @@
-﻿using KRF.Core.DTO.Master;
+﻿using System.Collections.Generic;
+using KRF.Core.DTO.Master;
 using KRF.Core.Entities.AccessControl;
-using KRF.Core.Entities.Master;
 using KRF.Core.FunctionalContracts;
 using KRF.Core.Repository;
-using StructureMap;
-using System.Collections.Generic;
 
-namespace KRF.Persistence.FunctionalContractImplementation
+namespace KRF.Persistence.RepositoryImplementation
 {
     public class RolePermissionRepository : IRolePermissionRepository
     {
-        private readonly IRolePermissionManagement _RolePermissionManagement;
+        private readonly IRolePermissionManagement rolePermissionManagement_;
 
         /// <summary>
         /// Constructor
         /// </summary>
         public RolePermissionRepository()
         {
-            _RolePermissionManagement = ObjectFactory.GetInstance<IRolePermissionManagement>();
+            rolePermissionManagement_ = ObjectFactory.GetInstance<IRolePermissionManagement>();
         }
         /// <summary>
         /// Get Role Permission
         /// </summary>
-        /// <param name="roleID"></param>
+        /// <param name="roleId"></param>
         /// <returns></returns>
-        public RolePermissionDTO GetRolePermissionDetail(int roleID)
+        public RolePermissionDTO GetRolePermissionDetail(int roleId)
         {
-            return _RolePermissionManagement.GetRolePermissionDetail(roleID);
+            return rolePermissionManagement_.GetRolePermissionDetail(roleId);
         }
 
         /// <summary>
         /// Save Role Permission
         /// </summary>
-        /// <param name="roleID"></param>
+        /// <param name="roleId"></param>
         /// <param name="rolePermissions"></param>
         /// <returns></returns>
-        public bool SaveRolePermissions(int roleID, List<RolePermission> rolePermissions)
+        public bool SaveRolePermissions(int roleId, List<RolePermission> rolePermissions)
         {
-            return _RolePermissionManagement.SaveRolePermissions(roleID, rolePermissions);
+            return rolePermissionManagement_.SaveRolePermissions(roleId, rolePermissions);
         }
         /// <summary>
         /// Get Role Permission by roleID and pageID
         /// </summary>
-        /// <param name="roleID"></param>
-        /// <param name="pageID"></param>
+        /// <param name="roleId"></param>
+        /// <param name="pageId"></param>
         /// <returns></returns>
-        public List<RolePermission> GetRolePermission(int roleID, int pageID)
+        public List<RolePermission> GetRolePermission(int roleId, int pageId)
         {
-            return _RolePermissionManagement.GetRolePermission(roleID, pageID);
+            return rolePermissionManagement_.GetRolePermission(roleId, pageId);
         }
         /// <summary>
         /// Get Page List
@@ -55,7 +53,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <returns></returns>
         public List<Pages> GetPages()
         {
-            return _RolePermissionManagement.GetPages();
+            return rolePermissionManagement_.GetPages();
         }
     }
 }

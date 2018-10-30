@@ -1,64 +1,50 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using KRF.Core.FunctionalContracts;
-using KRF.Core.Repository;
-using KRF.Core.Entities.Product;
-using StructureMap;
-using KRF.Core.Entities.ValueList;
-using KRF.Core.DTO.Product;
-using KRF.Core.Entities.Sales;
-using System.Configuration;
-using KRF.Core.DTO.Sales;
-using System.Data.SqlClient;
+using System.Transactions;
+using System.Xml.Linq;
 using Dapper;
 using DapperExtensions;
-using System.Transactions;
-using System.IO;
 using DocumentFormat.OpenXml.Packaging;
-using System.Xml.Linq;
 using DocumentFormat.OpenXml.Wordprocessing;
-using DocumentFormat.OpenXml;
+using KRF.Core.DTO.Sales;
 using KRF.Core.Entities.Employee;
-using System.Globalization;
+using KRF.Core.Entities.Product;
+using KRF.Core.Entities.Sales;
+using KRF.Core.Entities.ValueList;
 using KRF.Core.Enums;
+using KRF.Core.FunctionalContracts;
 
-namespace KRF.Persistence.RepositoryImplementation
+namespace KRF.Persistence.FunctionalContractImplementation
 {
     public class EstimateManagement : IEstimateManagement
     {
-        private readonly string _connectionString;
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        public EstimateManagement()
-        {
-            _connectionString = Convert.ToString(ConfigurationManager.AppSettings["ApplicationDSN"]);
-        }
-
         public int Create(Estimate estimate, IList<EstimateItem> estimateItem)
         {
             using (var transactionScope = new TransactionScope())
             {
-                using (var sqlConnection = new SqlConnection(_connectionString))
+                var dbConnection = new DataAccessFactory();
+                using (var conn = dbConnection.CreateConnection())
                 {
-                    sqlConnection.Open();
+                    conn.Open();
                     estimate.CreatedDate = DateTime.Now;
-                    var ID = sqlConnection.Insert<Estimate>(estimate);
+                    var id = conn.Insert(estimate);
 
                     foreach (var c in estimateItem)
                     {
-                        c.EstimateID = ID;
-                        sqlConnection.Insert<EstimateItem>(c);
+                        c.EstimateID = id;
+                        conn.Insert(c);
                     }
-                    if (estimate.Status == (int)KRF.Core.Enums.EstimateStatusType.Complete)
+                    if (estimate.Status == (int)EstimateStatusType.Complete)
                     {
-                        DeleteQuantityInInventory(sqlConnection, estimateItem.ToList(), ID);
+                        DeleteQuantityInInventory(conn, estimateItem.ToList(), id);
                     }
                     transactionScope.Complete();
-                    return ID;
+                    return id;
                 }
             }
         }
@@ -67,49 +53,47 @@ namespace KRF.Persistence.RepositoryImplementation
         {
             using (var transactionScope = new TransactionScope())
             {
-                using (var sqlConnection = new SqlConnection(_connectionString))
+                var dbConnection = new DataAccessFactory();
+                using (var conn = dbConnection.CreateConnection())
                 {
-                    sqlConnection.Open();
-                    var curEstimate = sqlConnection.Get<Estimate>(estimate.ID);
+                    conn.Open();
+                    var curEstimate = conn.Get<Estimate>(estimate.ID);
                     if (estimate.CreatedDate == DateTime.MinValue)
                     {
                         estimate.CreatedDate = DateTime.Now;
                     }
-                    var isEdited = sqlConnection.Update<Estimate>(estimate);
+                    conn.Update(estimate);
 
                     var pgEstimate = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
                     pgEstimate.Predicates.Add(Predicates.Field<EstimateItem>(s => s.EstimateID, Operator.Eq, estimate.ID));
                     
-                    var curEstimateList = sqlConnection.GetList<EstimateItem>(pgEstimate).ToList();
-                    if (curEstimate.Status != (int)KRF.Core.Enums.EstimateStatusType.Complete && estimate.Status == (int)KRF.Core.Enums.EstimateStatusType.Complete)
+                    var curEstimateList = conn.GetList<EstimateItem>(pgEstimate).ToList();
+                    if (curEstimate.Status != (int)EstimateStatusType.Complete && estimate.Status == (int)EstimateStatusType.Complete)
                     {
-                        DeleteQuantityInInventory(sqlConnection, estimateItem.ToList(), estimate.ID);
+                        DeleteQuantityInInventory(conn, estimateItem.ToList(), estimate.ID);
                     }
-                    else if (curEstimate.Status == (int)KRF.Core.Enums.EstimateStatusType.Complete && estimate.Status == (int)KRF.Core.Enums.EstimateStatusType.Complete)
+                    else if (curEstimate.Status == (int)EstimateStatusType.Complete && estimate.Status == (int)EstimateStatusType.Complete)
                     {
                         foreach (var c in estimateItem)
                         {
                             if (!curEstimateList.Any(p => p.ItemAssemblyID == c.ItemAssemblyID))
                             {
-                                List<EstimateItem> qtyToBeDelete = new List<EstimateItem>();
-                                qtyToBeDelete.Add(c);
-                                DeleteQuantityInInventory(sqlConnection, qtyToBeDelete, estimate.ID);
+                                var qtyToBeDelete = new List<EstimateItem> {c};
+                                DeleteQuantityInInventory(conn, qtyToBeDelete, estimate.ID);
                             }
                             else
                             {
-                                EstimateItem curEst = curEstimateList.FirstOrDefault(p => p.ItemAssemblyID == c.ItemAssemblyID);
-                                if (curEst != null)
+                                var curEst = curEstimateList.FirstOrDefault(p => p.ItemAssemblyID == c.ItemAssemblyID);
+                                if (curEst == null) continue;
+                                if (curEst.Quantity < c.Quantity)
                                 {
-                                    if (curEst.Quantity < c.Quantity)
-                                    {
-                                        decimal qty = c.Quantity - curEst.Quantity;
-                                        DeleteQuantityInInventory(sqlConnection, c.ItemAssemblyID, qty, estimate.ID);
-                                    }
-                                    else
-                                    {
-                                        decimal qty = curEst.Quantity - c.Quantity;
-                                        AddQuantityInInventory(sqlConnection, c.ItemAssemblyID, qty, estimate.ID);
-                                    }
+                                    var qty = c.Quantity - curEst.Quantity;
+                                    DeleteQuantityInInventory(conn, c.ItemAssemblyID, qty, estimate.ID);
+                                }
+                                else
+                                {
+                                    var qty = curEst.Quantity - c.Quantity;
+                                    AddQuantityInInventory(conn, c.ItemAssemblyID, qty, estimate.ID);
                                 }
                             }
                         }
@@ -117,22 +101,21 @@ namespace KRF.Persistence.RepositoryImplementation
                         {
                             if (!estimateItem.Any(p => p.ItemAssemblyID == c1.ItemAssemblyID))
                             {
-                                List<EstimateItem> qtyToBeDelete = new List<EstimateItem>();
-                                qtyToBeDelete.Add(c1);
-                                AddQuantityInInventory(sqlConnection, qtyToBeDelete, estimate.ID);
+                                var qtyToBeDelete = new List<EstimateItem> {c1};
+                                AddQuantityInInventory(conn, qtyToBeDelete, estimate.ID);
                             }
                         }
                     }
                     
                     foreach (var c1 in curEstimateList)
                     {
-                        sqlConnection.Delete<EstimateItem>(c1);
+                        conn.Delete(c1);
                     }
 
                     foreach (var c in estimateItem)
                     {
                         c.EstimateID = estimate.ID;
-                        sqlConnection.Insert<EstimateItem>(c);
+                        conn.Insert(c);
                     }
 
                     transactionScope.Complete();
@@ -143,113 +126,114 @@ namespace KRF.Persistence.RepositoryImplementation
 
         public bool Delete(int estimateId)
         {
-            var isDeleted = false;
             using (var transactionScope = new TransactionScope())
             {
-                using (var sqlConnection = new SqlConnection(_connectionString))
+                var dbConnection = new DataAccessFactory();
+                bool isDeleted;
+                using (var conn = dbConnection.CreateConnection())
                 {
+                    conn.Open();
                     var predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
                     predicateGroup.Predicates.Add(Predicates.Field<Estimate>(s => s.ID, Operator.Eq, estimateId));
-                    sqlConnection.Open();
-                    var estimate = sqlConnection.Get<Estimate>(estimateId);
-                    int estimateStatus = estimate.Status;
-                    isDeleted = sqlConnection.Delete<Estimate>(predicateGroup);
+                    conn.Open();
+                    var estimate = conn.Get<Estimate>(estimateId);
+                    var estimateStatus = estimate.Status;
+                    isDeleted = conn.Delete<Estimate>(predicateGroup);
 
                     var predicateGroup1 = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
                     predicateGroup1.Predicates.Add(Predicates.Field<EstimateItem>(s => s.EstimateID, Operator.Eq, estimateId));
-                    if (estimateStatus == (int)KRF.Core.Enums.EstimateStatusType.Complete)
+                    if (estimateStatus == (int)EstimateStatusType.Complete)
                     {
-                        var estimateItems = sqlConnection.GetList<EstimateItem>(predicateGroup1).ToList();
-                        AddQuantityInInventory(sqlConnection, estimateItems, estimateId);
+                        var estimateItems = conn.GetList<EstimateItem>(predicateGroup1).ToList();
+                        AddQuantityInInventory(conn, estimateItems, estimateId);
                     }
-                    isDeleted = sqlConnection.Delete<EstimateItem>(predicateGroup1);
+                    isDeleted = conn.Delete<EstimateItem>(predicateGroup1);
                 }
                 transactionScope.Complete();
                 return isDeleted;
             }
         }
 
-        private void DeleteQuantityInInventory(SqlConnection sqlConnection, int assemblyID, decimal qty, int estimateId)
+        private void DeleteQuantityInInventory(IDbConnection conn, int assemblyID, decimal qty, int estimateId)
         {
             var predicateGroupInv = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
             predicateGroupInv.Predicates.Add(Predicates.Field<AssemblyItem>(s => s.AssemblyId, Operator.Eq, assemblyID));
-            var assemblyItems = sqlConnection.GetList<AssemblyItem>(predicateGroupInv).ToList();
+            var assemblyItems = conn.GetList<AssemblyItem>(predicateGroupInv).ToList();
             foreach (var assemblyItem in assemblyItems)
             {
                 predicateGroupInv = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
                 predicateGroupInv.Predicates.Add(Predicates.Field<Inventory>(s => s.ItemID, Operator.Eq, assemblyItem.ItemId));
-                var inventory = sqlConnection.GetList<Inventory>(predicateGroupInv).FirstOrDefault();
+                var inventory = conn.GetList<Inventory>(predicateGroupInv).FirstOrDefault();
                 if (inventory != null)
                 {
                     inventory.Qty = inventory.Qty - qty;
                     inventory.Type = "Assigned";
                     inventory.Comment = "Estimate ID : " + Convert.ToString(estimateId);
-                    sqlConnection.Update<Inventory>(inventory);
+                    conn.Update(inventory);
                 }
             }
         }
-        private void AddQuantityInInventory(SqlConnection sqlConnection, int assemblyID, decimal qty, int estimateId)
+        private void AddQuantityInInventory(IDbConnection conn, int assemblyID, decimal qty, int estimateId)
         {
             var predicateGroupInv = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
             predicateGroupInv.Predicates.Add(Predicates.Field<AssemblyItem>(s => s.AssemblyId, Operator.Eq, assemblyID));
-            var assemblyItems = sqlConnection.GetList<AssemblyItem>(predicateGroupInv).ToList();
+            var assemblyItems = conn.GetList<AssemblyItem>(predicateGroupInv).ToList();
             foreach (var assemblyItem in assemblyItems)
             {
                 predicateGroupInv = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
                 predicateGroupInv.Predicates.Add(Predicates.Field<Inventory>(s => s.ItemID, Operator.Eq, assemblyItem.ItemId));
-                var inventory = sqlConnection.GetList<Inventory>(predicateGroupInv).FirstOrDefault();
+                var inventory = conn.GetList<Inventory>(predicateGroupInv).FirstOrDefault();
                 if (inventory != null)
                 {
                     inventory.Qty = inventory.Qty + qty;
                     inventory.Type = "Assigned";
                     inventory.Comment = "Estimate ID : " + Convert.ToString(estimateId);
-                    sqlConnection.Update<Inventory>(inventory);
+                    conn.Update(inventory);
                 }
             }
         }
 
-        private void AddQuantityInInventory(SqlConnection sqlConnection, List<EstimateItem> estimateItems, int estimateId)
+        private void AddQuantityInInventory(IDbConnection conn, IEnumerable<EstimateItem> estimateItems, int estimateId)
         {
-            foreach (EstimateItem estimateItem in estimateItems)
+            foreach (var estimateItem in estimateItems)
             {
                 var predicateGroupInv = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
                 predicateGroupInv.Predicates.Add(Predicates.Field<AssemblyItem>(s => s.AssemblyId, Operator.Eq, estimateItem.ItemAssemblyID));
-                var assemblyItems = sqlConnection.GetList<AssemblyItem>(predicateGroupInv).ToList();
+                var assemblyItems = conn.GetList<AssemblyItem>(predicateGroupInv).ToList();
                 foreach (var assemblyItem in assemblyItems)
                 {
                     predicateGroupInv = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
                     predicateGroupInv.Predicates.Add(Predicates.Field<Inventory>(s => s.ItemID, Operator.Eq, assemblyItem.ItemId));
-                    var inventory = sqlConnection.GetList<Inventory>(predicateGroupInv).FirstOrDefault();
+                    var inventory = conn.GetList<Inventory>(predicateGroupInv).FirstOrDefault();
                     if (inventory != null)
                     {
                         inventory.Qty = inventory.Qty + estimateItem.Quantity;
                         inventory.Type = "Assigned";
                         inventory.Comment = "Estimate ID : " + Convert.ToString(estimateId);
-                        sqlConnection.Update<Inventory>(inventory);
+                        conn.Update(inventory);
                     }
                 }
             }
         }
-        private void DeleteQuantityInInventory(SqlConnection sqlConnection, List<EstimateItem> estimateItems, int estimateId)
+        private void DeleteQuantityInInventory(IDbConnection conn, IEnumerable<EstimateItem> estimateItems, int estimateId)
         {
             foreach (var c in estimateItems)
             {
                 var predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
                 predicateGroup.Predicates.Add(Predicates.Field<AssemblyItem>(s => s.AssemblyId, Operator.Eq, c.ItemAssemblyID));
-                var assemblyItems = sqlConnection.GetList<AssemblyItem>(predicateGroup).ToList();
-                decimal qty = 0;
+                var assemblyItems = conn.GetList<AssemblyItem>(predicateGroup).ToList();
                 foreach (var assemblyItem in assemblyItems)
                 {
                     predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
                     predicateGroup.Predicates.Add(Predicates.Field<Inventory>(s => s.ItemID, Operator.Eq, assemblyItem.ItemId));
-                    var inventory = sqlConnection.GetList<Inventory>(predicateGroup).FirstOrDefault();
+                    var inventory = conn.GetList<Inventory>(predicateGroup).FirstOrDefault();
                     if (inventory != null)
                     {
-                        qty = inventory.Qty - c.Quantity;
+                        var qty = inventory.Qty - c.Quantity;
                         inventory.Qty = qty;
                         inventory.Type = "Assigned";
                         inventory.Comment = "Estimate ID : " + Convert.ToString(estimateId);
-                        sqlConnection.Update<Inventory>(inventory);
+                        conn.Update(inventory);
                     }
                 }
             }
@@ -257,25 +241,25 @@ namespace KRF.Persistence.RepositoryImplementation
 
         public EstimateDTO ListAll()
         {
-            EstimateDTO estimateDTO = new EstimateDTO();
-            using (var sqlConnection = new SqlConnection(_connectionString))
+            var estimateDto = new EstimateDTO();
+            var dbConnection = new DataAccessFactory();
+            using (var conn = dbConnection.CreateConnection())
             {
-                sqlConnection.Open();
-
-                estimateDTO.Estimates = sqlConnection.GetList<Estimate>().ToList();
-                estimateDTO.EstimateItems = sqlConnection.GetList<EstimateItem>().ToList();
-                estimateDTO.Leads = sqlConnection.GetList<Lead>().Where(l => l.LeadStage == (int)LeadStageType.Lead).ToList();
-                estimateDTO.Customers = sqlConnection.GetList<Lead>().Where(l => l.LeadStage == (int)LeadStageType.Customer).ToList();
-                estimateDTO.CustomerAddress = sqlConnection.GetList<CustomerAddress>().ToList();
+                conn.Open();
+                estimateDto.Estimates = conn.GetList<Estimate>().ToList();
+                estimateDto.EstimateItems = conn.GetList<EstimateItem>().ToList();
+                estimateDto.Leads = conn.GetList<Lead>().Where(l => l.LeadStage == (int)LeadStageType.Lead).ToList();
+                estimateDto.Customers = conn.GetList<Lead>().Where(l => l.LeadStage == (int)LeadStageType.Customer).ToList();
+                estimateDto.CustomerAddress = conn.GetList<CustomerAddress>().ToList();
                 var predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
                 predicateGroup.Predicates.Add(Predicates.Field<Status>(s => s.Active, Operator.Eq, true));
-                estimateDTO.Status = sqlConnection.GetList<Status>(predicateGroup).OrderBy(p => p.Description).ToList();
+                estimateDto.Status = conn.GetList<Status>(predicateGroup).OrderBy(p => p.Description).ToList();
                 predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
                 predicateGroup.Predicates.Add(Predicates.Field<RoofType>(s => s.Active, Operator.Eq, true));
-                IList<RoofType> roofType = sqlConnection.GetList<RoofType>(predicateGroup).ToList();
-                estimateDTO.RoofTypes = roofType.OrderBy(p => p.Description).ToList();
+                IList<RoofType> roofType = conn.GetList<RoofType>(predicateGroup).ToList();
+                estimateDto.RoofTypes = roofType.OrderBy(p => p.Description).ToList();
             }
-            return estimateDTO;
+            return estimateDto;
         }
 
         public IList<EstimateDTO> ListAllEstimatesForACustomer(int customerId)
@@ -285,42 +269,43 @@ namespace KRF.Persistence.RepositoryImplementation
 
         public EstimateDTO Select(int estimateId)
         {
-            using (var sqlConnection = new SqlConnection(_connectionString))
+            var dbConnection = new DataAccessFactory();
+            using (var conn = dbConnection.CreateConnection())
             {
-                EstimateDTO estimateDTO = new EstimateDTO();
+                conn.Open();
+                var estimateDto = new EstimateDTO();
 
                 var predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
                 predicateGroup.Predicates.Add(Predicates.Field<EstimateItem>(s => s.EstimateID, Operator.Eq, estimateId));
 
-                sqlConnection.Open();
+                conn.Open();
 
-                var estimate = sqlConnection.Get<Estimate>(estimateId);
+                var estimate = conn.Get<Estimate>(estimateId);
 
-                estimateDTO.Estimates = new List<Estimate>();
-                estimateDTO.Estimates.Add(estimate);
+                estimateDto.Estimates = new List<Estimate> {estimate};
 
-                estimateDTO.EstimateItems = sqlConnection.GetList<EstimateItem>(predicateGroup).ToList();
+                estimateDto.EstimateItems = conn.GetList<EstimateItem>(predicateGroup).ToList();
 
-                estimateDTO.Leads = sqlConnection.GetList<Lead>().Where(l => l.LeadStage == (int)LeadStageType.Lead).ToList();
-                estimateDTO.Customers = sqlConnection.GetList<Lead>().Where(l => l.LeadStage == (int)LeadStageType.Customer).ToList();
-                estimateDTO.CustomerAddress = sqlConnection.GetList<CustomerAddress>().ToList();
+                estimateDto.Leads = conn.GetList<Lead>().Where(l => l.LeadStage == (int)LeadStageType.Lead).ToList();
+                estimateDto.Customers = conn.GetList<Lead>().Where(l => l.LeadStage == (int)LeadStageType.Customer).ToList();
+                estimateDto.CustomerAddress = conn.GetList<CustomerAddress>().ToList();
                 predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
                 predicateGroup.Predicates.Add(Predicates.Field<Status>(s => s.Active, Operator.Eq, true));
-                estimateDTO.Status = sqlConnection.GetList<Status>(predicateGroup).OrderBy(p => p.Description).ToList();
+                estimateDto.Status = conn.GetList<Status>(predicateGroup).OrderBy(p => p.Description).ToList();
                 predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
                 predicateGroup.Predicates.Add(Predicates.Field<UnitOfMeasure>(s => s.Active, Operator.Eq, true));
-                estimateDTO.UnitOfMeasure = sqlConnection.GetList<UnitOfMeasure>(predicateGroup).ToList();
+                estimateDto.UnitOfMeasure = conn.GetList<UnitOfMeasure>(predicateGroup).ToList();
 
                 predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
                 predicateGroup.Predicates.Add(Predicates.Field<RoofType>(s => s.Active, Operator.Eq, true));
-                IList<RoofType> roofType = sqlConnection.GetList<RoofType>(predicateGroup).ToList();
-                estimateDTO.RoofTypes = roofType.OrderBy(p => p.Description).ToList();
+                IList<RoofType> roofType = conn.GetList<RoofType>(predicateGroup).ToList();
+                estimateDto.RoofTypes = roofType.OrderBy(p => p.Description).ToList();
 
-                estimateDTO.Items = sqlConnection.GetList<Item>().ToList();
-                estimateDTO.Assemblies = sqlConnection.GetList<Assembly>().ToList();
-                estimateDTO.AssemblyItems = sqlConnection.GetList<AssemblyItem>().ToList();
+                estimateDto.Items = conn.GetList<Item>().ToList();
+                estimateDto.Assemblies = conn.GetList<Assembly>().ToList();
+                estimateDto.AssemblyItems = conn.GetList<AssemblyItem>().ToList();
 
-                return estimateDTO;
+                return estimateDto;
             }
         }
 
@@ -328,20 +313,20 @@ namespace KRF.Persistence.RepositoryImplementation
         {
             using (var transactionScope = new TransactionScope())
             {
-                using (var sqlConnection = new SqlConnection(_connectionString))
+                var dbConnection = new DataAccessFactory();
+                using (var conn = dbConnection.CreateConnection())
                 {
-                    sqlConnection.Open();
-
+                    conn.Open();
                     if (estimateDocument.ID > 0)
                     {
-                        var curEstimate = sqlConnection.Get<EstimateDocument>(estimateDocument.ID);
+                        var curEstimate = conn.Get<EstimateDocument>(estimateDocument.ID);
                         curEstimate.Description = estimateDocument.Description;
 
-                        var isEdited = sqlConnection.Update<EstimateDocument>(curEstimate);
+                        conn.Update(curEstimate);
                     }
                     else
                     {
-                        estimateDocument.ID = sqlConnection.Insert<EstimateDocument>(estimateDocument);
+                        estimateDocument.ID = conn.Insert(estimateDocument);
                     }
 
                     transactionScope.Complete();
@@ -352,16 +337,18 @@ namespace KRF.Persistence.RepositoryImplementation
 
         public bool DeleteEstimateDocument(int estimateDocumentID)
         {
-            var isDeleted = false;
             using (var transactionScope = new TransactionScope())
             {
-                using (var sqlConnection = new SqlConnection(_connectionString))
+                var dbConnection = new DataAccessFactory();
+                bool isDeleted;
+                using (var conn = dbConnection.CreateConnection())
                 {
+                    conn.Open();
                     var predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
                     predicateGroup.Predicates.Add(Predicates.Field<EstimateDocument>(s => s.ID, Operator.Eq, estimateDocumentID));
 
-                    sqlConnection.Open();
-                    isDeleted = sqlConnection.Delete<EstimateDocument>(predicateGroup);
+                    conn.Open();
+                    isDeleted = conn.Delete<EstimateDocument>(predicateGroup);
                 }
 
                 transactionScope.Complete();
@@ -371,35 +358,39 @@ namespace KRF.Persistence.RepositoryImplementation
 
         public EstimateDocument GetEstimateDocument(int estimateDocumentID)
         {
-            using (var sqlConnection = new SqlConnection(_connectionString))
+            var dbConnection = new DataAccessFactory();
+            using (var conn = dbConnection.CreateConnection())
             {
-                var estimateDocument = sqlConnection.Get<EstimateDocument>(estimateDocumentID);
+                conn.Open();
+                var estimateDocument = conn.Get<EstimateDocument>(estimateDocumentID);
                 return estimateDocument;
             }
         }
 
         public EstimateDocument GetEstimateDocumentByType(int type)
         {
-            using (var sqlConnection = new SqlConnection(_connectionString))
+            var dbConnection = new DataAccessFactory();
+            using (var conn = dbConnection.CreateConnection())
             {
+                conn.Open();
                 var predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
                 predicateGroup.Predicates.Add(Predicates.Field<EstimateDocument>(s => s.Type, Operator.Eq, type));
 
-                EstimateDocument estimateDocument = sqlConnection.GetList<EstimateDocument>(predicateGroup).First();
+                var estimateDocument = conn.GetList<EstimateDocument>(predicateGroup).First();
                 return estimateDocument;
             }
         }
 
         public IList<EstimateDocument> GetEstimateDocuments(int estimateID)
         {
-            using (var sqlConnection = new SqlConnection(_connectionString))
+            var dbConnection = new DataAccessFactory();
+            using (var conn = dbConnection.CreateConnection())
             {
-                sqlConnection.Open();
-
+                conn.Open();
                 const string query = "select ID, EstimateID, Name, Type, Description, UploadDateTime, Null as Tesxt from EstimateDocument " +
                              "WHERE EstimateID = @EstimateID";
 
-                var estimateDocuments = sqlConnection.Query<EstimateDocument>(query,
+                var estimateDocuments = conn.Query<EstimateDocument>(query,
                        new { EstimateID = estimateID }).ToList();
                 return estimateDocuments;
             }
@@ -407,15 +398,15 @@ namespace KRF.Persistence.RepositoryImplementation
 
         public string NumbersToWords(double inputNumber)
         {
-            int inputNo = Convert.ToInt32(inputNumber);
+            var inputNo = Convert.ToInt32(inputNumber);
 
             if (inputNo == 0)
                 return "Zero";
 
-            int[] numbers = new int[4];
-            int first = 0;
+            var numbers = new int[4];
+            var first = 0;
             int u, h, t;
-            System.Text.StringBuilder sb = new System.Text.StringBuilder();
+            var sb = new StringBuilder();
 
             if (inputNo < 0)
             {
@@ -438,7 +429,7 @@ namespace KRF.Persistence.RepositoryImplementation
             numbers[3] = inputNo / 10000000; // crores
             numbers[2] = numbers[2] - 100 * numbers[3]; // lakhs
 
-            for (int i = 3; i > 0; i--)
+            for (var i = 3; i > 0; i--)
             {
                 if (numbers[i] != 0)
                 {
@@ -446,7 +437,7 @@ namespace KRF.Persistence.RepositoryImplementation
                     break;
                 }
             }
-            for (int i = first; i >= 0; i--)
+            for (var i = first; i >= 0; i--)
             {
                 if (numbers[i] == 0) continue;
                 u = numbers[i] % 10; // ones
@@ -475,7 +466,7 @@ namespace KRF.Persistence.RepositoryImplementation
                 return "ZERO";
             if (number < 0)
                 return "minus " + ConvertNumbertoWords(Math.Abs(number));
-            string words = "";
+            var words = "";
             if ((number / 1000000) > 0)
             {
                 words += ConvertNumbertoWords(number / 1000000) + " MILLION ";
@@ -512,33 +503,33 @@ namespace KRF.Persistence.RepositoryImplementation
 
         public byte[] CreateProposalDocument(int estimateID)
         {
-            Estimate estimate = null;
-            CustomerAddress customerAddress = null;
-            Lead lead = null;
-            Employee employee = null;
+            Estimate estimate;
+            CustomerAddress customerAddress;
+            Lead lead;
+            Employee employee;
 
             IList<City> cities = null;
             IList<State> states = null;
             List<Assembly> assemblies = null;
 
-            using (var sqlConnection = new SqlConnection(_connectionString))
+            var dbConnection = new DataAccessFactory();
+            using (var conn = dbConnection.CreateConnection())
             {
-                sqlConnection.Open();
-
-                estimate = sqlConnection.Get<Estimate>(estimateID);
+                conn.Open();
+                estimate = conn.Get<Estimate>(estimateID);
                 var leadID = estimate.LeadID;
 
-                lead = sqlConnection.Get<Lead>(leadID);
-                customerAddress = sqlConnection.Get<CustomerAddress>(estimate.JobAddressID);
-                employee = sqlConnection.Get<Employee>(lead.AssignedTo);
+                lead = conn.Get<Lead>(leadID);
+                customerAddress = conn.Get<CustomerAddress>(estimate.JobAddressID);
+                employee = conn.Get<Employee>(lead.AssignedTo);
 
-                states = sqlConnection.GetList<State>().ToList();
+                states = conn.GetList<State>().ToList();
                 var predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
                 predicateGroup.Predicates.Add(Predicates.Field<City>(s => s.Active, Operator.Eq, true));
-                cities = sqlConnection.GetList<City>(predicateGroup).ToList();
+                cities = conn.GetList<City>(predicateGroup).ToList();
 
                 var lookup = new Dictionary<int, Assembly>();
-                sqlConnection.Query<Assembly, EstimateItem, Assembly>(@"
+                conn.Query<Assembly, EstimateItem, Assembly>(@"
                 SELECT i.*, a.*
                 FROM Assembly i
                 INNER JOIN EstimateItem a ON i.Id= a.ItemAssemblyId  and EstimateID = @EstimateID               
@@ -563,12 +554,12 @@ namespace KRF.Persistence.RepositoryImplementation
                 return null;
 
             var document = GetEstimateDocumentByType(1);
-            byte[] byteArray = document.Text;
+            var byteArray = document.Text;
 
-            using (MemoryStream mem = new MemoryStream())
+            using (var mem = new MemoryStream())
             {
                 mem.Write(byteArray, 0, (int)byteArray.Length);
-                using (WordprocessingDocument wordDoc =
+                using (var wordDoc =
                     WordprocessingDocument.Open(mem, true))
                 {
                     XNamespace w =
@@ -577,16 +568,16 @@ namespace KRF.Persistence.RepositoryImplementation
 
                     IDictionary<String, BookmarkStart> bookmarkMap = new Dictionary<String, BookmarkStart>();
 
-                    foreach (BookmarkStart bookmarkStart in wordDoc.MainDocumentPart.RootElement.Descendants<BookmarkStart>())
+                    foreach (var bookmarkStart in wordDoc.MainDocumentPart.RootElement.Descendants<BookmarkStart>())
                     {
                         bookmarkMap[bookmarkStart.Name] = bookmarkStart;
                     }
 
-                    foreach (BookmarkStart bookmarkStart in bookmarkMap.Values)
+                    foreach (var bookmarkStart in bookmarkMap.Values)
                     {
                         if (!bookmarkStart.Name.ToString().Trim().StartsWith("_"))
                         {
-                            Run bookmarkText = bookmarkStart.NextSibling<Run>();
+                            var bookmarkText = bookmarkStart.NextSibling<Run>();
                             if (bookmarkText != null)
                             {
                                 if (bookmarkStart.Name.ToString() == "Name")
@@ -642,8 +633,8 @@ namespace KRF.Persistence.RepositoryImplementation
 
                                 if (bookmarkStart.Name.ToString() == "PText")
                                 {
-                                    StringBuilder list = new StringBuilder();
-                                    int count = 1;
+                                    var list = new StringBuilder();
+                                    var count = 1;
                                     foreach (var i in assemblies)
                                     {
                                         if (!string.IsNullOrWhiteSpace(i.ProposalText))
@@ -669,7 +660,7 @@ namespace KRF.Persistence.RepositoryImplementation
                     }
                 }
 
-                EstimateDocument e = new EstimateDocument
+                var e = new EstimateDocument
                 {
                     EstimateID = estimateID,
                     Name = "Proposal.docx",

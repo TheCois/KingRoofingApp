@@ -11,85 +11,86 @@ namespace KRF.Persistence.RepositoryImplementation
 {
     public class LeadManagementRepository : ILeadManagementRepository
     {
-        private readonly ILeadManagement _LeadManagement;
+        private readonly ILeadManagement leadManagement_;
 
         /// <summary>
         /// Constructor
         /// </summary>
         public LeadManagementRepository()
         {
-            _LeadManagement = ObjectFactory.GetInstance<ILeadManagement>();
+            leadManagement_ = ObjectFactory.GetInstance<ILeadManagement>();
         }
 
 
         /// <summary>
         /// Create an Lead
         /// </summary>
-        /// <param name="Lead">Lead details</param>
+        /// <param name="lead">Lead details</param>
         /// <returns>Newly created Lead identifier</returns>
         public int Create(Lead lead)
         {
-            return _LeadManagement.Create(lead, new List<CustomerAddress>());
+            return leadManagement_.Create(lead, new List<CustomerAddress>());
         }
 
         /// <summary>
         /// Edit an Lead based on updated Lead details.
         /// </summary>
-        /// <param name="Lead">Updated Lead details.</param>
+        /// <param name="lead">Updated Lead details.</param>
         /// <returns>Updated Lead details.</returns>
         public Lead Edit(Lead lead)
         {
-            return _LeadManagement.Edit(lead, new List<CustomerAddress>());
+            return leadManagement_.Edit(lead, new List<CustomerAddress>());
         }
 
         /// <summary>
         /// Create an Lead
         /// </summary>
-        /// <param name="Lead">Lead details</param>
+        /// <param name="lead">Lead details</param>
         /// <returns>Newly created Lead identifier</returns>
-        public int Create(Lead Lead, IList<CustomerAddress> customerAddress)
+        public int Create(Lead lead, IList<CustomerAddress> customerAddress)
         {
-            return _LeadManagement.Create(Lead, customerAddress);
+            return leadManagement_.Create(lead, customerAddress);
         }
 
         /// <summary>
         /// Edit an Lead based on updated Lead details.
         /// </summary>
-        /// <param name="Lead">Updated Lead details.</param>
+        /// <param name="lead">Updated Lead details.</param>
         /// <returns>Updated Lead details.</returns>
-        public Lead Edit(Lead Lead, IList<CustomerAddress> customerAddress)
+        public Lead Edit(Lead lead, IList<CustomerAddress> customerAddress)
         {
-            return _LeadManagement.Edit(Lead, customerAddress);
+            return leadManagement_.Edit(lead, customerAddress);
         }
 
         /// <summary>
-        /// Delete an  Lead.
+        /// Delete a Lead.
         /// </summary>
-        /// <param name="LeadId"> Lead unique identifier</param>
+        /// <param name="id"> Lead unique identifier</param>
         /// <returns>True - if successful deletion; False - If failure.</returns>
         public bool Delete(int id)
         {
-            return _LeadManagement.Delete(id);
+            return leadManagement_.Delete(id);
         }
 
         /// <summary>
         /// Get all Lead created in the system.
         /// </summary>
+        /// <param name="predicate"></param>
         /// <param name="isActive">If true - returns only active  Leads else return all</param>
         /// <returns>List of  Leads.</returns>
         public LeadDTO GetLeads(Func<Lead, bool> predicate, bool isActive = true)
         {
-            return _LeadManagement.GetLeads(predicate, isActive);
+            return leadManagement_.GetLeads(predicate, isActive);
         }
 
         /// <summary>
         /// Get  Lead details based on  id.
         /// </summary>
-        /// <param name="LeadId">Lead's unique identifier</param>
+        /// <param name="id">Lead's unique identifier</param>
         /// <returns>Lead details.</returns>
         public LeadDTO GetLead(int id)
         {
-            return _LeadManagement.GetLead(id);
+            return leadManagement_.GetLead(id);
         }
 
         /// <summary>
@@ -99,18 +100,18 @@ namespace KRF.Persistence.RepositoryImplementation
         /// <returns> Lead list.</returns>
         public IList<Lead> SearchLead(string searchText)
         {
-            return _LeadManagement.SearchLead(searchText);
+            return leadManagement_.SearchLead(searchText);
         }
 
         /// <summary>
         /// Set  Lead to active / Deactive
         /// </summary>
-        /// <param name="LeadId"> Lead unique identifier</param>
+        /// <param name="leadId"> Lead unique identifier</param>
         /// <param name="isActive">True - active; False - Deactive.</param>
         /// <returns>True - if successful deletion; False - If failure.</returns>
         public bool SetActive(int leadId, bool isActive)
         {
-            return _LeadManagement.SetActive(leadId, isActive); ;
+            return leadManagement_.SetActive(leadId, isActive); ;
         }
 
         /// <summary>
@@ -120,7 +121,7 @@ namespace KRF.Persistence.RepositoryImplementation
         /// <returns></returns>
         public int CreateJobAddress(IList<CustomerAddress> customerAddress)
         {
-            return _LeadManagement.CreateJobAddress(customerAddress);
+            return leadManagement_.CreateJobAddress(customerAddress);
         }
 
         /// <summary>
@@ -130,17 +131,17 @@ namespace KRF.Persistence.RepositoryImplementation
         /// <returns></returns>
         public bool EditJobAddress(IList<CustomerAddress> customerAddress)
         {
-            return _LeadManagement.EditJobAddress(customerAddress);
+            return leadManagement_.EditJobAddress(customerAddress);
         }
 
         /// <summary>
         /// Delete Job Address
         /// </summary>
-        /// <param name="JobAddID"></param>
+        /// <param name="jobAddId"></param>
         /// <returns></returns>
-        public bool DeleteJobAddress(int JobAddID)
+        public bool DeleteJobAddress(int jobAddId)
         {
-            return _LeadManagement.DeleteJobAddress(JobAddID);
+            return leadManagement_.DeleteJobAddress(jobAddId);
         }
     }
 }

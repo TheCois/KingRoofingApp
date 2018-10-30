@@ -40,6 +40,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EncryptDecrypt.cs" />
+    <Compile Include="IDataAccessFactory.cs" />
     <Compile Include="IDatabaseConnection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

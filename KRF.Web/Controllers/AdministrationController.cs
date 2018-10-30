@@ -34,7 +34,7 @@ namespace KRF.Web.Controllers
                 iTotalDisplayRecords = masterRecords.Count,
                 aaData = (from p in masterRecords
                           select new string[] {
-                              "<span class='edit-administration' data-val=" + p.ID.ToString() + " data-desc="+ System.Uri.EscapeDataString(p.Description.Trim()) + " data-extraField1="+ (string.IsNullOrEmpty(p.ExtraField1) ? "" : System.Uri.EscapeDataString(p.ExtraField1.Trim())) +"><ul><li class='edit'><a href='#non'>View</a></li></ul></span>",
+                              "<span class='edit-administration' data-val=" + p.ID.ToString() + " data-desc="+ Uri.EscapeDataString(p.Description.Trim()) + " data-extraField1="+ (string.IsNullOrEmpty(p.ExtraField1) ? "" : Uri.EscapeDataString(p.ExtraField1.Trim())) +"><ul><li class='edit'><a href='#non'>View</a></li></ul></span>",
                               p.Description,
                               p.ExtraField1,
                               p.Active ? "Active" : "In-Active",
@@ -46,7 +46,7 @@ namespace KRF.Web.Controllers
         public ActionResult GetAdministrationType()
         {
             IAdministrationRepository administrationRepo = ObjectFactory.GetInstance<IAdministrationRepository>();
-            List<KRF.Core.Entities.ValueList.AdministrationType> administrationTypes = administrationRepo.GetAdministrationType();
+            List<Core.Entities.ValueList.AdministrationType> administrationTypes = administrationRepo.GetAdministrationType();
             return Json(new
             {
                 types = administrationTypes

@@ -47,6 +47,6 @@ namespace KRF.Core.FunctionalContracts
         /// </summary>
         /// <param name="userID"></param>
         /// <returns></returns>
-        EmployeeDTO GetEmployeByUserID(int userID);
+        EmployeeDTO GetEmployeeByUserID(int userID);
     }
 }

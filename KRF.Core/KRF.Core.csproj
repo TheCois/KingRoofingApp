@@ -178,6 +178,7 @@
     <Compile Include="Repository\IItemManagementRepository.cs" />
     <Compile Include="Repository\MISC\IZipCodeRepository.cs" />
     <Compile Include="Repository\MISC\ILoginRepository.cs" />
+    <Compile Include="SecretsReader.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

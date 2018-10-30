@@ -37,20 +37,20 @@ namespace KRF.Core.Repository
         /// Get all employees
         /// </summary>
         /// <returns></returns>
-        EmployeeDTO GetEmployes();
+        EmployeeDTO GetEmployees();
 
         /// <summary>
         /// Get employee by EmpID
         /// </summary>
         /// <param name="empId"></param>
         /// <returns></returns>
-        EmployeeDTO GetEmploye(int empId);
+        EmployeeDTO GetEmployee(int empId);
         /// <summary>
         /// Get Employee By UserID
         /// </summary>
         /// <param name="userID"></param>
         /// <returns></returns>
-        EmployeeDTO GetEmployeByUserID(int userID);
+        EmployeeDTO GetEmployeeByUserID(int userID);
     
     }
 }

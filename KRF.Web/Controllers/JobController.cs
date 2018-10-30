@@ -95,12 +95,12 @@ namespace KRF.Web.Controllers
             var leads = jobDTO.Leads.Where(k => k.LeadStage == (int)LeadStageType.Lead).Where(p => !string.IsNullOrEmpty(p.LeadName)).Select(k => new { ID = k.ID, Description = (k.LeadName ?? "") }).ToList();
             var job = jobDTO.Jobs[0];
             ILeadManagementRepository leadRepo = ObjectFactory.GetInstance<ILeadManagementRepository>();
-            KRF.Core.DTO.Sales.LeadDTO leadData = leadRepo.GetLead(job != null ? job.LeadID : 0);
+            LeadDTO leadData = leadRepo.GetLead(job != null ? job.LeadID : 0);
             var customerAddress = jobDTO.CustomerAddress.FirstOrDefault(c => c.LeadID == (job != null ? job.LeadID : 0) && c.ID == (job != null ? job.JobAddressID : 0));
             IEmployeeManagementRepository employeeRepo = ObjectFactory.GetInstance<IEmployeeManagementRepository>();
-            KRF.Core.DTO.Employee.EmployeeDTO empDTO = employeeRepo.GetEmployes();
+            KRF.Core.DTO.Employee.EmployeeDTO empDTO = employeeRepo.GetEmployees();
             ICrewManagementRepository crewRepo = ObjectFactory.GetInstance<ICrewManagementRepository>();
-            KRF.Core.DTO.Master.CrewDTO crewDTO = crewRepo.GetCrews();
+            Core.DTO.Master.CrewDTO crewDTO = crewRepo.GetCrews();
             List<CrewEmpDetails> lstCrewEmp = new List<CrewEmpDetails>();
 
             IEstimateManagementRepository estimateRepo = ObjectFactory.GetInstance<IEstimateManagementRepository>();
@@ -174,16 +174,16 @@ namespace KRF.Web.Controllers
             var customers = jobDTO.Leads.Where(k => k.LeadStage == (int)LeadStageType.Customer).Select(k => new { ID = k.ID, Description = (k.FirstName + " " + k.LastName), Contact = k.LeadName }).OrderBy(k => k.Description).ToList();
             var job = jobDTO.Jobs[0];
             ILeadManagementRepository leadRepo = ObjectFactory.GetInstance<ILeadManagementRepository>();
-            KRF.Core.DTO.Sales.LeadDTO leadData = leadRepo.GetLead(job != null ? job.LeadID : 0);
+            LeadDTO leadData = leadRepo.GetLead(job != null ? job.LeadID : 0);
             var lead = leadData.Leads[0];
             var jobAddress = jobDTO.CustomerAddress.FirstOrDefault(c => c.LeadID == job.LeadID && c.ID == job.JobAddressID);
             var city = jobDTO.Cities.FirstOrDefault(c => c.ID == jobAddress.City);
             var state = jobDTO.States.FirstOrDefault(c => c.ID == jobAddress.State);
             IEmployeeManagementRepository empRepo = ObjectFactory.GetInstance<IEmployeeManagementRepository>();
-            var employDTO = empRepo.GetEmployes();
+            var employDTO = empRepo.GetEmployees();
             IEstimateManagementRepository estimateRepo = ObjectFactory.GetInstance<IEstimateManagementRepository>();
             EstimateDTO estimateDTO = estimateRepo.ListAll();
-            KRF.Core.Entities.Sales.Estimate estimate = estimateDTO.Estimates.FirstOrDefault(p => p.ID == job.EstimateID);
+            Core.Entities.Sales.Estimate estimate = estimateDTO.Estimates.FirstOrDefault(p => p.ID == job.EstimateID);
             List<JobCO> jobCOs = jobRepo.GetJobCOs(job.Id);
             List<JobInvoice> jobINVs = jobRepo.GetJobInvoices(job.Id);
             decimal totalPrice= (estimate != null ? estimate.TotalCost : 0) + jobCOs.Where(p=>p.Active == true).Sum(p => p.TotalAmount);
@@ -214,9 +214,9 @@ namespace KRF.Web.Controllers
         public JsonResult GetBuildingInformation(int leadID)
         {
             ILeadManagementRepository leadRepo = ObjectFactory.GetInstance<ILeadManagementRepository>();
-            KRF.Core.DTO.Sales.LeadDTO leadData = leadRepo.GetLeads(x => true);
-            KRF.Core.DTO.Sales.LeadDTO leads = leadRepo.GetLead(leadID);
-            KRF.Core.Entities.Sales.Lead lead = leads.Leads[0];
+            LeadDTO leadData = leadRepo.GetLeads(x => true);
+            LeadDTO leads = leadRepo.GetLead(leadID);
+            Core.Entities.Sales.Lead lead = leads.Leads[0];
             return Json(new
             {
                 buildingInformation = new
@@ -246,7 +246,7 @@ namespace KRF.Web.Controllers
 
                 if (job.Id > 0)
                 {
-                    if (job.JobStatusID == (int)KRF.Core.Entities.MISC.Status.Complete)
+                    if (job.JobStatusID == (int)Core.Entities.MISC.Status.Complete)
                     {
                         job.Status = true;
                     }
@@ -523,7 +523,7 @@ namespace KRF.Web.Controllers
         {
             IEstimateManagementRepository estimateRepo = ObjectFactory.GetInstance<IEstimateManagementRepository>();
             IItemManagementRepository itemRepo = ObjectFactory.GetInstance<IItemManagementRepository>();
-            IList<KRF.Core.Entities.Sales.EstimateItem> estimateItems = new List<KRF.Core.Entities.Sales.EstimateItem>();
+            IList<Core.Entities.Sales.EstimateItem> estimateItems = new List<Core.Entities.Sales.EstimateItem>();
             var estimateDTO = estimateRepo.Select(estimateID);
             if (estimateID != 0)
             {
@@ -601,7 +601,7 @@ namespace KRF.Web.Controllers
             IJobManagementRepository jobRepo = ObjectFactory.GetInstance<IJobManagementRepository>();
             IEstimateManagementRepository estimateRepo = ObjectFactory.GetInstance<IEstimateManagementRepository>();
             IItemManagementRepository itemRepo = ObjectFactory.GetInstance<IItemManagementRepository>();
-            IList<KRF.Core.Entities.Sales.EstimateItem> estimateItems = new List<KRF.Core.Entities.Sales.EstimateItem>();
+            IList<Core.Entities.Sales.EstimateItem> estimateItems = new List<Core.Entities.Sales.EstimateItem>();
             var estimateDTO = estimateRepo.Select(0);
             List<KRF.Core.Entities.Product.AssemblyItem> assemblyItems = estimateDTO.AssemblyItems.ToList();
             JobDTO jobDTO = jobRepo.GetJobCO(COID);
@@ -879,7 +879,7 @@ namespace KRF.Web.Controllers
             IJobManagementRepository jobRepo = ObjectFactory.GetInstance<IJobManagementRepository>();
             IEmployeeManagementRepository empRepo = ObjectFactory.GetInstance<IEmployeeManagementRepository>();
             var coList = jobRepo.GetJobCOs(jobID);
-            var empList = empRepo.GetEmployes();
+            var empList = empRepo.GetEmployees();
             return Json(new
             {
                 keyValue = new
@@ -1129,7 +1129,7 @@ namespace KRF.Web.Controllers
             IEmployeeManagementRepository empRepo = ObjectFactory.GetInstance<IEmployeeManagementRepository>();
             var woList = jobRepo.GetJobWOs(jobID);
             var estimateDTO = estRepo.ListAll();
-            var employDTO = empRepo.GetEmployes();
+            var employDTO = empRepo.GetEmployees();
             List<JobAssignment> jobAssignments = jobRepo.GetJobAssignments(jobID);
             return Json(new
             {
@@ -1166,7 +1166,7 @@ namespace KRF.Web.Controllers
         {
             IEstimateManagementRepository estimateRepo = ObjectFactory.GetInstance<IEstimateManagementRepository>();
             IItemManagementRepository itemRepo = ObjectFactory.GetInstance<IItemManagementRepository>();
-            IList<KRF.Core.Entities.Sales.EstimateItem> estimateItems = new List<KRF.Core.Entities.Sales.EstimateItem>();
+            IList<Core.Entities.Sales.EstimateItem> estimateItems = new List<Core.Entities.Sales.EstimateItem>();
             var estimateDTO = estimateRepo.Select(estimateID);
             if (estimateID != 0)
             {
@@ -1245,7 +1245,7 @@ namespace KRF.Web.Controllers
             IJobManagementRepository jobRepo = ObjectFactory.GetInstance<IJobManagementRepository>();
             IEstimateManagementRepository estimateRepo = ObjectFactory.GetInstance<IEstimateManagementRepository>();
             IItemManagementRepository itemRepo = ObjectFactory.GetInstance<IItemManagementRepository>();
-            IList<KRF.Core.Entities.Sales.EstimateItem> estimateItems = new List<KRF.Core.Entities.Sales.EstimateItem>();
+            IList<Core.Entities.Sales.EstimateItem> estimateItems = new List<Core.Entities.Sales.EstimateItem>();
             var estimateDTO = estimateRepo.Select(0);
             List<KRF.Core.Entities.Product.AssemblyItem> assemblyItems = estimateDTO.AssemblyItems.ToList();
             JobDTO jobDTO = jobRepo.GetJobCO(COID);
@@ -1399,7 +1399,7 @@ namespace KRF.Web.Controllers
             }
 
             var woList = jobRepo.GetJobWOs(jobData.JobWO.JobID);
-            var employDTO = empRepo.GetEmployes();
+            var employDTO = empRepo.GetEmployees();
 
             return Json(new
             {
@@ -1537,7 +1537,7 @@ namespace KRF.Web.Controllers
         {
             IEstimateManagementRepository estimateRepo = ObjectFactory.GetInstance<IEstimateManagementRepository>();
             IItemManagementRepository itemRepo = ObjectFactory.GetInstance<IItemManagementRepository>();
-            IList<KRF.Core.Entities.Sales.EstimateItem> estimateItems = new List<KRF.Core.Entities.Sales.EstimateItem>();
+            IList<Core.Entities.Sales.EstimateItem> estimateItems = new List<Core.Entities.Sales.EstimateItem>();
             var estimateDTO = estimateRepo.Select(estimateID);
             if (estimateID != 0)
             {
@@ -1599,7 +1599,7 @@ namespace KRF.Web.Controllers
             IJobManagementRepository jobRepo = ObjectFactory.GetInstance<IJobManagementRepository>();
             IEstimateManagementRepository estimateRepo = ObjectFactory.GetInstance<IEstimateManagementRepository>();
             IItemManagementRepository itemRepo = ObjectFactory.GetInstance<IItemManagementRepository>();
-            IList<KRF.Core.Entities.Sales.EstimateItem> estimateItems = new List<KRF.Core.Entities.Sales.EstimateItem>();
+            IList<Core.Entities.Sales.EstimateItem> estimateItems = new List<Core.Entities.Sales.EstimateItem>();
             var estimateDTO = estimateRepo.Select(0);
             List<KRF.Core.Entities.Product.AssemblyItem> assemblyItems = estimateDTO.AssemblyItems.ToList();
             JobDTO jobDTO = jobRepo.GetJobCO(COID);
@@ -1832,7 +1832,7 @@ namespace KRF.Web.Controllers
             IJobManagementRepository jobRepo = ObjectFactory.GetInstance<IJobManagementRepository>();
             IEmployeeManagementRepository empRepo = ObjectFactory.GetInstance<IEmployeeManagementRepository>();
             var inspList = jobRepo.GetJobInspections(jobID);
-            var employDTO = empRepo.GetEmployes();
+            var employDTO = empRepo.GetEmployees();
             List<Permit> permits = jobRepo.GetPrmitList();
             List<PermitInspection> permitInspection = jobRepo.GetPrmitInspectionList();
             List<PermitStatus> permitStatus = jobRepo.GetPrmitStatusList();
@@ -1932,7 +1932,7 @@ namespace KRF.Web.Controllers
             }
 
             var inspList = jobRepo.GetJobInspections(jobData.JobInspection.JobID);
-            var employDTO = empRepo.GetEmployes();
+            var employDTO = empRepo.GetEmployees();
             List<Permit> permits = jobRepo.GetPrmitList();
             List<PermitInspection> permitInspection = jobRepo.GetPrmitInspectionList();
             List<PermitStatus> permitStatus = jobRepo.GetPrmitStatusList();
@@ -1977,7 +1977,7 @@ namespace KRF.Web.Controllers
             List<Permit> permits = jobRepo.GetPrmitList();
             List<PermitInspection> permitInspection = jobRepo.GetPrmitInspectionList();
             List<PermitStatus> permitStatus = jobRepo.GetPrmitStatusList();
-            var employDTO = empRepo.GetEmployes();
+            var employDTO = empRepo.GetEmployees();
             return Json(new
             {
                 JobInspection = jobDTO.JobInspection,

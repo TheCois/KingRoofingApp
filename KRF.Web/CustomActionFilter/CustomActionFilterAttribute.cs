@@ -19,14 +19,14 @@ namespace KRF.Web.CustomActionFilter
                 if (controller.ToLower() == "product")
                 {
                     pageID = SessionManager.Pages.Where(p => p.PageName == "Assembly" && p.Active == true).FirstOrDefault().PageID;
-                    var assemblyEdit = KRF.Web.Common.Common.IsUserAuthorizeToPerformThisAction(KRF.Web.SessionManager.RoleId, pageID, (int)KRF.Core.Enums.PermissionType.Edit);
+                    var assemblyEdit = Common.Common.IsUserAuthorizeToPerformThisAction(SessionManager.RoleId, pageID, (int)Core.Enums.PermissionType.Edit);
                     filterContext.Controller.ViewBag.AssemblyAllowEdit = assemblyEdit;
-                    var assemblyView = KRF.Web.Common.Common.IsUserAuthorizeToPerformThisAction(KRF.Web.SessionManager.RoleId, pageID, (int)KRF.Core.Enums.PermissionType.View);
+                    var assemblyView = Common.Common.IsUserAuthorizeToPerformThisAction(SessionManager.RoleId, pageID, (int)Core.Enums.PermissionType.View);
                     filterContext.Controller.ViewBag.AssemblyAllowView = assemblyView;
                     pageID = SessionManager.Pages.Where(p => p.PageName == "Item" && p.Active == true).FirstOrDefault().PageID;
-                    var itemEdit = KRF.Web.Common.Common.IsUserAuthorizeToPerformThisAction(KRF.Web.SessionManager.RoleId, pageID, (int)KRF.Core.Enums.PermissionType.Edit);
+                    var itemEdit = Common.Common.IsUserAuthorizeToPerformThisAction(SessionManager.RoleId, pageID, (int)Core.Enums.PermissionType.Edit);
                     filterContext.Controller.ViewBag.ItemAllowEdit = itemEdit;
-                    var itemView = KRF.Web.Common.Common.IsUserAuthorizeToPerformThisAction(KRF.Web.SessionManager.RoleId, pageID, (int)KRF.Core.Enums.PermissionType.View);
+                    var itemView = Common.Common.IsUserAuthorizeToPerformThisAction(SessionManager.RoleId, pageID, (int)Core.Enums.PermissionType.View);
                     filterContext.Controller.ViewBag.ItemAllowView = itemView;
                     if (!itemView && !itemEdit && !assemblyView && !assemblyEdit)
                     {
@@ -53,7 +53,7 @@ namespace KRF.Web.CustomActionFilter
                                    });
                     }
                     //Check Edit Permission
-                    filterContext.Controller.ViewBag.AllowEdit = KRF.Web.Common.Common.IsUserAuthorizeToPerformThisAction(KRF.Web.SessionManager.RoleId, pageID, (int)KRF.Core.Enums.PermissionType.Edit);
+                    filterContext.Controller.ViewBag.AllowEdit = Common.Common.IsUserAuthorizeToPerformThisAction(SessionManager.RoleId, pageID, (int)Core.Enums.PermissionType.Edit);
                 }
             }
             else if (action.ToLower() == "add" || action.ToLower().Contains("save") || action.ToLower().Contains("update") || action.ToLower().Contains("import"))
@@ -63,7 +63,7 @@ namespace KRF.Web.CustomActionFilter
                 if (page != null)
                 {
                     pageID = page.PageID;
-                    if (!KRF.Web.Common.Common.IsUserAuthorizeToPerformThisAction(KRF.Web.SessionManager.RoleId, pageID, (int)KRF.Core.Enums.PermissionType.Edit))
+                    if (!Common.Common.IsUserAuthorizeToPerformThisAction(SessionManager.RoleId, pageID, (int)Core.Enums.PermissionType.Edit))
                     {
                         filterContext.Result = new RedirectToRouteResult(
                                                    new RouteValueDictionary 
@@ -74,7 +74,7 @@ namespace KRF.Web.CustomActionFilter
                     }
                 }
             }
-            this.OnActionExecuting(filterContext);
+            OnActionExecuting(filterContext);
         }
     }
 }

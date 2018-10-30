@@ -20,7 +20,7 @@ namespace KRF.Web.Controllers
         public ActionResult Index()
         {
             IEmployeeManagementRepository employeeRepo = ObjectFactory.GetInstance<IEmployeeManagementRepository>();
-            var employes = employeeRepo.GetEmployes();
+            var employes = employeeRepo.GetEmployees();
             TempData["Employes"] = employes;
             return View();
         }
@@ -61,7 +61,7 @@ namespace KRF.Web.Controllers
 
             EmployeeDTO employeeDTO = (EmployeeDTO)TempData["Employes"];
             if (employeeDTO == null)
-                employeeDTO = employeeRepo.GetEmployes();
+                employeeDTO = employeeRepo.GetEmployees();
 
             return Json(new
             {
@@ -101,7 +101,7 @@ namespace KRF.Web.Controllers
         {
             IEmployeeManagementRepository employeeRepo = ObjectFactory.GetInstance<IEmployeeManagementRepository>();
             ICrewManagementRepository crewRepo = ObjectFactory.GetInstance<ICrewManagementRepository>();
-            var employeeDTO = employeeRepo.GetEmploye(empId);
+            var employeeDTO = employeeRepo.GetEmployee(empId);
             var crews = crewRepo.GetCrews();
             return Json(new
             {
@@ -133,7 +133,7 @@ namespace KRF.Web.Controllers
         {
             IEmployeeManagementRepository employeeRepo = ObjectFactory.GetInstance<IEmployeeManagementRepository>();
             ICrewManagementRepository crewRepo = ObjectFactory.GetInstance<ICrewManagementRepository>();
-            var employeeDTO = employeeRepo.GetEmployeByUserID(userID);
+            var employeeDTO = employeeRepo.GetEmployeeByUserID(userID);
             return Json(new
             {
                 employee = employeeDTO.Employees.First(),
@@ -163,7 +163,7 @@ namespace KRF.Web.Controllers
             {
                 var employee = employeeData.Employee;
                 ID = employee.EmpId;
-                EmployeeDTO employeeDTO = employeeRepo.GetEmployes();
+                EmployeeDTO employeeDTO = employeeRepo.GetEmployees();
                 if(!string.IsNullOrEmpty(employee.Password))
                     employee.Password = KRF.Common.EncryptDecrypt.EncryptString(employee.Password);
 

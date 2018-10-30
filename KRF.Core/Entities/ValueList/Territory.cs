@@ -19,6 +19,7 @@ namespace KRF.Core.Entities.ValueList
         public string TerritoryDesc { get; set; }
 
         public int EmpID { get; set; }
+        
         /// <summary>
         /// Hold the true/false value
         /// </summary>

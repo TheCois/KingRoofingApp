@@ -6,7 +6,6 @@ using KRF.Web.Models;
 using KRF.Core.Repository.MISC;
 using System.Web;
 using System.Configuration;
-using KRF.Core.Entities.Actors;
 using KRF.Core.Repository;
 using KRF.Core.FunctionalContracts;
 
@@ -30,48 +29,57 @@ namespace KRF.Web.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Login(LoginModel model, string returnUrl)
         {
-            ILoginRepository repository = ObjectFactory.GetInstance<ILoginRepository>();
-            IEmployeeManagementRepository employeeRepo = ObjectFactory.GetInstance<IEmployeeManagementRepository>();
+            var repository = ObjectFactory.GetInstance<ILoginRepository>();
+            var employeeRepo = ObjectFactory.GetInstance<IEmployeeManagementRepository>();
             //ILoginRepository repository;
-            string username = model.UserName;
-            string password = model.Password;
-            if ((username != null && username != string.Empty) && (password != null && password != string.Empty))
+            var username = model.UserName;
+            var password = model.Password;
+            if (!string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(password))
             {
                 password = KRF.Common.EncryptDecrypt.EncryptString(password);
-                bool loginResult = repository.AuthenticateUser(username, password);
+                var loginResult = repository.AuthenticateUser(username, password);
                 if (ModelState.IsValid && loginResult)
                 {
-                    User user = repository.GetUserDetail(username);
+                    var user = repository.GetUserDetail(username);
                     SessionManager.LoggedInUser = user;
                     SessionManager.UserID = user.ID;
                     SessionManager.UserName = user.Email;
 
-                    IRolePermissionRepository rolePermissionRepo = ObjectFactory.GetInstance<IRolePermissionRepository>();
+                    var rolePermissionRepo = ObjectFactory.GetInstance<IRolePermissionRepository>();
                     SessionManager.Pages = rolePermissionRepo.GetPages();
 
                     //Session["IsAdmin"] = user.IsAdmin;
 
-                    var employeeDTO = employeeRepo.GetEmployeByUserID(user.ID);
-                    SessionManager.RoleId = employeeDTO.Employees.FirstOrDefault().RoleId;
-                    SessionManager.UserFullName = employeeDTO.Employees.FirstOrDefault().FirstName + " " + employeeDTO.Employees.FirstOrDefault().LastName;
-                    SessionManager.EmpID = employeeDTO.Employees.FirstOrDefault().EmpId;
+                    var employeeDto = employeeRepo.GetEmployeeByUserID(user.ID);
+                    var targetEmployee = employeeDto.Employees.FirstOrDefault();
+                    if (targetEmployee == null)
+                    {
+                        throw new ArgumentException("Employee details are inconsistent with Login Credentials");
+                    }
+                    SessionManager.RoleId = targetEmployee.RoleId;
+                    SessionManager.UserFullName = targetEmployee.FirstName + " " + targetEmployee.LastName;
+                    SessionManager.EmpID = targetEmployee.EmpId;
 
-                    FormsAuthenticationTicket ticket = new FormsAuthenticationTicket(1, model.UserName, DateTime.Now, DateTime.Now.AddMinutes(30), false, string.Empty, FormsAuthentication.FormsCookiePath);
-                    string encryptedCookie = FormsAuthentication.Encrypt(ticket);
-                    HttpCookie faCookie = new HttpCookie(FormsAuthentication.FormsCookieName, encryptedCookie);
-                    faCookie.Expires = DateTime.Now.AddMinutes(Convert.ToInt32(ConfigurationManager.AppSettings["UserTimeOut"]));//timeout in minute
-                    faCookie.HttpOnly = true;
+                    var ticket = new FormsAuthenticationTicket(1, model.UserName, DateTime.Now, DateTime.Now.AddMinutes(30), false, string.Empty, FormsAuthentication.FormsCookiePath);
+                    var encryptedCookie = FormsAuthentication.Encrypt(ticket);
+                    var faCookie = new HttpCookie(FormsAuthentication.FormsCookieName, encryptedCookie)
+                    {
+                        Expires = DateTime.Now.AddMinutes(
+                            Convert.ToInt32(ConfigurationManager.AppSettings["UserTimeOut"])),
+                        HttpOnly = true
+                    };
+                    //timeout in minute
                     Response.Cookies.Add(faCookie);
-                    string action = "Index";
-                    string controller = "Lead";
+                    var action = "Index";
+                    var controller = "Lead";
                     var rolePermissions = rolePermissionRepo.GetRolePermissionDetail(SessionManager.RoleId);
                     if (rolePermissions != null)
                     {
                         var firstAccessiblePage = rolePermissions.RolePermissions.OrderBy(p => p.PageID).FirstOrDefault();
                         if (firstAccessiblePage != null)
                         {
-                            int firstAccesiblePageID = firstAccessiblePage.PageID;
-                            string firstAccesiblePageName = SessionManager.Pages.Where(p => p.PageID == firstAccesiblePageID).FirstOrDefault().PageName;
+                            var firstAccesiblePageId = firstAccessiblePage.PageID;
+                            var firstAccesiblePageName = SessionManager.Pages.Where(p => p.PageID == firstAccesiblePageId).FirstOrDefault().PageName;
                             controller = firstAccesiblePageName;
                             if (firstAccesiblePageName == "Estimate")
                             {
@@ -96,29 +104,31 @@ namespace KRF.Web.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult SendResetPassword(string email)
         {
-            bool success = false;
-            string msg = string.Empty;
+            var success = false;
+            var msg = string.Empty;
             try
             {
-                ILoginRepository repository = ObjectFactory.GetInstance<ILoginRepository>();
-                IEmployeeManagementRepository employeeRepo = ObjectFactory.GetInstance<IEmployeeManagementRepository>();
-                User user = repository.GetUserDetail(email);
+                var repository = ObjectFactory.GetInstance<ILoginRepository>();
+                var employeeRepo = ObjectFactory.GetInstance<IEmployeeManagementRepository>();
+                var user = repository.GetUserDetail(email);
                 if (user != null)
                 {
-                    Guid guid = Guid.NewGuid();
+                    var guid = Guid.NewGuid();
                     if (repository.ForgotPassword(email, guid.ToString()))
                     {
-                        var employeeDTO = employeeRepo.GetEmployeByUserID(user.ID);
+                        var employeeDto = employeeRepo.GetEmployeeByUserID(user.ID);
 
-                        string code = KRF.Common.EncryptDecrypt.EncryptString(guid.ToString());
-                        IMailService _mailSrvc = ObjectFactory.GetInstance<IMailService>();
-                        KRF.Web.Models.ResetPasswordEmailModel resetEmailModel = new KRF.Web.Models.ResetPasswordEmailModel();
-                        resetEmailModel.FirstName = employeeDTO.Employees.FirstOrDefault().FirstName;
-                        resetEmailModel.LastName = employeeDTO.Employees.FirstOrDefault().LastName;
-                        resetEmailModel.Email = email;
-                        string url = Request.UrlReferrer.ToString().Substring(0, Request.UrlReferrer.ToString().IndexOf(Request.Url.Host) + Request.Url.Host.Length);
+                        var code = KRF.Common.EncryptDecrypt.EncryptString(guid.ToString());
+                        var mailSrvc = ObjectFactory.GetInstance<IMailService>();
+                        var resetEmailModel = new ResetPasswordEmailModel
+                        {
+                            FirstName = employeeDto.Employees.FirstOrDefault().FirstName,
+                            LastName = employeeDto.Employees.FirstOrDefault().LastName,
+                            Email = email
+                        };
+                        var url = Request.UrlReferrer.ToString().Substring(0, Request.UrlReferrer.ToString().IndexOf(Request.Url.Host) + Request.Url.Host.Length);
                         resetEmailModel.ResetPasswordUrl = url + Url.Action("ResetPassword", "Account", new { key = code });
-                        _mailSrvc.SendMail(resetEmailModel, "ResetPassword", resetEmailModel.Email, "", "KRF - Reset Password", Server.MapPath("~/MailTemplates"), null);
+                        mailSrvc.SendMail(resetEmailModel, "ResetPassword", resetEmailModel.Email, "", "KRF - Reset Password", Server.MapPath("~/MailTemplates"), null);
                         success = true;
                         msg = "Your password is now reset. Please check your email and follow up.";
                     }
@@ -147,8 +157,8 @@ namespace KRF.Web.Controllers
         [AllowAnonymous]
         public ActionResult ResetPassword(string key)
         {
-            ResetPasswordModel resetPasswordModel = new ResetPasswordModel();
-            ILoginRepository repository = ObjectFactory.GetInstance<ILoginRepository>();
+            var resetPasswordModel = new ResetPasswordModel();
+            var repository = ObjectFactory.GetInstance<ILoginRepository>();
             try
             {
                 key = KRF.Common.EncryptDecrypt.DecryptString(key);
@@ -171,12 +181,12 @@ namespace KRF.Web.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult ResetPassword(ResetPasswordModel model)
         {
-            bool result = false;
-            string msg = string.Empty;
+            var result = false;
+            var msg = string.Empty;
             try
             {
-                ILoginRepository repository = ObjectFactory.GetInstance<ILoginRepository>();
-                string password = KRF.Common.EncryptDecrypt.EncryptString(model.NewPassword);
+                var repository = ObjectFactory.GetInstance<ILoginRepository>();
+                var password = KRF.Common.EncryptDecrypt.EncryptString(model.NewPassword);
                 if (repository.ResetPassword(model.Key, password))
                 {
                     result = true;
@@ -200,8 +210,8 @@ namespace KRF.Web.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Register(ResetPasswordModel model)
         {
-            bool result = false;
-            string msg = string.Empty;
+            var result = false;
+            var msg = string.Empty;
             try
             {
             }
@@ -217,8 +227,8 @@ namespace KRF.Web.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Manage(ResetPasswordModel model)
         {
-            bool result = false;
-            string msg = string.Empty;
+            var result = false;
+            var msg = string.Empty;
             try
             {
             }
@@ -234,8 +244,8 @@ namespace KRF.Web.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult LogOff(ResetPasswordModel model)
         {
-            bool result = false;
-            string msg = string.Empty;
+            var result = false;
+            var msg = string.Empty;
             try
             {
             }

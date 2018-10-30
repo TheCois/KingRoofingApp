@@ -10,11 +10,9 @@ var EstimateNS = {
 // End of Global objects
 
 function getWebsiteBaseUrl() {
-    //var url = window.location;
-    //var baseUrl = url.substr(0, url.lastIndexOf('/'));
-    //return baseUrl;
-
-    return 'https://dev1.myprogrammer.com/krf-dev/';
+    var url = window.location;
+    var baseUrl = url.substr(0, url.lastIndexOf('/'));
+    return baseUrl;
 }
 
 function openModal() {
@@ -2039,6 +2037,7 @@ $.ajaxSetup({
             window.location.href = getWebsiteBaseUrl() + 'Account/Login';
         },
         500: function (jqXHR, textStatus, errorThrown) {
+            alert('error 500 = ' + errorThrown);
             window.location.href = getWebsiteBaseUrl() + 'Account/Login';
         }
     }

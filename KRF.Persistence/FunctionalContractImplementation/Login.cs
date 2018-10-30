@@ -1,75 +1,65 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using KRF.Common;
-using KRF.Core;
 using KRF.Core.FunctionalContracts;
 using Dapper;
-using DapperExtensions;
-using StructureMap;
 using KRF.Core.Entities.Actors;
-using System.Configuration;
 
 namespace KRF.Persistence.FunctionalContractImplementation
 {
-    public class Login:ILogin
+    public class Login : ILogin
     {
-       private string _connectionString;
-
-        public Login()
-        {
-            //_connectionString = ObjectFactory.GetInstance<IDatabaseConnection>().ConnectionString;
-            _connectionString = Convert.ToString(ConfigurationManager.AppSettings["ApplicationDSN"]);
-        }
-
         #region ILogin Members
 
         public bool AuthenticateUser(string username, string password)
         {
-
-            using (var sqlConnection = new SqlConnection(_connectionString))
+            var dbConnection = new DataAccessFactory();
+            using (var conn = dbConnection.CreateConnection())
             {
-                sqlConnection.Open();
-                const string query = "Select U.* from [User] U inner join Employee E on E.UserID = U.ID INNER JOIN Role R on R.RoleId = E.RoleId AND R.Active = 1 where E.Status = 1 and U.Email = @Email and U.Password = @Password";
-                User objUser =  sqlConnection.Query<User>(query, new { Email = username, Password = password }).FirstOrDefault();
-                if (objUser != null)
-                    return true;
-                else
-                    return false;
+                conn.Open();
+                const string query = "Select U.* from User U inner join Employee E on E.UserID = U.ID INNER JOIN Role R on R.RoleId = E.RoleId AND R.Active = 1 where E.Status = 1 and U.Email = @Email and U.Password = @Password";
+                try
+                {
+                    var objUser = conn.Query<User>(query, new {Email = username, Password = password}).FirstOrDefault();
+                    if (objUser != null)
+                        return true;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex);
+                }
+
+                return false;
             }
-          
         }
 
         public User GetUserDetail(string username)
         {
-
-            using (var sqlConnection = new SqlConnection(_connectionString))
+            var dbConnection = new DataAccessFactory();
+            using (var conn = dbConnection.CreateConnection())
             {
-                sqlConnection.Open();
-                const string query = "Select * from [User] where Email = @Email";
-                User objUser = sqlConnection.Query<User>(query, new { Email = username }).SingleOrDefault();
+                conn.Open();
+                const string query = "Select * from User where Email = @Email";
+                var objUser = conn.Query<User>(query, new { Email = username }).SingleOrDefault();
                 return objUser;
             }
-
         }
 
         public bool ForgotPassword(string email, string code)
         {
             try
             {
-                using (var sqlConnection = new SqlConnection(_connectionString))
+                var dbConnection = new DataAccessFactory();
+                using (var conn = dbConnection.CreateConnection())
                 {
-                    sqlConnection.Open();
+                    conn.Open();
                     const string query = "UPDATE [User] set ResetCode = @Code where Email = @Email";
-                    int id = sqlConnection.Execute(query, new { Code = code, Email = email });
+                    conn.Execute(query, new { Code = code, Email = email });
                     return true;
                 }
             }
             catch (Exception ex)
             {
+                Console.WriteLine(ex);
                 return false;
             }
         }
@@ -81,15 +71,13 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <returns></returns>
         public bool IsCodeValid(string code)
         {
-            using (var sqlConnection = new SqlConnection(_connectionString))
+            var dbConnection = new DataAccessFactory();
+            using (var conn = dbConnection.CreateConnection())
             {
-                sqlConnection.Open();
-                const string query = "Select * from [User] where ResetCode = @Code";
-                User objUser = sqlConnection.Query<User>(query, new { Code = code }).FirstOrDefault();
-                if (objUser != null)
-                    return true;
-                else
-                    return false;
+                conn.Open();
+                const string query = "Select * from User where ResetCode = @Code";
+                var objUser = conn.Query<User>(query, new { Code = code }).FirstOrDefault();
+                return objUser != null;
             }
         }
 
@@ -103,16 +91,18 @@ namespace KRF.Persistence.FunctionalContractImplementation
         {
             try
             {
-                using (var sqlConnection = new SqlConnection(_connectionString))
+                var dbConnection = new DataAccessFactory();
+                using (var conn = dbConnection.CreateConnection())
                 {
-                    sqlConnection.Open();
-                    const string query = "UPDATE [User] set ResetCode = null, Password = @Password where ResetCode = @ResetCode";
-                    int id = sqlConnection.Execute(query, new { Password = newPassword, ResetCode = key });
+                    conn.Open();
+                    const string query = "UPDATE User set ResetCode = null, Password = @Password where ResetCode = @ResetCode";
+                    var id = conn.Execute(query, new { Password = newPassword, ResetCode = key });
                     return id > 0;
                 }
             }
             catch (Exception ex)
             {
+                Console.WriteLine(ex);
                 return false;
             }
         }

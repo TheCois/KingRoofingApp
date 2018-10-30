@@ -20,7 +20,7 @@ namespace KRF.Web.Common
         public static bool IsUserAuthorizeToPerformThisAction(int roleID, int pageID, int permissionID)
         {
             bool allow = true;
-            if (SessionManager.RoleId != (int)KRF.Core.Enums.RoleType.AdminManager)
+            if (SessionManager.RoleId != (int)Core.Enums.RoleType.AdminManager)
             {
                 IRolePermissionRepository rolePermissionRepo = ObjectFactory.GetInstance<IRolePermissionRepository>();
                 var rolePermissions = rolePermissionRepo.GetRolePermission(SessionManager.RoleId, pageID);
@@ -40,7 +40,7 @@ namespace KRF.Web.Common
         public static bool IsUserHasBothViewAndEditPermission(int roleID, int pageID)
         {
             bool allow = true;
-            if (SessionManager.RoleId != (int)KRF.Core.Enums.RoleType.AdminManager)
+            if (SessionManager.RoleId != (int)Core.Enums.RoleType.AdminManager)
             {
                 IRolePermissionRepository rolePermissionRepo = ObjectFactory.GetInstance<IRolePermissionRepository>();
                 var rolePermissions = rolePermissionRepo.GetRolePermission(SessionManager.RoleId, pageID);

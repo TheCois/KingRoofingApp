@@ -8,8 +8,7 @@ using KRF.Core.Entities.ValueList;
 using KRF.Core.FunctionalContracts;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
-using System.Data.SqlClient;
+using System.Data;
 using System.Linq;
 using System.Transactions;
 
@@ -17,16 +16,6 @@ namespace KRF.Persistence.FunctionalContractImplementation
 {
     public class EmployeeManagement : IEmployeeManagement
     {
-        private string _connectionString;
-
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        public EmployeeManagement()
-        {
-            _connectionString = Convert.ToString(ConfigurationManager.AppSettings["ApplicationDSN"]);
-        }
-
         /// <summary>
         /// Create an employee
         /// </summary>
@@ -34,53 +23,54 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <param name="skillItems"></param>
         /// <param name="crewItems"></param>
         /// <returns></returns>
-        public int CreateEmployee(Employee empoyee, List<tbl_EmpSkillDetails> skillItems, List<EmployeeCrewDetails> crewItems)
+        public int CreateEmployee(Employee employee, List<tbl_EmpSkillDetails> skillItems, List<EmployeeCrewDetails> crewItems)
         {
             using (var transactionScope = new TransactionScope())
             {
-                using (var sqlConnection = new SqlConnection(_connectionString))
+                var dbConnection = new DataAccessFactory();
+                using (var conn = dbConnection.CreateConnection())
                 {
-                    sqlConnection.Open();
-                    int userID = 0;
-                    if (!string.IsNullOrEmpty(empoyee.EmailID) && !string.IsNullOrEmpty(empoyee.Password))
+                    conn.Open();
+                    var userId = 0;
+                    if (!string.IsNullOrEmpty(employee.EmailID) && !string.IsNullOrEmpty(employee.Password))
                     {
                         var predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
-                        predicateGroup.Predicates.Add(Predicates.Field<User>(s => s.Email, Operator.Eq, empoyee.EmailID));
-                        IList<User> users = sqlConnection.GetList<User>(predicateGroup).ToList();
+                        predicateGroup.Predicates.Add(Predicates.Field<User>(s => s.Email, Operator.Eq, employee.EmailID));
+                        IList<User> users = conn.GetList<User>(predicateGroup).ToList();
 
                         User user = users.Any() ? users[0] : new User();
-                        user.UserName = empoyee.EmailID.Substring(0, (empoyee.EmailID.Length > 20 ? 20 : empoyee.EmailID.Length));
-                        user.Email = empoyee.EmailID;
-                        user.Password = empoyee.Password;
+                        user.UserName = employee.EmailID.Substring(0, (employee.EmailID.Length > 20 ? 20 : employee.EmailID.Length));
+                        user.Email = employee.EmailID;
+                        user.Password = employee.Password;
                         user.IsDeleted = false;
                         user.DOB = null;
-                        user.IsAdmin = empoyee.IsAdmin;
+                        user.IsAdmin = employee.IsAdmin;
                         if (!users.Any())
                         {
-                            userID = sqlConnection.Insert<User>(user);
+                            userId = conn.Insert(user);
                         }
                         else
                         {
-                            userID = user.ID;
-                            sqlConnection.Update<User>(user);
+                            userId = user.ID;
+                            conn.Update(user);
                         }
                     }
-                    empoyee.Password = null;
-                    empoyee.UserID = userID;
-                    var id = sqlConnection.Insert<Employee>(empoyee);
+                    employee.Password = null;
+                    employee.UserID = userId;
+                    var id = conn.Insert(employee);
                     if (skillItems != null)
                     {
                         foreach (tbl_EmpSkillDetails skillItem in skillItems)
                         {
                             skillItem.EmpID = id;
-                            sqlConnection.Insert<tbl_EmpSkillDetails>(skillItem);
+                            conn.Insert(skillItem);
                         }
                     }
                     if (crewItems == null)
                     {
                         crewItems = new List<EmployeeCrewDetails>();
                     }
-                    UpdateCrewDetail(sqlConnection, id, crewItems);
+                    UpdateCrewDetail(conn, id, crewItems);
 
                     transactionScope.Complete();
                     return id;
@@ -95,129 +85,128 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <param name="skillItems"></param>
         /// <param name="crewItems"></param>
         /// <returns></returns>
-        public Employee EditEmployee(Employee empoyee, List<tbl_EmpSkillDetails> skillItems, List<EmployeeCrewDetails> crewItems)
+        public Employee EditEmployee(Employee employee, List<tbl_EmpSkillDetails> skillItems, List<EmployeeCrewDetails> crewItems)
         {
             using (var transactionScope = new TransactionScope())
             {
-                using (var sqlConnection = new SqlConnection(_connectionString))
+                var dbConnection = new DataAccessFactory();
+                using (var conn = dbConnection.CreateConnection())
                 {
-                    sqlConnection.Open();
-                    int id = empoyee.EmpId;
-                    int userID = 0;
+                    conn.Open();
+                    var id = employee.EmpId;
+                    var userId = 0;
                     var predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
-                    if (!string.IsNullOrEmpty(empoyee.EmailID) && !string.IsNullOrEmpty(empoyee.Password))
+                    if (!string.IsNullOrEmpty(employee.EmailID) && !string.IsNullOrEmpty(employee.Password))
                     {
-                        predicateGroup.Predicates.Add(Predicates.Field<User>(s => s.Email, Operator.Eq, empoyee.EmailID));
-                        IList<User> users = sqlConnection.GetList<User>(predicateGroup).ToList();
+                        predicateGroup.Predicates.Add(Predicates.Field<User>(s => s.Email, Operator.Eq, employee.EmailID));
+                        IList<User> users = conn.GetList<User>(predicateGroup).ToList();
 
-                        User user = users.Any() ? users[0] : new User();
-                        user.UserName = empoyee.EmailID.Substring(0, (empoyee.EmailID.Length > 20 ? 20 : empoyee.EmailID.Length));
-                        user.Email = empoyee.EmailID;
-                        user.Password = empoyee.Password;
+                        var user = users.Any() ? users[0] : new User();
+                        user.UserName = employee.EmailID.Substring(0, (employee.EmailID.Length > 20 ? 20 : employee.EmailID.Length));
+                        user.Email = employee.EmailID;
+                        user.Password = employee.Password;
                         user.IsDeleted = false;
                         user.DOB = null;
-                        user.IsAdmin = empoyee.IsAdmin;
+                        user.IsAdmin = employee.IsAdmin;
                         if (!users.Any())
                         {
-                            userID = sqlConnection.Insert<User>(user);
+                            userId = conn.Insert(user);
                         }
                         else
                         {
-                            userID = user.ID;
-                            sqlConnection.Update<User>(user);
+                            userId = user.ID;
+                            conn.Update(user);
                         }
                     }
-                    empoyee.Password = null;
-                    empoyee.UserID = userID;
+                    employee.Password = null;
+                    employee.UserID = userId;
                     
                     predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
                     predicateGroup.Predicates.Add(Predicates.Field<tbl_EmpSkillDetails>(s => s.EmpID, Operator.Eq, id));
-                    IList<tbl_EmpSkillDetails> skillDetails = sqlConnection.GetList<tbl_EmpSkillDetails>(predicateGroup).ToList();
-                    foreach(tbl_EmpSkillDetails skill in skillDetails)
+                    IList<tbl_EmpSkillDetails> skillDetails = conn.GetList<tbl_EmpSkillDetails>(predicateGroup).ToList();
+                    foreach(var skill in skillDetails)
                     {
-                        sqlConnection.Delete(skill);
+                        conn.Delete(skill);
                     }
                     if (skillItems != null)
                     {
-                        foreach (tbl_EmpSkillDetails skill in skillItems)
+                        foreach (var skill in skillItems)
                         {
                             skill.EmpID = id;
-                            sqlConnection.Insert<tbl_EmpSkillDetails>(skill);
+                            conn.Insert(skill);
                         }
                     }
                     if (crewItems == null)
                     {
                         crewItems = new List<EmployeeCrewDetails>();
                     }
-                    UpdateCrewDetail(sqlConnection, id, crewItems);
+                    UpdateCrewDetail(conn, id, crewItems);
 
-                    var isEdited = sqlConnection.Update<Employee>(empoyee);
+                    conn.Update(employee);
                     transactionScope.Complete();
-                    return empoyee;
+                    return employee;
                 }
             }
         }
         /// <summary>
         /// Update Crew Detail
         /// </summary>
-        /// <param name="sqlConnection"></param>
+        /// <param name="conn"></param>
         /// <param name="id"></param>
         /// <param name="crewItems"></param>
-        private void UpdateCrewDetail(SqlConnection sqlConnection, int id, List<EmployeeCrewDetails> crewItems)
+        private void UpdateCrewDetail(IDbConnection conn, int id, List<EmployeeCrewDetails> crewItems)
         {
             var predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
             predicateGroup.Predicates.Add(Predicates.Field<CrewDetail>(s => s.EmpId, Operator.Eq, id));
-            List<CrewDetail> allCrewDetails = sqlConnection.GetList<CrewDetail>(predicateGroup).ToList();
+            var allCrewDetails = conn.GetList<CrewDetail>(predicateGroup).ToList();
             foreach (CrewDetail crewDetailToBeDelete in allCrewDetails)
             {
                 if (crewItems.Find(c => c.CrewID == crewDetailToBeDelete.CrewID) == null)
                 {
-                    sqlConnection.Delete<CrewDetail>(crewDetailToBeDelete);
+                    conn.Delete(crewDetailToBeDelete);
                 }
             }
-            foreach (EmployeeCrewDetails crewItem in crewItems)
+            foreach (var crewItem in crewItems)
             {
                 predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
                 predicateGroup.Predicates.Add(Predicates.Field<CrewDetail>(s => s.CrewID, Operator.Eq, crewItem.CrewID));
-                List<CrewDetail> crewDetails = sqlConnection.GetList<CrewDetail>(predicateGroup).ToList();
+                var crewDetails = conn.GetList<CrewDetail>(predicateGroup).ToList();
 
-                if (crewDetails.Count() > 0)
+                if (crewDetails.Any())
                 {
                     if (crewItem.IsLead)
                     {
-                        foreach (CrewDetail crewDetail in crewDetails)
+                        foreach (var crewDetail in crewDetails)
                         {
                             crewDetail.IsLead = false;
-                            sqlConnection.Update<CrewDetail>(crewDetail);
+                            conn.Update(crewDetail);
                         }
                     }
                     predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
                     predicateGroup.Predicates.Add(Predicates.Field<CrewDetail>(s => s.CrewID, Operator.Eq, crewItem.CrewID));
                     predicateGroup.Predicates.Add(Predicates.Field<CrewDetail>(s => s.EmpId, Operator.Eq, id));
-                    List<CrewDetail> crewDetl = sqlConnection.GetList<CrewDetail>(predicateGroup).ToList();
-                    if (crewDetl.Count > 0)
+                    var filteredDetails = conn.GetList<CrewDetail>(predicateGroup).ToList();
+                    if (filteredDetails.Count > 0)
                     {
-                        crewDetl[0].IsLead = crewItem.IsLead;
-                        sqlConnection.Update<CrewDetail>(crewDetl[0]);
+                        filteredDetails[0].IsLead = crewItem.IsLead;
+                        conn.Update(filteredDetails[0]);
                     }
                     else
                     {
-                        CrewDetail crewDetailInsert = new CrewDetail();
-                        crewDetailInsert.CrewID = crewItem.CrewID;
-                        crewDetailInsert.EmpId = id;
-                        crewDetailInsert.IsLead = crewItem.IsLead;
-                        crewDetailInsert.Active = true;
-                        sqlConnection.Insert<CrewDetail>(crewDetailInsert);
+                        var crewDetailInsert = new CrewDetail
+                        {
+                            CrewID = crewItem.CrewID, EmpId = id, IsLead = crewItem.IsLead, Active = true
+                        };
+                        conn.Insert(crewDetailInsert);
                     }
                 }
                 else
                 {
-                    CrewDetail crewDetailInsert = new CrewDetail();
-                    crewDetailInsert.CrewID = crewItem.CrewID;
-                    crewDetailInsert.EmpId = id;
-                    crewDetailInsert.IsLead = crewItem.IsLead;
-                    crewDetailInsert.Active = true;
-                    sqlConnection.Insert<CrewDetail>(crewDetailInsert);
+                    var crewDetailInsert = new CrewDetail
+                    {
+                        CrewID = crewItem.CrewID, EmpId = id, IsLead = crewItem.IsLead, Active = true
+                    };
+                    conn.Insert(crewDetailInsert);
                 }
             }
         }
@@ -230,15 +219,16 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <returns></returns>
         public bool ToggleEmployeeStatus(int empId, bool tobeEnabled)
         {
-            using (var sqlConnection = new SqlConnection(_connectionString))
+            var dbConnection = new DataAccessFactory();
+            using (var conn = dbConnection.CreateConnection())
             {
+                conn.Open();
                 var predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
                 predicateGroup.Predicates.Add(Predicates.Field<Employee>(s => s.EmpId, Operator.Eq, empId));
-                sqlConnection.Open();
-                Employee Employee = sqlConnection.Get<Employee>(empId);
-                Employee.Status = tobeEnabled;
-                Employee.DateUpdated = DateTime.Now;
-                var isUpdated = sqlConnection.Update<Employee>(Employee);
+                var employee = conn.Get<Employee>(empId);
+                employee.Status = tobeEnabled;
+                employee.DateUpdated = DateTime.Now;
+                var isUpdated = conn.Update(employee);
                 return isUpdated;
             }
         }
@@ -250,32 +240,33 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <returns></returns>
         public EmployeeDTO GetEmployeeDetails(int empId)
         {
-            using (var sqlConnection = new SqlConnection(_connectionString))
+            var dbConnection = new DataAccessFactory();
+            using (var conn = dbConnection.CreateConnection())
             {
+                conn.Open();
                 var predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
                 predicateGroup.Predicates.Add(Predicates.Field<Employee>(s => s.EmpId, Operator.Eq, empId));
-                sqlConnection.Open();
-                Employee employee = sqlConnection.Get<Employee>(empId);
+                Employee employee = conn.Get<Employee>(empId);
                 if (employee != null && (employee.UserID ?? 0) > 0)
                 {
-                    User user = sqlConnection.Get<User>(employee.UserID);
+                    User user = conn.Get<User>(employee.UserID);
                     employee.Password = Common.EncryptDecrypt.DecryptString(user.Password);
                 }
                 IList<Employee> p = new List<Employee>();
                 p.Add(employee);
-                IList<tbl_EmpTerritory> territories = sqlConnection.GetList<tbl_EmpTerritory>().ToList();
-                IList<Role> roles = sqlConnection.GetList<Role>().ToList();
-                IList<tbl_SkillLevel> skilllevels = sqlConnection.GetList<tbl_SkillLevel>().ToList();
+                IList<tbl_EmpTerritory> territories = conn.GetList<tbl_EmpTerritory>().ToList();
+                IList<Role> roles = conn.GetList<Role>().ToList();
+                IList<tbl_SkillLevel> skillLevels = conn.GetList<tbl_SkillLevel>().ToList();
                 predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
                 predicateGroup.Predicates.Add(Predicates.Field<tbl_EmpSkillDetails>(s => s.EmpID, Operator.Eq, empId));
-                IList<tbl_EmpSkillDetails> skillItems = sqlConnection.GetList<tbl_EmpSkillDetails>(predicateGroup).ToList();
+                IList<tbl_EmpSkillDetails> skillItems = conn.GetList<tbl_EmpSkillDetails>(predicateGroup).ToList();
 
                 predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
                 predicateGroup.Predicates.Add(Predicates.Field<City>(s => s.Active, Operator.Eq, true));
-                IList<City> cities = sqlConnection.GetList<City>(predicateGroup).ToList();
+                IList<City> cities = conn.GetList<City>(predicateGroup).ToList();
                 predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
                 predicateGroup.Predicates.Add(Predicates.Field<State>(s => s.Active, Operator.Eq, true));
-                IList<State> states = sqlConnection.GetList<State>(predicateGroup).ToList();
+                IList<State> states = conn.GetList<State>(predicateGroup).ToList();
 
                 return new EmployeeDTO
                 {
@@ -284,36 +275,37 @@ namespace KRF.Persistence.FunctionalContractImplementation
                     Employees = p,
                     Territories = territories.Where(t => t.Active).OrderBy(q => q.TerritoryDesc).ToList(),
                     Roles = roles.OrderBy(q => q.RoleName).ToList(),
-                    SkillLevels = skilllevels.OrderBy(q => q.SkillLevelDesc).ToList(),
+                    SkillLevels = skillLevels.OrderBy(q => q.SkillLevelDesc).ToList(),
                     SkillItems = skillItems.OrderBy(q => q.SkillDesc).ToList()
-                }; ;
+                };
             }
         }
 
         /// <summary>
         /// Get Employee By UserID
         /// </summary>
-        /// <param name="userID"></param>
+        /// <param name="userId"></param>
         /// <returns></returns>
-        public EmployeeDTO GetEmployeByUserID(int userID)
+        public EmployeeDTO GetEmployeeByUserID(int userId)
         {
-            using (var sqlConnection = new SqlConnection(_connectionString))
+            var dbConnection = new DataAccessFactory();
+            using (var conn = dbConnection.CreateConnection())
             {
+                conn.Open();
                 var predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
-                predicateGroup.Predicates.Add(Predicates.Field<Employee>(s => s.UserID, Operator.Eq, userID));
+                predicateGroup.Predicates.Add(Predicates.Field<Employee>(s => s.UserID, Operator.Eq, userId));
                 predicateGroup.Predicates.Add(Predicates.Field<Employee>(s => s.Status, Operator.Eq, true));
-                sqlConnection.Open();
-                IList<Employee> employees = sqlConnection.GetList<Employee>(predicateGroup).ToList();
+                IList<Employee> employees = conn.GetList<Employee>(predicateGroup).ToList();
                 IList<Employee> p = new List<Employee>();
                 p.Add(employees[0]);
-                IList<Role> roles = sqlConnection.GetList<Role>().ToList();
-                IList<tbl_EmpTerritory> territories = sqlConnection.GetList<tbl_EmpTerritory>().ToList();
+                IList<Role> roles = conn.GetList<Role>().ToList();
+                IList<tbl_EmpTerritory> territories = conn.GetList<tbl_EmpTerritory>().ToList();
                 predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
                 predicateGroup.Predicates.Add(Predicates.Field<City>(s => s.Active, Operator.Eq, true));
-                IList<City> cities = sqlConnection.GetList<City>(predicateGroup).ToList();
+                IList<City> cities = conn.GetList<City>(predicateGroup).ToList();
                 predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
                 predicateGroup.Predicates.Add(Predicates.Field<State>(s => s.Active, Operator.Eq, true));
-                IList<State> states = sqlConnection.GetList<State>(predicateGroup).ToList();
+                IList<State> states = conn.GetList<State>(predicateGroup).ToList();
                 return new EmployeeDTO
                 {
                     Cities = cities.OrderBy(t => t.Description).ToList(),
@@ -331,21 +323,22 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <returns></returns>
         public EmployeeDTO ListAllEmployees()
         {
-            using (var sqlConnection = new SqlConnection(_connectionString))
+            var dbConnection = new DataAccessFactory();
+            using (var conn = dbConnection.CreateConnection())
             {
+                conn.Open();
                 var predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
                 //predicateGroup.Predicates.Add(Predicates.Field<Employee>(s => s.EmpId, Operator.Eq, empId));
-                sqlConnection.Open();
-                IList<tbl_EmpTerritory> territories = sqlConnection.GetList<tbl_EmpTerritory>().ToList();
-                IList<Role> roles = sqlConnection.GetList<Role>().ToList();
-                IList<tbl_SkillLevel> skilllevels = sqlConnection.GetList<tbl_SkillLevel>().ToList();
-                IList<Employee> employees = sqlConnection.GetList<Employee>(predicateGroup).ToList();
+                IList<tbl_EmpTerritory> territories = conn.GetList<tbl_EmpTerritory>().ToList();
+                IList<Role> roles = conn.GetList<Role>().ToList();
+                IList<tbl_SkillLevel> skillLevels = conn.GetList<tbl_SkillLevel>().ToList();
+                IList<Employee> employees = conn.GetList<Employee>(predicateGroup).ToList();
                 predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
                 predicateGroup.Predicates.Add(Predicates.Field<City>(s => s.Active, Operator.Eq, true));
-                IList<City> cities = sqlConnection.GetList<City>(predicateGroup).ToList();
+                IList<City> cities = conn.GetList<City>(predicateGroup).ToList();
                 predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
                 predicateGroup.Predicates.Add(Predicates.Field<State>(s => s.Active, Operator.Eq, true));
-                IList<State> states = sqlConnection.GetList<State>(predicateGroup).ToList();
+                IList<State> states = conn.GetList<State>(predicateGroup).ToList();
                 return new EmployeeDTO
                 {
                     Cities = cities.OrderBy(p => p.Description).ToList(),
@@ -353,7 +346,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
                     Employees = employees,
                     Territories = territories.Where(t => t.Active).OrderBy(q => q.TerritoryDesc).ToList(),
                     Roles = roles.OrderBy(q => q.RoleName).ToList(),
-                    SkillLevels = skilllevels.OrderBy(q => q.SkillLevelDesc).ToList()
+                    SkillLevels = skillLevels.OrderBy(q => q.SkillLevelDesc).ToList()
                 };
             }
         }

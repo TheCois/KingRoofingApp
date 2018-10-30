@@ -16,33 +16,33 @@ namespace KRF.Persistence.RepositoryImplementation
 {
     public class EstimateManagementRepository : IEstimateManagementRepository
     {
-        private readonly IEstimateManagement _IEstimateManagement;
+        private readonly IEstimateManagement iEstimateManagement_;
         /// <summary>
         /// Constructor
         /// </summary>
         public EstimateManagementRepository()
         {
-            _IEstimateManagement = ObjectFactory.GetInstance<IEstimateManagement>();
+            iEstimateManagement_ = ObjectFactory.GetInstance<IEstimateManagement>();
         }
 
         public int Create(Estimate estimate, IList<EstimateItem> estimateItem)
         {
-            return _IEstimateManagement.Create(estimate, estimateItem);
+            return iEstimateManagement_.Create(estimate, estimateItem);
         }
 
         public Estimate Edit(Estimate estimate, IList<EstimateItem> estimateItem)
         {
-            return _IEstimateManagement.Edit(estimate, estimateItem);
+            return iEstimateManagement_.Edit(estimate, estimateItem);
         }
 
         public bool Delete(int estimateId)
         {
-            return _IEstimateManagement.Delete(estimateId);
+            return iEstimateManagement_.Delete(estimateId);
         }
 
         public EstimateDTO ListAll()
         {
-            return _IEstimateManagement.ListAll();
+            return iEstimateManagement_.ListAll();
         }
 
         public EstimateDTO ListAllEstimatesForACustomer(int customerId)
@@ -52,32 +52,32 @@ namespace KRF.Persistence.RepositoryImplementation
 
         public EstimateDTO Select(int estimateId)
         {
-            return _IEstimateManagement.Select(estimateId);
+            return iEstimateManagement_.Select(estimateId);
         }
 
         public int SaveDocument(EstimateDocument estimateDocument)
         {
-            return _IEstimateManagement.SaveDocument(estimateDocument);
+            return iEstimateManagement_.SaveDocument(estimateDocument);
         }
 
         public bool DeleteEstimateDocument(int estimateDocumentID)
         {
-            return _IEstimateManagement.DeleteEstimateDocument(estimateDocumentID);
+            return iEstimateManagement_.DeleteEstimateDocument(estimateDocumentID);
         }
 
         public EstimateDocument GetEstimateDocument(int estimateDocumentID)
         {
-            return _IEstimateManagement.GetEstimateDocument(estimateDocumentID);
+            return iEstimateManagement_.GetEstimateDocument(estimateDocumentID);
         }
 
         public IList<EstimateDocument> GetEstimateDocuments(int estimateID)
         {
-            return _IEstimateManagement.GetEstimateDocuments(estimateID);
+            return iEstimateManagement_.GetEstimateDocuments(estimateID);
         }
 
         public byte[] CreateProposalDocument(int estimateID)
         {
-            return _IEstimateManagement.CreateProposalDocument(estimateID);
+            return iEstimateManagement_.CreateProposalDocument(estimateID);
         }
     }
 }
