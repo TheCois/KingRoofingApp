@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using KRF.Core.FunctionalContracts;
 using KRF.Core.Repository;
 using KRF.Core.Entities.Product;
-using StructureMap;
 using KRF.Core.Entities.ValueList;
 using KRF.Core.DTO.Product;
 
@@ -14,38 +10,38 @@ namespace KRF.Persistence.RepositoryImplementation
 {
     public class ItemManagementRepository : IItemManagementRepository
     {
-        private readonly IItemManagement _ItemManagement;
+        private readonly IItemManagement itemManagement_;
         /// <summary>
         /// Constructor
         /// </summary>
         public ItemManagementRepository()
         {
-            _ItemManagement = ObjectFactory.GetInstance<IItemManagement>();
+            itemManagement_ = ObjectFactory.GetInstance<IItemManagement>();
         }
 
         public int Create(Item item)
         {
-            return _ItemManagement.Create(item);
+            return itemManagement_.Create(item);
         }
 
         public Item Edit(Item item)
         {
-            return _ItemManagement.Edit(item);
+            return itemManagement_.Edit(item);
         }
 
         public bool Delete(int itemId)
         {
-            return _ItemManagement.Delete(itemId);
+            return itemManagement_.Delete(itemId);
         }
 
         public IList<Item> GetAllItems(bool isActive = true)
         {
-            return _ItemManagement.GetAllItems(isActive);
+            return itemManagement_.GetAllItems(isActive);
         }
 
         public Item GetItem(int itemId)
         {
-            return _ItemManagement.GetItem(itemId);
+            return itemManagement_.GetItem(itemId);
         }
 
         public IList<Item> SearchItem(string searchText)
@@ -60,31 +56,31 @@ namespace KRF.Persistence.RepositoryImplementation
 
         public IList<Category> GetCategories()
         {
-            return _ItemManagement.GetCategories();
+            return itemManagement_.GetCategories();
         }
 
         public IList<Manufacturer> GetManufacturers()
         {
-            return _ItemManagement.GetManufacturers();
+            return itemManagement_.GetManufacturers();
         }
 
         public IList<UnitOfMeasure> GetUnitOfMeasures()
         {
-            return _ItemManagement.GetUnitOfMeasures();
+            return itemManagement_.GetUnitOfMeasures();
         }
 
 
         public ProductDTO GetProduct()
         {
-            return _ItemManagement.GetProduct();
+            return itemManagement_.GetProduct();
         }
         public ProductDTO GetInventory()
         {
-            return _ItemManagement.GetInventory();
+            return itemManagement_.GetInventory();
         }
-        public ProductDTO GetInventoryAudit(int inventoryID)
+        public ProductDTO GetInventoryAudit(int inventoryId)
         {
-            return _ItemManagement.GetInventoryAudit(inventoryID);
+            return itemManagement_.GetInventoryAudit(inventoryId);
         }
         /// <summary>
         /// Update Inventory
@@ -93,7 +89,7 @@ namespace KRF.Persistence.RepositoryImplementation
         /// <returns></returns>
         public bool UpdateInventory(List<Inventory> inventories)
         {
-            return _ItemManagement.UpdateInventory(inventories);
+            return itemManagement_.UpdateInventory(inventories);
         }
         /// <summary>
         /// Delete Inventory
@@ -102,7 +98,7 @@ namespace KRF.Persistence.RepositoryImplementation
         /// <returns></returns>
         public bool DeleteInventory(List<Inventory> inventories)
         {
-            return _ItemManagement.DeleteInventory(inventories);
+            return itemManagement_.DeleteInventory(inventories);
         }
     }
 }

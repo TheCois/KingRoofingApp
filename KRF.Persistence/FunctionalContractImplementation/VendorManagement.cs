@@ -1,12 +1,9 @@
 ﻿using DapperExtensions;
 using KRF.Core.DTO.Master;
 using KRF.Core.Entities.Master;
-using KRF.Core.Entities.Employee;
 using KRF.Core.FunctionalContracts;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
-using System.Data.SqlClient;
 using System.Linq;
 using System.Transactions;
 
@@ -14,15 +11,6 @@ namespace KRF.Persistence.FunctionalContractImplementation
 {
     public class VendorManagement : IVendorManagement
     {
-        private string _connectionString;
-
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        public VendorManagement()
-        {
-            _connectionString = Convert.ToString(ConfigurationManager.AppSettings["ApplicationDSN"]);
-        }
         /// <summary>
         /// Create Vendor
         /// </summary>
@@ -32,18 +20,20 @@ namespace KRF.Persistence.FunctionalContractImplementation
         {
             using (var transactionScope = new TransactionScope())
             {
-                using (var sqlConnection = new SqlConnection(_connectionString))
+                var dbConnection = new DataAccessFactory();
+                using (var conn = dbConnection.CreateConnection())
                 {
-                    sqlConnection.Open();
+                    conn.Open();
                     vendor.DateCreated = DateTime.Now;
                     vendor.Active = true;
-                    var id = sqlConnection.Insert<Vendor>(vendor);
+                    var id = conn.Insert(vendor);
 
                     transactionScope.Complete();
                     return id;
                 }
             }
         }
+
         /// <summary>
         /// Edit Vendor detail
         /// </summary>
@@ -53,45 +43,50 @@ namespace KRF.Persistence.FunctionalContractImplementation
         {
             using (var transactionScope = new TransactionScope())
             {
-                using (var sqlConnection = new SqlConnection(_connectionString))
+                var dbConnection = new DataAccessFactory();
+                using (var conn = dbConnection.CreateConnection())
                 {
-                    sqlConnection.Open();
+                    conn.Open();
                     vendor.DateUpdated = DateTime.Now;
-                    var isEdited = sqlConnection.Update<Vendor>(vendor);
+                    var isEdited = conn.Update(vendor);
                     transactionScope.Complete();
                     return isEdited;
                 }
             }
         }
+
         /// <summary>
         /// Toggle vendor active field
         /// </summary>
-        /// <param name="vendorID"></param>
+        /// <param name="vendorId"></param>
         /// <param name="active"></param>
         /// <returns></returns>
-        public bool SetActiveInactiveVendor(int vendorID, bool active)
+        public bool SetActiveInactiveVendor(int vendorId, bool active)
         {
-            using (var sqlConnection = new SqlConnection(_connectionString))
+            var dbConnection = new DataAccessFactory();
+            using (var conn = dbConnection.CreateConnection())
             {
-                sqlConnection.Open();
-                Vendor vendor = sqlConnection.Get<Vendor>(vendorID);
+                conn.Open();
+                Vendor vendor = conn.Get<Vendor>(vendorId);
                 vendor.Active = active;
                 vendor.DateUpdated = DateTime.Now;
-                var isUpdated = sqlConnection.Update<Vendor>(vendor);
+                var isUpdated = conn.Update(vendor);
                 return isUpdated;
             }
         }
+
         /// <summary>
         /// Get Vendor by vendorID
         /// </summary>
-        /// <param name="vendorID"></param>
+        /// <param name="vendorId"></param>
         /// <returns></returns>
-        public VendorDTO GetVendor(int vendorID)
+        public VendorDTO GetVendor(int vendorId)
         {
-            using (var sqlConnection = new SqlConnection(_connectionString))
+            var dbConnection = new DataAccessFactory();
+            using (var conn = dbConnection.CreateConnection())
             {
-                sqlConnection.Open();
-                Vendor vendor = sqlConnection.Get<Vendor>(vendorID);
+                conn.Open();
+                Vendor vendor = conn.Get<Vendor>(vendorId);
                 IList<Vendor> p = new List<Vendor>();
                 p.Add(vendor);
                 return new VendorDTO
@@ -100,22 +95,24 @@ namespace KRF.Persistence.FunctionalContractImplementation
                 };
             }
         }
+
         /// <summary>
         /// Get all Vendors
         /// </summary>
         /// <returns></returns>
         public VendorDTO ListAllVendors()
         {
-            using (var sqlConnection = new SqlConnection(_connectionString))
+            var dbConnection = new DataAccessFactory();
+            using (var conn = dbConnection.CreateConnection())
             {
                 //var predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
                 //predicateGroup.Predicates.Add(Predicates.Field<Vendor>(s => s.Active, Operator.Eq, true));
-                
-                sqlConnection.Open();
-                IList<Vendor> vendords = sqlConnection.GetList<Vendor>().ToList();
+
+                conn.Open();
+                IList<Vendor> vendors = conn.GetList<Vendor>().ToList();
                 return new VendorDTO
                 {
-                    Vendors = vendords
+                    Vendors = vendors
                 };
             }
         }

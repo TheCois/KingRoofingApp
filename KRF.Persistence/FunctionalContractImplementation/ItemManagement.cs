@@ -1,31 +1,18 @@
-﻿using KRF.Common;
-using KRF.Core.Entities.Product;
+﻿using KRF.Core.Entities.Product;
 using KRF.Core.FunctionalContracts;
-using StructureMap;
 using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using DapperExtensions;
 using KRF.Core.Entities.ValueList;
 using KRF.Core.DTO.Product;
-using System.Configuration;
+using System.Data;
 using System.Transactions;
 
 namespace KRF.Persistence.FunctionalContractImplementation
 {
     public class ItemManagement : IItemManagement
     {
-        private string _connectionString;
-
-        public ItemManagement()
-        {
-            //_connectionString = ObjectFactory.GetInstance<IDatabaseConnection>().ConnectionString;
-            _connectionString = Convert.ToString(ConfigurationManager.AppSettings["ApplicationDSN"]);
-        }
-
         /// <summary>
         /// Create an item
         /// </summary>
@@ -33,19 +20,20 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <returns>Newly created item identifier</returns>
         public int Create(Item item)
         {
-            using (var sqlConnection = new SqlConnection(_connectionString))
+            var dbConnection = new DataAccessFactory();
+            using (var conn = dbConnection.CreateConnection())
             {
-                sqlConnection.Open();
-                var id = sqlConnection.Insert<Item>(item);
-                UpdateInventoryRecord(item, sqlConnection);
+                conn.Open();
+                var id = conn.Insert(item);
+                UpdateInventoryRecord(item, conn);
                 return id;
             }
         }
 
-        private void UpdateInventoryRecord(Item item, SqlConnection sqlConnection)
+        private void UpdateInventoryRecord(Item item, IDbConnection conn)
         {
-            List<Inventory> inventoryList = sqlConnection.GetList<Inventory>().Where(x => x.ItemID == item.Id).ToList();
-            if (item.IsInventoryItem == true)
+            var inventoryList = conn.GetList<Inventory>().Where(x => x.ItemID == item.Id).ToList();
+            if (item.IsInventoryItem)
             {
                 var inventory = inventoryList.FirstOrDefault();
                 if (inventory == null)
@@ -56,18 +44,18 @@ namespace KRF.Persistence.FunctionalContractImplementation
                         DateUpdated = DateTime.Now,
                         Type = "Added"
                     };
-                    sqlConnection.Insert<Inventory>(inventory);
+                    conn.Insert(inventory);
                 }
                 else
                 {
                     inventory.DateUpdated = DateTime.Now;
-                    sqlConnection.Update<Inventory>(inventory);
+                    conn.Update(inventory);
                 }
             }
             else if (inventoryList.Count == 1)
             {
                 var inventory = inventoryList.FirstOrDefault();
-                sqlConnection.Delete<Inventory>(inventory);
+                conn.Delete(inventory);
             }
         }
 
@@ -78,52 +66,52 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <returns>Updated item details.</returns>
         public Item Edit(Item item)
         {
-            using (var sqlConnection = new SqlConnection(_connectionString))
+            var dbConnection = new DataAccessFactory();
+            using (var conn = dbConnection.CreateConnection())
             {
-                sqlConnection.Open();
-                var isEdited = sqlConnection.Update<Item>(item);
+                conn.Open();
+                conn.Update(item);
 
-                var pgAssemblyItem = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
+                var pgAssemblyItem = new PredicateGroup
+                    {Operator = GroupOperator.And, Predicates = new List<IPredicate>()};
                 pgAssemblyItem.Predicates.Add(Predicates.Field<AssemblyItem>(s => s.ItemId, Operator.Eq, item.Id));
 
-                List<AssemblyItem> assemblyItems = sqlConnection.GetList<AssemblyItem>(pgAssemblyItem).ToList();
-                UpdateAssemblyItems(item.Price, assemblyItems, sqlConnection);
+                var assemblyItems = conn.GetList<AssemblyItem>(pgAssemblyItem).ToList();
+                UpdateAssemblyItems(item.Price, assemblyItems, conn);
 
-                UpdateInventoryRecord(item, sqlConnection);
+                UpdateInventoryRecord(item, conn);
 
                 return item;
             }
         }
 
-        private void UpdateAssemblyItems(decimal itemPrice, List<AssemblyItem> assemblyItems, SqlConnection sqlConnection)
+        private void UpdateAssemblyItems(decimal itemPrice, IEnumerable<AssemblyItem> assemblyItems, IDbConnection conn)
         {
-            foreach(AssemblyItem assemblyItem in assemblyItems)
+            foreach (var assemblyItem in assemblyItems)
             {
-                decimal value = 0;
-                decimal cost = 0;
-                decimal retailCost = 0;
                 assemblyItem.Price = itemPrice;
-                value = (assemblyItem.Price * (assemblyItem.PercentageOfItem / 100));
+                var value = (assemblyItem.Price * (assemblyItem.PercentageOfItem / 100));
                 assemblyItem.Value = value;
-                cost = value + ((value * assemblyItem.TaxPercent) / 100);
+                var cost = value + ((value * assemblyItem.TaxPercent) / 100);
                 assemblyItem.Cost = cost;
-                retailCost = (cost / (1 - assemblyItem.CostPercent / 100));
+                var retailCost = (cost / (1 - assemblyItem.CostPercent / 100));
                 assemblyItem.RetailCost = retailCost;
 
                 IAssemblyManagement assemblyMgt = new AssemblyManagement();
 
-                AssemblyItemDTO assemblyDTO = assemblyMgt.GetAssembly(assemblyItem.AssemblyId, sqlConnection);
-                
-                foreach (AssemblyItem ai in assemblyDTO.assemblyItem.Where(p=>p.id == assemblyItem.id))
+                var assemblyDto = assemblyMgt.GetAssembly(assemblyItem.AssemblyId, conn);
+
+                foreach (var ai in assemblyDto.assemblyItem.Where(p => p.id == assemblyItem.id))
                 {
                     ai.Price = assemblyItem.Price;
                     ai.Value = assemblyItem.Value;
                     ai.Cost = assemblyItem.Cost;
                     ai.RetailCost = assemblyItem.RetailCost;
                 }
-                assemblyDTO.assembly.TotalCost = assemblyDTO.assemblyItem.Sum(p => p.Cost);
-                assemblyDTO.assembly.TotalRetailCost = assemblyDTO.assemblyItem.Sum(p => p.RetailCost);
-                assemblyMgt.Edit(assemblyDTO);
+
+                assemblyDto.assembly.TotalCost = assemblyDto.assemblyItem.Sum(p => p.Cost);
+                assemblyDto.assembly.TotalRetailCost = assemblyDto.assemblyItem.Sum(p => p.RetailCost);
+                assemblyMgt.Edit(assemblyDto);
             }
         }
 
@@ -134,13 +122,15 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <returns>True - if successful deletion; False - If failure.</returns>
         public bool Delete(int itemId)
         {
-            using (var sqlConnection = new SqlConnection(_connectionString))
+            var dbConnection = new DataAccessFactory();
+            using (var conn = dbConnection.CreateConnection())
             {
-                var predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
+                var predicateGroup = new PredicateGroup
+                    {Operator = GroupOperator.And, Predicates = new List<IPredicate>()};
                 predicateGroup.Predicates.Add(Predicates.Field<Item>(s => s.Id, Operator.Eq, itemId));
 
-                sqlConnection.Open();
-                var isDeleted = sqlConnection.Delete<Item>(predicateGroup);
+                conn.Open();
+                var isDeleted = conn.Delete<Item>(predicateGroup);
                 return isDeleted;
             }
         }
@@ -151,10 +141,11 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <param name="isActive">If true - returns only active items else return all</param>
         public IList<Item> GetAllItems(bool isActive = true)
         {
-            using (var sqlConnection = new SqlConnection(_connectionString))
+            var dbConnection = new DataAccessFactory();
+            using (var conn = dbConnection.CreateConnection())
             {
-                sqlConnection.Open();
-                IList<Item> items = sqlConnection.GetList<Item>().ToList();
+                conn.Open();
+                IList<Item> items = conn.GetList<Item>().ToList();
                 return items;
             }
         }
@@ -166,12 +157,14 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <returns>Item details.</returns>
         public Item GetItem(int itemId)
         {
-            using (var sqlConnection = new SqlConnection(_connectionString))
+            var dbConnection = new DataAccessFactory();
+            using (var conn = dbConnection.CreateConnection())
             {
-                var predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
+                var predicateGroup = new PredicateGroup
+                    {Operator = GroupOperator.And, Predicates = new List<IPredicate>()};
                 predicateGroup.Predicates.Add(Predicates.Field<Item>(s => s.Id, Operator.Eq, itemId));
-                sqlConnection.Open();
-                Item item = sqlConnection.Get<Item>(itemId);
+                conn.Open();
+                var item = conn.Get<Item>(itemId);
                 return item;
             }
         }
@@ -186,33 +179,35 @@ namespace KRF.Persistence.FunctionalContractImplementation
             throw new NotImplementedException();
         }
 
-
         public IList<Category> GetCategories()
         {
-            using (var sqlConnection = new SqlConnection(_connectionString))
+            var dbConnection = new DataAccessFactory();
+            using (var conn = dbConnection.CreateConnection())
             {
-                sqlConnection.Open();
-                IList<Category> categories = sqlConnection.GetList<Category>().ToList();
+                conn.Open();
+                IList<Category> categories = conn.GetList<Category>().ToList();
                 return categories;
             }
         }
 
         public IList<Manufacturer> GetManufacturers()
         {
-            using (var sqlConnection = new SqlConnection(_connectionString))
+            var dbConnection = new DataAccessFactory();
+            using (var conn = dbConnection.CreateConnection())
             {
-                sqlConnection.Open();
-                IList<Manufacturer> manufacturers = sqlConnection.GetList<Manufacturer>().ToList();
+                conn.Open();
+                IList<Manufacturer> manufacturers = conn.GetList<Manufacturer>().ToList();
                 return manufacturers;
             }
         }
 
         public IList<UnitOfMeasure> GetUnitOfMeasures()
         {
-            using (var sqlConnection = new SqlConnection(_connectionString))
+            var dbConnection = new DataAccessFactory();
+            using (var conn = dbConnection.CreateConnection())
             {
-                sqlConnection.Open();
-                IList<UnitOfMeasure> unitOfMeasures = sqlConnection.GetList<UnitOfMeasure>().ToList();
+                conn.Open();
+                IList<UnitOfMeasure> unitOfMeasures = conn.GetList<UnitOfMeasure>().ToList();
                 return unitOfMeasures;
             }
         }
@@ -220,25 +215,26 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <summary>
         /// Get Product entities
         /// </summary>
-        /// <returns> Items and its dependent Vlaue List objects and Assembly list</returns>
+        /// <returns> Items and its dependent value List objects and Assembly list</returns>
         public ProductDTO GetProduct()
         {
-            ProductDTO product = new ProductDTO();
-            using (var sqlConnection = new SqlConnection(_connectionString))
+            var product = new ProductDTO();
+            var dbConnection = new DataAccessFactory();
+            using (var conn = dbConnection.CreateConnection())
             {
-                sqlConnection.Open();
-                IList<ItemType> itemTypes = sqlConnection.GetList<ItemType>().ToList();
-                IList<Category> categories = sqlConnection.GetList<Category>().ToList();
-                IList<Manufacturer> manufacturers = sqlConnection.GetList<Manufacturer>().ToList();
-                IList<UnitOfMeasure> unitOfMeasures = sqlConnection.GetList<UnitOfMeasure>().ToList();
-                IList<Item> items = sqlConnection.GetList<Item>().ToList();
-                IList<Assembly> assemblies = sqlConnection.GetList<Assembly>().ToList();
+                conn.Open();
+                IList<ItemType> itemTypes = conn.GetList<ItemType>().ToList();
+                IList<Category> categories = conn.GetList<Category>().ToList();
+                IList<Manufacturer> manufacturers = conn.GetList<Manufacturer>().ToList();
+                IList<UnitOfMeasure> unitOfMeasures = conn.GetList<UnitOfMeasure>().ToList();
+                IList<Item> items = conn.GetList<Item>().ToList();
+                IList<Assembly> assemblies = conn.GetList<Assembly>().ToList();
 
-                product.ItemTypes = itemTypes.Where(p => p.Active == true).ToList();
-                product.Categories = categories.Where(p=>p.Active == true).ToList();
-                product.Manufacturers = manufacturers.Where(p => p.Active == true).ToList();
-                product.UnitsOfMeasure = unitOfMeasures.Where(p => p.Active == true).ToList();
-                product.Items = items.OrderBy(p=>p.Code).ToList();
+                product.ItemTypes = itemTypes.Where(p => p.Active).ToList();
+                product.Categories = categories.Where(p => p.Active).ToList();
+                product.Manufacturers = manufacturers.Where(p => p.Active).ToList();
+                product.UnitsOfMeasure = unitOfMeasures.Where(p => p.Active).ToList();
+                product.Items = items.OrderBy(p => p.Code).ToList();
                 product.Assemblies = assemblies;
                 return product;
             }
@@ -250,45 +246,50 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <returns></returns>
         public ProductDTO GetInventory()
         {
-            ProductDTO product = new ProductDTO();
-            using (var sqlConnection = new SqlConnection(_connectionString))
+            var product = new ProductDTO();
+            var dbConnection = new DataAccessFactory();
+            using (var conn = dbConnection.CreateConnection())
             {
-                sqlConnection.Open();
-                IList<Item> items = sqlConnection.GetList<Item>().Where(x => x.IsInventoryItem).ToList();
-                IList<Inventory> inventories = sqlConnection.GetList<Inventory>().ToList();
-                IList<ItemType> itemTypes = sqlConnection.GetList<ItemType>().ToList();
-                IList<Category> categories = sqlConnection.GetList<Category>().ToList();
-                IList<Manufacturer> manufacturers = sqlConnection.GetList<Manufacturer>().ToList();
-                IList<UnitOfMeasure> unitOfMeasures = sqlConnection.GetList<UnitOfMeasure>().ToList();
+                conn.Open();
+                IList<Item> items = conn.GetList<Item>().Where(x => x.IsInventoryItem).ToList();
+                IList<Inventory> inventories = conn.GetList<Inventory>().ToList();
+                IList<ItemType> itemTypes = conn.GetList<ItemType>().ToList();
+                IList<Category> categories = conn.GetList<Category>().ToList();
+                IList<Manufacturer> manufacturers = conn.GetList<Manufacturer>().ToList();
+                IList<UnitOfMeasure> unitOfMeasures = conn.GetList<UnitOfMeasure>().ToList();
 
                 product.Items = items;
                 product.Inventories = inventories;
-                product.ItemTypes = itemTypes.Where(p => p.Active == true).ToList();
-                product.Categories = categories.Where(p => p.Active == true).ToList();
-                product.Manufacturers = manufacturers.Where(p => p.Active == true).ToList();
-                product.UnitsOfMeasure = unitOfMeasures.Where(p => p.Active == true).ToList();
+                product.ItemTypes = itemTypes.Where(p => p.Active).ToList();
+                product.Categories = categories.Where(p => p.Active).ToList();
+                product.Manufacturers = manufacturers.Where(p => p.Active).ToList();
+                product.UnitsOfMeasure = unitOfMeasures.Where(p => p.Active).ToList();
                 return product;
             }
         }
+
         /// <summary>
         /// Get Inventory audit detail
         /// </summary>
         /// <returns></returns>
-        public ProductDTO GetInventoryAudit(int inventoryID)
+        public ProductDTO GetInventoryAudit(int inventoryId)
         {
-            ProductDTO product = new ProductDTO();
-            using (var sqlConnection = new SqlConnection(_connectionString))
+            var product = new ProductDTO();
+            var dbConnection = new DataAccessFactory();
+            using (var conn = dbConnection.CreateConnection())
             {
-                sqlConnection.Open();
-                var predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
-                predicateGroup.Predicates.Add(Predicates.Field<InventoryAudit>(s => s.ID, Operator.Eq, inventoryID));
-                product.InventoryAudits = sqlConnection.GetList<InventoryAudit>(predicateGroup).ToList();
-                IList<Item> items = sqlConnection.GetList<Item>().ToList();
+                conn.Open();
+                var predicateGroup = new PredicateGroup
+                    {Operator = GroupOperator.And, Predicates = new List<IPredicate>()};
+                predicateGroup.Predicates.Add(Predicates.Field<InventoryAudit>(s => s.ID, Operator.Eq, inventoryId));
+                product.InventoryAudits = conn.GetList<InventoryAudit>(predicateGroup).ToList();
+                IList<Item> items = conn.GetList<Item>().ToList();
                 product.Items = items;
 
                 return product;
             }
         }
+
         /// <summary>
         /// Update Inventory
         /// </summary>
@@ -300,37 +301,35 @@ namespace KRF.Persistence.FunctionalContractImplementation
             {
                 using (var transactionScope = new TransactionScope())
                 {
-                    using (var sqlConnection = new SqlConnection(_connectionString))
+                    var dbConnection = new DataAccessFactory();
+                    using (var conn = dbConnection.CreateConnection())
                     {
-                        sqlConnection.Open();
-                        foreach (Inventory inventory in inventories)
+                        conn.Open();
+                        foreach (var inventory in inventories)
                         {
-                            Inventory curInventory = sqlConnection.Get<Inventory>(inventory.ID);
+                            var curInventory = conn.Get<Inventory>(inventory.ID);
                             if (curInventory.Qty != inventory.Qty)
                             {
-                                if(curInventory.Qty > inventory.Qty)
-                                {
-                                    curInventory.Type = "Deleted";
-                                }
-                                else
-                                {
-                                    curInventory.Type = "Added";
-                                }
+                                curInventory.Type = curInventory.Qty > inventory.Qty ? "Deleted" : "Added";
+
                                 curInventory.Comment = "";
                                 curInventory.Qty = inventory.Qty;
-                                sqlConnection.Update<Inventory>(curInventory);
+                                conn.Update(curInventory);
                             }
                         }
                     }
+
                     transactionScope.Complete();
                     return true;
                 }
             }
             catch (Exception ex)
             {
+                Console.WriteLine(ex);
                 return false;
             }
         }
+
         /// <summary>
         /// Delete Inventory
         /// </summary>
@@ -338,26 +337,29 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <returns></returns>
         public bool DeleteInventory(List<Inventory> inventories)
         {
-            bool result = false;
+            var result = false;
             try
             {
                 using (var transactionScope = new TransactionScope())
                 {
-                    using (var sqlConnection = new SqlConnection(_connectionString))
+                    var dbConnection = new DataAccessFactory();
+                    using (var conn = dbConnection.CreateConnection())
                     {
-                        sqlConnection.Open();
-                        foreach (Inventory inventory in inventories)
+                        conn.Open();
+                        foreach (var inventory in inventories)
                         {
-                            Inventory invToBeDeleted = sqlConnection.Get<Inventory>(inventory.ID);
-                            result = sqlConnection.Delete<Inventory>(invToBeDeleted);
+                            var invToBeDeleted = conn.Get<Inventory>(inventory.ID);
+                            result = conn.Delete(invToBeDeleted);
                         }
                     }
+
                     transactionScope.Complete();
                     return result;
                 }
             }
             catch (Exception ex)
             {
+                Console.WriteLine(ex);
                 return false;
             }
         }

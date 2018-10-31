@@ -42,7 +42,7 @@ namespace KRF.Core.Entities.Customer
         /// <summary>
         /// Upload DateTime of the document
         /// </summary>
-        public System.Nullable<DateTime> UploadDateTime { get; set; }
+        public DateTime? UploadDateTime { get; set; }
     }
     public class JobDocumentType
     {

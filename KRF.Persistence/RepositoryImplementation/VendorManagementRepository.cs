@@ -2,21 +2,19 @@
 using KRF.Core.Entities.Master;
 using KRF.Core.FunctionalContracts;
 using KRF.Core.Repository;
-using StructureMap;
-using System.Collections.Generic;
 
-namespace KRF.Persistence.FunctionalContractImplementation
+namespace KRF.Persistence.RepositoryImplementation
 {
     public class VendorManagementRepository : IVendorManagementRepository
     {
-        private readonly IVendorManagement _VendorManagement;
+        private readonly IVendorManagement vendorManagement_;
 
         /// <summary>
         /// Constructor
         /// </summary>
         public VendorManagementRepository()
         {
-            _VendorManagement = ObjectFactory.GetInstance<IVendorManagement>();
+            vendorManagement_ = ObjectFactory.GetInstance<IVendorManagement>();
         }
         /// <summary>
         /// Create Vendor
@@ -25,7 +23,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <returns></returns>
         public int CreateVendor(Vendor vendor)
         {
-            return _VendorManagement.CreateVendor(vendor);
+            return vendorManagement_.CreateVendor(vendor);
         }
         /// <summary>
         /// Edit Vendor
@@ -34,26 +32,26 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <returns></returns>
         public bool EditVendor(Vendor vendor)
         {
-            return _VendorManagement.EditVendor(vendor);
+            return vendorManagement_.EditVendor(vendor);
         }
         /// <summary>
         /// Toggle vendor active field
         /// </summary>
-        /// <param name="vendorID"></param>
+        /// <param name="vendorId"></param>
         /// <param name="active"></param>
         /// <returns></returns>
-        public bool SetActiveInactiveVendor(int vendorID, bool active)
+        public bool SetActiveInactiveVendor(int vendorId, bool active)
         {
-            return _VendorManagement.SetActiveInactiveVendor(vendorID, active);
+            return vendorManagement_.SetActiveInactiveVendor(vendorId, active);
         }
         /// <summary>
         /// Get Vendor by vendorID
         /// </summary>
-        /// <param name="vendorID"></param>
+        /// <param name="vendorId"></param>
         /// <returns></returns>
-        public VendorDTO GetVendor(int vendorID)
+        public VendorDTO GetVendor(int vendorId)
         {
-            return _VendorManagement.GetVendor(vendorID);
+            return vendorManagement_.GetVendor(vendorId);
         }
         /// <summary>
         /// Get all Vendors
@@ -61,7 +59,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <returns></returns>
         public VendorDTO ListAllVendors()
         {
-            return _VendorManagement.ListAllVendors();
+            return vendorManagement_.ListAllVendors();
         }
         
     }

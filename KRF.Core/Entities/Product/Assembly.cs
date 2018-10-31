@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace KRF.Core.Entities.Product
+﻿namespace KRF.Core.Entities.Product
 {
     public class Assembly
     {
@@ -12,7 +7,7 @@ namespace KRF.Core.Entities.Product
         /// </summary>
         public int Id { get; set; }
 
-        // <summary>
+        /// <summary>
         /// ID/Code  of the assembly.
         /// </summary>
         public string Code { get; set; }

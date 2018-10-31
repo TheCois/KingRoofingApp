@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using KRF.Core.Entities.Master;
+﻿using System.Collections.Generic;
 using KRF.Core.Entities.Customer;
 
 namespace KRF.Web.Models

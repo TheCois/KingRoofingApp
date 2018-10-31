@@ -1,15 +1,10 @@
 ﻿using KRF.Web.Models;
-using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 using KRF.Core.Repository;
-using StructureMap;
 using ProductNS = KRF.Core.Entities.Product;
 using ValueListNS = KRF.Core.Entities.ValueList;
-using KRF.Core.DTO.Product;
 
 namespace KRF.Web.Controllers
 {

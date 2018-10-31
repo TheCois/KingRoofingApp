@@ -10,7 +10,8 @@ var EstimateNS = {
 // End of Global objects
 
 function getWebsiteBaseUrl() {
-    return window.location.origin;
+    //return window.location.origin;
+    return window.location.href;
 }
 
 function openModal() {

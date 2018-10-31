@@ -1,11 +1,8 @@
 ﻿using KRF.Core.DTO.Master;
 using KRF.Core.Repository;
 using KRF.Web.Models;
-using StructureMap;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 
 namespace KRF.Web.Controllers
@@ -18,7 +15,7 @@ namespace KRF.Web.Controllers
 
         public ActionResult Index()
         {
-            IFleetManagementRepository fleetRepo = ObjectFactory.GetInstance<IFleetManagementRepository>();
+            var fleetRepo = ObjectFactory.GetInstance<IFleetManagementRepository>();
             var fleets = fleetRepo.GetFleetDetails();
             TempData["Fleets"] = fleets;
             return View();
@@ -27,13 +24,13 @@ namespace KRF.Web.Controllers
         /// <summary>
         /// Get Add View
         /// </summary>
-        /// <param name="ID"></param>
+        /// <param name="id"></param>
         /// <returns></returns>
-        public ActionResult Add(int ID = 0)
+        public ActionResult Add(int id = 0)
         {
-            IFleetManagementRepository fleetRepo = ObjectFactory.GetInstance<IFleetManagementRepository>();
+            ObjectFactory.GetInstance<IFleetManagementRepository>();
             //var employes = fleetRepo.GetEmployes();
-            ViewBag.ID = ID;
+            ViewBag.ID = id;
             return View();
         }
 
@@ -44,27 +41,26 @@ namespace KRF.Web.Controllers
         /// <returns></returns>
         public ActionResult GetFleets(jQueryDataTableParamModel param)
         {
-            IFleetManagementRepository fleetRepo = ObjectFactory.GetInstance<IFleetManagementRepository>();
+            var fleetRepo = ObjectFactory.GetInstance<IFleetManagementRepository>();
 
-            FleetDTO fleetDTO = (FleetDTO)TempData["Fleets"];
-            if (fleetDTO == null)
-                fleetDTO = fleetRepo.GetFleetDetails();
+            var fleetDto = (FleetDTO)TempData["Fleets"] ?? fleetRepo.GetFleetDetails();
 
             return Json(new
             {
                 sEcho = param.sEcho,
                 iTotalRecords = 97,
                 iTotalDisplayRecords = 3,
-                aaData = (from p in fleetDTO.Fleets.Where(p => p.Active == true)
-                          select new string[] {
-                              "<span class='edit-fleet' data-val=" + p.FleetID.ToString() + "><ul><li class='edit'><a href='#non'>View</a></li></ul></span>",
+                aaData = (from p in fleetDto.Fleets.Where(p => p.Active)
+                    let relevantFleetAssignment = fleetDto.FleetAssignments.FirstOrDefault(a => a.IsCurrent && a.FleetID == p.FleetID)
+                    select new[] {
+                              "<span class='edit-fleet' data-val=" + p.FleetID + "><ul><li class='edit'><a href='#non'>View</a></li></ul></span>",
                               p.FleetID.ToString(),
                               p.Make,
                               p.Model,
-                              p.Year.ToString(),
-                              (fleetDTO.FleetAssignments.Where(a=>a.IsCurrent == true && a.FleetID == p.FleetID).FirstOrDefault() != null ? fleetDTO.Employes.Where(e=>e.EmpId == (fleetDTO.FleetAssignments.Where(a=>a.IsCurrent == true && a.FleetID == p.FleetID).FirstOrDefault().EmployeeID)).FirstOrDefault().FirstName + " " +fleetDTO.Employes.Where(e=>e.EmpId == (fleetDTO.FleetAssignments.Where(a=>a.IsCurrent == true && a.FleetID == p.FleetID).FirstOrDefault().EmployeeID)).FirstOrDefault().LastName : ""),
-                              (fleetDTO.FleetStatus.Where(s=>s.FleetStatusID == p.FleetStatusID).FirstOrDefault().StatusName),
-                              "<span class='delete-fleet' data-val=" + p.FleetID.ToString() + "><ul><li class='delete'><a href='#non'>Delete</a></li></ul></span>"
+                              p.Year,
+                              (relevantFleetAssignment != null ? fleetDto.Employes.FirstOrDefault(e => e.EmpId == (relevantFleetAssignment.EmployeeID)).FirstName + " " +fleetDto.Employes.FirstOrDefault(e => e.EmpId == (fleetDto.FleetAssignments.FirstOrDefault(a => a.IsCurrent && a.FleetID == p.FleetID).EmployeeID))?.LastName : ""),
+                              (fleetDto.FleetStatus.FirstOrDefault(s => s.FleetStatusID == p.FleetStatusID)?.StatusName),
+                              "<span class='delete-fleet' data-val=" + p.FleetID + "><ul><li class='delete'><a href='#non'>Delete</a></li></ul></span>"
                           }).ToArray()
             }, JsonRequestBehavior.AllowGet);
         }
@@ -72,23 +68,23 @@ namespace KRF.Web.Controllers
         /// <summary>
         /// Get Fleet Detail by FleetID
         /// </summary>
-        /// <param name="fleetID"></param>
+        /// <param name="fleetId"></param>
         /// <returns></returns>
-        public ActionResult GetFleet(int fleetID)
+        public ActionResult GetFleet(int fleetId)
         {
-            IFleetManagementRepository fleetRepo = ObjectFactory.GetInstance<IFleetManagementRepository>();
-            var fleetDTO = fleetRepo.GetFleetDetail(fleetID);
-            var emps = fleetDTO.Employes.Where(e => e.Status == true).Select(k => new { ID = k.EmpId, Description = (k.FirstName + " " + k.LastName) }).ToList();
+            var fleetRepo = ObjectFactory.GetInstance<IFleetManagementRepository>();
+            var fleetDto = fleetRepo.GetFleetDetail(fleetId);
+            var employees = fleetDto.Employes.Where(e => e.Status == true).Select(k => new { ID = k.EmpId, Description = (k.FirstName + " " + k.LastName) }).ToList();
             return Json(new
             {
-                fleet = fleetDTO.Fleets[0],
+                fleet = fleetDto.Fleets[0],
                 keyValue = new
                 {
-                    fleetstatus = fleetDTO.FleetStatus.Where(s=>s.Active == true).Select(k => new { ID = k.FleetStatusID, Description = k.StatusName }),
-                    employees = emps
+                    fleetstatus = fleetDto.FleetStatus.Where(s=>s.Active).Select(k => new { ID = k.FleetStatusID, Description = k.StatusName }),
+                    employees = employees
                 },
-                serviceDetails = fleetDTO.FleetServices.Select(k => new { k.FleetServiceID, ServiceDate = k.ServiceDate.ToString("MM/dd/yyyy"), Notes = k.Notes, k.FleetID }),
-                assignmentDetails = fleetDTO.FleetAssignments.Select(k => new { k.FleetAssignmentID, k.EmployeeID, EmployeeName = (fleetDTO.Employes.Where(e => e.EmpId == k.EmployeeID).FirstOrDefault().FirstName + " " + fleetDTO.Employes.Where(e => e.EmpId == k.EmployeeID).FirstOrDefault().LastName), AssignmentDate = k.AssignmentDate.ToString("MM/dd/yyyy"), IsCurrent = k.IsCurrent, k.FleetID })
+                serviceDetails = fleetDto.FleetServices.Select(k => new { k.FleetServiceID, ServiceDate = k.ServiceDate.ToString("MM/dd/yyyy"), Notes = k.Notes, k.FleetID }),
+                assignmentDetails = fleetDto.FleetAssignments.Select(k => new { k.FleetAssignmentID, k.EmployeeID, EmployeeName = (fleetDto.Employes.Where(e => e.EmpId == k.EmployeeID).FirstOrDefault().FirstName + " " + fleetDto.Employes.Where(e => e.EmpId == k.EmployeeID).FirstOrDefault().LastName), AssignmentDate = k.AssignmentDate.ToString("MM/dd/yyyy"), IsCurrent = k.IsCurrent, k.FleetID })
             });
         }
 
@@ -100,20 +96,20 @@ namespace KRF.Web.Controllers
         [HttpPost]
         public JsonResult Save(FleetData fleetData)
         {
-            IFleetManagementRepository fleetRepo = ObjectFactory.GetInstance<IFleetManagementRepository>();
-            bool hasSaved = true;
-            string message = string.Empty;
-            int ID = 0;
+            var fleetRepo = ObjectFactory.GetInstance<IFleetManagementRepository>();
+            bool hasSaved;
+            string message;
+            var id = 0;
             try
             {
                 var fleet = fleetData.Fleet;
-                ID = fleet.FleetID;
+                id = fleet.FleetID;
                 if (fleet.FleetID == 0)
                 {
                     fleet.DateCreated = DateTime.Now;
                     fleet.DateUpdated = null;
                     fleet.Active = true;
-                    ID = fleetRepo.Create(fleet, fleetData.FleetServices, fleetData.FleetAssignments);
+                    id = fleetRepo.Create(fleet, fleetData.FleetServices, fleetData.FleetAssignments);
                     message = "Record successfully inserted!";
                 }
                 else
@@ -126,25 +122,26 @@ namespace KRF.Web.Controllers
             }
             catch (Exception ex)
             {
+                Console.WriteLine(ex);
                 hasSaved = false;
                 message = "Fleet data could not be updated.";
             }
 
 
-            return Json(new { hasSaved = hasSaved, message = message, ID = ID });
+            return Json(new { hasSaved = hasSaved, message = message, ID = id });
         }
 
         /// <summary>
         /// Active/Inactive Fleet record
         /// </summary>
-        /// <param name="fleetID"></param>
+        /// <param name="fleetId"></param>
         /// <param name="tobeEnabled"></param>
         /// <returns></returns>
-        public JsonResult ToggleFleetStatus(int fleetID, bool tobeEnabled)
+        public JsonResult ToggleFleetStatus(int fleetId, bool tobeEnabled)
         {
-            IFleetManagementRepository fleetRepo = ObjectFactory.GetInstance<IFleetManagementRepository>();
+            var fleetRepo = ObjectFactory.GetInstance<IFleetManagementRepository>();
 
-            fleetRepo.ToggleFleetStatus(fleetID, tobeEnabled);
+            fleetRepo.ToggleFleetStatus(fleetId, tobeEnabled);
 
             return Json(new { hasDeleted = true });
         }

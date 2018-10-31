@@ -1,6 +1,7 @@
 ﻿using KRF.Core.DTO.Product;
 using KRF.Core.Entities.Product;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
 
 namespace KRF.Core.FunctionalContracts
@@ -46,7 +47,7 @@ namespace KRF.Core.FunctionalContracts
         /// </summary>
         /// <param name="AssemblyId">Assembly's unique identifier</param>
         /// <returns>Assembly details.</returns>
-        AssemblyItemDTO GetAssembly(int assemblyId, SqlConnection sqlConnection);
+        AssemblyItemDTO GetAssembly(int assemblyId, IDbConnection conn);
 
         /// <summary>
         /// Search and filter Assembly based on search text.

@@ -130,7 +130,6 @@ namespace KRF.Persistence.FunctionalContractImplementation
                         var predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
                         predicateGroup.Predicates.Add(Predicates.Field<CustomerAddress>(s => s.ID, Operator.Eq, jobAddId));
 
-                        conn.Open();
                         isDeleted = conn.Delete<CustomerAddress>(predicateGroup);
                     }
                 }
@@ -159,7 +158,6 @@ namespace KRF.Persistence.FunctionalContractImplementation
                     var predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
                     predicateGroup.Predicates.Add(Predicates.Field<Lead>(s => s.ID, Operator.Eq, id));
 
-                    conn.Open();
                     var isDeleted = conn.Delete<Lead>(predicateGroup);
                     return isDeleted;
                 }
@@ -257,7 +255,6 @@ namespace KRF.Persistence.FunctionalContractImplementation
                 conn.Open();
                 var predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
                 predicateGroup.Predicates.Add(Predicates.Field<Lead>(s => s.ID, Operator.Eq, id));
-                conn.Open();
                 var lead = conn.Get<Lead>(id);
                 IList<Lead> leads = new List<Lead>();
                 leads.Add(lead);

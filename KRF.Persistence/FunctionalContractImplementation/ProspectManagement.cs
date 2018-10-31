@@ -35,15 +35,15 @@ namespace KRF.Persistence.FunctionalContractImplementation
         {
             using (var transactionScope = new TransactionScope())
             {
-                using (var sqlConnection = new SqlConnection(_connectionString))
+                var dbConnection = new DataAccessFactory();             using (var conn = dbConnection.CreateConnection()) 
                 {
-                    sqlConnection.Open();
-                    var id = sqlConnection.Insert<Prospect>(prospect);
+                    conn.Open();
+                    var id = conn.Insert<Prospect>(prospect);
 
                     if (prospect.Status == 4)
                     {
                         var lead = InsertProspectIntoLead(prospect);
-                        sqlConnection.Insert<Lead>(lead);
+                        conn.Insert<Lead>(lead);
                     }
 
                     transactionScope.Complete();
@@ -61,15 +61,15 @@ namespace KRF.Persistence.FunctionalContractImplementation
         {
             using (var transactionScope = new TransactionScope())
             {
-                using (var sqlConnection = new SqlConnection(_connectionString))
+                var dbConnection = new DataAccessFactory();             using (var conn = dbConnection.CreateConnection()) 
                 {
-                    sqlConnection.Open();
-                    var isEdited = sqlConnection.Update<Prospect>(prospect);
+                    conn.Open();
+                    var isEdited = conn.Update<Prospect>(prospect);
 
                     if (prospect.Status == 4)
                     {
                         var lead = InsertProspectIntoLead(prospect);
-                        sqlConnection.Insert<Lead>(lead);
+                        conn.Insert<Lead>(lead);
                     }
 
                     transactionScope.Complete();
@@ -84,13 +84,13 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <param name="prospects"></param>
         public void SaveProspects(IList<Prospect> prospects)
         {
-            using (var sqlConnection = new SqlConnection(_connectionString))
+            var dbConnection = new DataAccessFactory();             using (var conn = dbConnection.CreateConnection()) 
             {
-                sqlConnection.Open();
-                IList<Prospect> existingProspects = sqlConnection.GetList<Prospect>().ToList();
+                conn.Open();
+                IList<Prospect> existingProspects = conn.GetList<Prospect>().ToList();
                 foreach (var prospect in prospects)
                 {
-                    sqlConnection.Insert<Prospect>(prospect);
+                    conn.Insert<Prospect>(prospect);
                 }
             }
         }
@@ -136,13 +136,13 @@ namespace KRF.Persistence.FunctionalContractImplementation
         {
             try
             {
-                using (var sqlConnection = new SqlConnection(_connectionString))
+                var dbConnection = new DataAccessFactory();             using (var conn = dbConnection.CreateConnection()) 
                 {
                     var predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
                     predicateGroup.Predicates.Add(Predicates.Field<Prospect>(s => s.ID, Operator.Eq, id));
 
-                    sqlConnection.Open();
-                    var isDeleted = sqlConnection.Delete<Prospect>(predicateGroup);
+                    conn.Open();
+                    var isDeleted = conn.Delete<Prospect>(predicateGroup);
                     return isDeleted;
                 }
             }
@@ -159,20 +159,20 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <returns>List of  Prospect.</returns>
         public ProspectDTO GetProspects(bool isActive = true)
         {
-            using (var sqlConnection = new SqlConnection(_connectionString))
+            var dbConnection = new DataAccessFactory();             using (var conn = dbConnection.CreateConnection()) 
             {
-                sqlConnection.Open();
-                IList<Prospect> prospects = sqlConnection.GetList<Prospect>().ToList();
+                conn.Open();
+                IList<Prospect> prospects = conn.GetList<Prospect>().ToList();
                 var predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
                 predicateGroup.Predicates.Add(Predicates.Field<City>(s => s.Active, Operator.Eq, true));
-                IList<City> cities = sqlConnection.GetList<City>(predicateGroup).ToList();
+                IList<City> cities = conn.GetList<City>(predicateGroup).ToList();
                 predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
                 predicateGroup.Predicates.Add(Predicates.Field<State>(s => s.Active, Operator.Eq, true));
-                IList<State> states = sqlConnection.GetList<State>(predicateGroup).ToList();
-                IList<Country> countries = sqlConnection.GetList<Country>().ToList();
+                IList<State> states = conn.GetList<State>(predicateGroup).ToList();
+                IList<Country> countries = conn.GetList<Country>().ToList();
                 predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
                 predicateGroup.Predicates.Add(Predicates.Field<Status>(s => s.Active, Operator.Eq, true));
-                IList<Status> status = sqlConnection.GetList<Status>(predicateGroup).ToList();
+                IList<Status> status = conn.GetList<Status>(predicateGroup).ToList();
                 status = status.Where(k => k.ID != 5).ToList();
 
                 return new ProspectDTO { Propects = prospects, States = states.OrderBy(p => p.Description).ToList(), Statuses = status.OrderBy(p => p.Description).ToList(), Cities = cities.OrderBy(p => p.Description).ToList(), Countries = countries.OrderBy(p => p.Description).ToList() };
@@ -186,12 +186,12 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <returns>Prospect details.</returns>
         public ProspectDTO GetProspect(int id)
         {
-            using (var sqlConnection = new SqlConnection(_connectionString))
+            var dbConnection = new DataAccessFactory();             using (var conn = dbConnection.CreateConnection()) 
             {
                 var predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
                 predicateGroup.Predicates.Add(Predicates.Field<Prospect>(s => s.ID, Operator.Eq, id));
-                sqlConnection.Open();
-                Prospect prospect = sqlConnection.Get<Prospect>(id);
+                conn.Open();
+                Prospect prospect = conn.Get<Prospect>(id);
                 IList<Prospect> p = new List<Prospect>();
                 p.Add(prospect);
                 return new ProspectDTO { Propects = p }; ;

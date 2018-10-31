@@ -1,87 +1,74 @@
-﻿using KRF.Common;
-using KRF.Core.Entities.Product;
+﻿using KRF.Core.Entities.Product;
 using KRF.Core.FunctionalContracts;
-using StructureMap;
 using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using DapperExtensions;
-using KRF.Core.Entities.ValueList;
 using System.Data;
 using KRF.Core.DTO.Product;
 using System.Transactions;
-using System.Configuration;
 
 namespace KRF.Persistence.FunctionalContractImplementation
 {
     public class AssemblyManagement : IAssemblyManagement
     {
-        private string _connectionString;
-
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        public AssemblyManagement()
-        {
-            //_connectionString = ObjectFactory.GetInstance<IDatabaseConnection>().ConnectionString;
-            _connectionString = Convert.ToString(ConfigurationManager.AppSettings["ApplicationDSN"]);
-        }
-
         /// <summary>
         /// Create an Assembly
         /// </summary>
-        /// <param name="Assembly">Assembly details</param>
+        /// <param name="assembly">Assembly details</param>
         /// <returns>Newly created Assembly identifier</returns>
         public int Create(AssemblyItemDTO assembly)
         {
             using (var transactionScope = new TransactionScope())
             {
-                using (var sqlConnection = new SqlConnection(_connectionString))
+                var dbConnection = new DataAccessFactory();
+                using (var conn = dbConnection.CreateConnection())
                 {
-                    sqlConnection.Open();
+                    conn.Open();
                     try
                     {
                         decimal totalMaterialCost = 0;
                         decimal totalLabourCost = 0;
                         foreach (var i in assembly.assemblyItem)
                         {
-                            var item = sqlConnection.Get<Item>(i.ItemId);
-                            if (item.ItemTypeId == (int)KRF.Core.Enums.ItemType.Labor)
+                            var item = conn.Get<Item>(i.ItemId);
+                            switch (item.ItemTypeId)
                             {
-                                totalLabourCost += Convert.ToDecimal(i.RetailCost);
-                            }
-                            else if (item.ItemTypeId == (int)KRF.Core.Enums.ItemType.Material)
-                            {
-                                totalMaterialCost += Convert.ToDecimal(i.RetailCost);
+                                case (int) Core.Enums.ItemType.Labor:
+                                    totalLabourCost += Convert.ToDecimal(i.RetailCost);
+                                    break;
+                                case (int) Core.Enums.ItemType.Material:
+                                    totalMaterialCost += Convert.ToDecimal(i.RetailCost);
+                                    break;
                             }
                         }
+
                         assembly.assembly.MaterialCost = totalMaterialCost;
                         assembly.assembly.LaborCost = totalLabourCost;
 
-                        var id = sqlConnection.Insert<Assembly>(assembly.assembly);
-                        var inventories = sqlConnection.GetList<Inventory>().ToList();
+                        var id = conn.Insert(assembly.assembly);
+                        var inventories = conn.GetList<Inventory>().ToList();
                         foreach (var i in assembly.assemblyItem)
                         {
                             i.AssemblyId = id;
-                            var assemblyItemId = sqlConnection.Insert<AssemblyItem>(i);
-                            var item = sqlConnection.Get<Item>(i.ItemId);
-                            if (item.ItemTypeId == (int)KRF.Core.Enums.ItemType.Labor)
+                            conn.Insert(i);
+                            var item = conn.Get<Item>(i.ItemId);
+                            if (item.ItemTypeId == (int) Core.Enums.ItemType.Labor)
                             {
                                 totalLabourCost += Convert.ToDecimal(i.RetailCost);
                             }
-                            else if (item.ItemTypeId == (int)KRF.Core.Enums.ItemType.Material)
+                            else if (item.ItemTypeId == (int) Core.Enums.ItemType.Material)
                             {
                                 totalMaterialCost += Convert.ToDecimal(i.RetailCost);
                             }
-                            
-                            if (item.ItemTypeId == (int)KRF.Core.Enums.ItemType.Material && (!inventories.Any(p=>p.ItemID == i.ItemId)))
+
+                            if (item.ItemTypeId == (int) Core.Enums.ItemType.Material &&
+                                (inventories.All(p => p.ItemID != i.ItemId)))
                             {
 
                                 //Create record in Inventory table with default quantity 0
-                                sqlConnection.Insert<Inventory>(new Inventory() { ItemID = i.ItemId, Qty = 0, DateUpdated = DateTime.Now });
+                                conn.Insert(new Inventory()
+                                    {ItemID = i.ItemId, Qty = 0, DateUpdated = DateTime.Now});
                             }
                         }
 
@@ -90,6 +77,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
                     }
                     catch (Exception e)
                     {
+                        Console.WriteLine(e);
                         transactionScope.Dispose();
                         return 0;
                     }
@@ -100,58 +88,66 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <summary>
         /// Edit an Assembly based on updated Assembly details.
         /// </summary>
-        /// <param name="Assembly">Updated Assembly details.</param>
+        /// <param name="assembly">Updated Assembly details.</param>
         /// <returns>Updated Assembly details.</returns>
         public Assembly Edit(AssemblyItemDTO assembly)
         {
             using (var transactionScope = new TransactionScope())
             {
-                using (var sqlConnection = new SqlConnection(_connectionString))
+                var dbConnection = new DataAccessFactory();
+                using (var conn = dbConnection.CreateConnection())
                 {
-                    sqlConnection.Open();
+                    conn.Open();
                     try
                     {
-                        var pgAssemblyItem = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
-                        pgAssemblyItem.Predicates.Add(Predicates.Field<AssemblyItem>(s => s.AssemblyId, Operator.Eq, assembly.assembly.Id));
+                        var pgAssemblyItem = new PredicateGroup
+                            {Operator = GroupOperator.And, Predicates = new List<IPredicate>()};
+                        pgAssemblyItem.Predicates.Add(Predicates.Field<AssemblyItem>(s => s.AssemblyId, Operator.Eq,
+                            assembly.assembly.Id));
 
-                        var assemblyItemList = sqlConnection.GetList<AssemblyItem>(pgAssemblyItem).ToList();
-                        var inventories = sqlConnection.GetList<Inventory>().ToList();
+                        var assemblyItemList = conn.GetList<AssemblyItem>(pgAssemblyItem).ToList();
+                        var inventories = conn.GetList<Inventory>().ToList();
                         foreach (var i in assemblyItemList)
                         {
                             //if (assembly.assemblyItem.Where(k => k.ItemId == i.ItemId).Count() == 0)
                             //{
-                            //    sqlConnection.Delete<AssemblyItem>(i.id);
+                            //    conn.Delete<AssemblyItem>(i.id);
                             //}
-                            sqlConnection.Delete<AssemblyItem>(i);
+                            conn.Delete(i);
                         }
+
                         decimal totalMaterialCost = 0;
                         decimal totalLabourCost = 0;
                         foreach (var i in assembly.assemblyItem)
                         {
-                            Item item = sqlConnection.Get<Item>(i.ItemId);
-                            if (item.ItemTypeId == (int)KRF.Core.Enums.ItemType.Labor)
+                            Item item = conn.Get<Item>(i.ItemId);
+                            if (item.ItemTypeId == (int) Core.Enums.ItemType.Labor)
                             {
                                 totalLabourCost += Convert.ToDecimal(i.RetailCost);
                             }
-                            else if (item.ItemTypeId == (int)KRF.Core.Enums.ItemType.Material)
+                            else if (item.ItemTypeId == (int) Core.Enums.ItemType.Material)
                             {
                                 totalMaterialCost += Convert.ToDecimal(i.RetailCost);
                             }
+
                             //if (i.id > 0)
-                            //    sqlConnection.Update<AssemblyItem>(i);
+                            //    conn.Update<AssemblyItem>(i);
                             //else
-                            sqlConnection.Insert<AssemblyItem>(i);
-                            if (item.ItemTypeId == (int)KRF.Core.Enums.ItemType.Material && (!inventories.Any(p => p.ItemID == i.ItemId)))
+                            conn.Insert(i);
+                            if (item.ItemTypeId == (int) Core.Enums.ItemType.Material &&
+                                (!inventories.Any(p => p.ItemID == i.ItemId)))
                             {
                                 //Create record in Inventory table with default quantity 0
-                                sqlConnection.Insert<Inventory>(new Inventory() { ItemID = i.ItemId, Qty = 0, DateUpdated = DateTime.Now });
+                                conn.Insert(new Inventory()
+                                    {ItemID = i.ItemId, Qty = 0, DateUpdated = DateTime.Now});
                             }
                         }
+
                         assembly.assembly.MaterialCost = totalMaterialCost;
                         assembly.assembly.LaborCost = totalLabourCost;
                         //assembly.assembly.IsItemAssembly = assembly.assembly.IsItemAssembly;
                         assembly.assembly.IsItemAssembly = false;
-                        sqlConnection.Update<Assembly>(assembly.assembly);
+                        conn.Update(assembly.assembly);
 
                         transactionScope.Complete();
 
@@ -159,6 +155,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
                     }
                     catch (Exception e)
                     {
+                        Console.WriteLine(e);
                         transactionScope.Dispose();
                         return assembly.assembly;
                     }
@@ -169,38 +166,43 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <summary>
         /// Delete an Item Assembly.
         /// </summary>
-        /// <param name="AssemblyId">Item Assembly unique identifier</param>
+        /// <param name="assemblyId">Item Assembly unique identifier</param>
         /// <returns>True - if successful deletion; False - If failure.</returns>
         public bool Delete(int assemblyId)
         {
             bool isDeleted = false;
             using (var transactionScope = new TransactionScope())
             {
-                using (var sqlConnection = new SqlConnection(_connectionString))
+                var dbConnection = new DataAccessFactory();
+                using (var conn = dbConnection.CreateConnection())
                 {
-                    sqlConnection.Open();
+                    conn.Open();
                     try
                     {
-                        var assembly = sqlConnection.Get<Assembly>(assemblyId);
+                        var assembly = conn.Get<Assembly>(assemblyId);
 
-                        var pgAssemblyItem = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
-                        pgAssemblyItem.Predicates.Add(Predicates.Field<AssemblyItem>(s => s.AssemblyId, Operator.Eq, assemblyId));
+                        var pgAssemblyItem = new PredicateGroup
+                            {Operator = GroupOperator.And, Predicates = new List<IPredicate>()};
+                        pgAssemblyItem.Predicates.Add(Predicates.Field<AssemblyItem>(s => s.AssemblyId, Operator.Eq,
+                            assemblyId));
 
-                        var assemblyItemList = sqlConnection.GetList<AssemblyItem>(pgAssemblyItem).ToList();
+                        var assemblyItemList = conn.GetList<AssemblyItem>(pgAssemblyItem).ToList();
                         foreach (var assemblyItem in assemblyItemList)
                         {
-                            var i = sqlConnection.Delete<AssemblyItem>(assemblyItem);
+                            conn.Delete(assemblyItem);
                         }
 
-                        isDeleted = sqlConnection.Delete<Assembly>(assembly);
+                        isDeleted = conn.Delete(assembly);
                         transactionScope.Complete();
                     }
                     catch (Exception e)
                     {
+                        Console.WriteLine(e);
                         transactionScope.Dispose();
                     }
                 }
             }
+
             return isDeleted;
         }
 
@@ -212,74 +214,87 @@ namespace KRF.Persistence.FunctionalContractImplementation
         public IList<Assembly> GetAllAssemblies(bool isActive = true)
         {
             IList<Assembly> assemblyList = new List<Assembly>();
-            using (var sqlConnection = new SqlConnection(_connectionString))
+            var dbConnection = new DataAccessFactory();
+            using (var conn = dbConnection.CreateConnection())
             {
-                sqlConnection.Open();
+                conn.Open();
                 try
                 {
-                    assemblyList = sqlConnection.GetList<Assembly>().ToList();
+                    assemblyList = conn.GetList<Assembly>().ToList();
                 }
                 catch (Exception e)
                 {
+                    Console.WriteLine(e);
                 }
             }
+
             return assemblyList;
         }
 
         /// <summary>
         /// Get Item Assembly details based on item id.
         /// </summary>
-        /// <param name="AssemblyId">Assembly's unique identifier</param>
+        /// <param name="assemblyId">Assembly's unique identifier</param>
         /// <returns>Assembly details.</returns>
         public AssemblyItemDTO GetAssembly(int assemblyId)
         {
-            AssemblyItemDTO assemblyItemDTO = null;
-            using (var sqlConnection = new SqlConnection(_connectionString))
+            AssemblyItemDTO assemblyItemDto = null;
+            var dbConnection = new DataAccessFactory();
+            using (var conn = dbConnection.CreateConnection())
             {
-                sqlConnection.Open();
+                conn.Open();
                 try
                 {
-                    var assembly = sqlConnection.Get<Assembly>(assemblyId);
+                    var assembly = conn.Get<Assembly>(assemblyId);
 
-                    var pgAssemblyItem = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
-                    pgAssemblyItem.Predicates.Add(Predicates.Field<AssemblyItem>(s => s.AssemblyId, Operator.Eq, assemblyId));
+                    var pgAssemblyItem = new PredicateGroup
+                        {Operator = GroupOperator.And, Predicates = new List<IPredicate>()};
+                    pgAssemblyItem.Predicates.Add(Predicates.Field<AssemblyItem>(s => s.AssemblyId, Operator.Eq,
+                        assemblyId));
 
-                    var assemblyItemList = sqlConnection.GetList<AssemblyItem>(pgAssemblyItem).ToList();
-                    assemblyItemDTO = new AssemblyItemDTO { assembly = assembly, assemblyItem = assemblyItemList.ToList() };
+                    var assemblyItemList = conn.GetList<AssemblyItem>(pgAssemblyItem).ToList();
+                    assemblyItemDto = new AssemblyItemDTO
+                        {assembly = assembly, assemblyItem = assemblyItemList.ToList()};
 
                 }
                 catch (Exception e)
                 {
+                    Console.WriteLine(e);
                 }
             }
-            return assemblyItemDTO;
+
+            return assemblyItemDto;
         }
+
         /// <summary>
-        /// Get Assmebly By AssmeblyID
+        /// Get Assembly By AssmeblyID
         /// </summary>
         /// <param name="assemblyId"></param>
-        /// <param name="sqlConnection"></param>
+        /// <param name="conn"></param>
         /// <returns></returns>
-        public AssemblyItemDTO GetAssembly(int assemblyId, SqlConnection sqlConnection)
+        public AssemblyItemDTO GetAssembly(int assemblyId, IDbConnection conn)
         {
-            AssemblyItemDTO assemblyItemDTO = null;
+            AssemblyItemDTO assemblyItemDto = null;
 
             try
             {
-                var assembly = sqlConnection.Get<Assembly>(assemblyId);
+                var assembly = conn.Get<Assembly>(assemblyId);
 
-                var pgAssemblyItem = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
-                pgAssemblyItem.Predicates.Add(Predicates.Field<AssemblyItem>(s => s.AssemblyId, Operator.Eq, assemblyId));
+                var pgAssemblyItem = new PredicateGroup
+                    {Operator = GroupOperator.And, Predicates = new List<IPredicate>()};
+                pgAssemblyItem.Predicates.Add(
+                    Predicates.Field<AssemblyItem>(s => s.AssemblyId, Operator.Eq, assemblyId));
 
-                var assemblyItemList = sqlConnection.GetList<AssemblyItem>(pgAssemblyItem).ToList();
-                assemblyItemDTO = new AssemblyItemDTO { assembly = assembly, assemblyItem = assemblyItemList.ToList() };
+                var assemblyItemList = conn.GetList<AssemblyItem>(pgAssemblyItem).ToList();
+                assemblyItemDto = new AssemblyItemDTO {assembly = assembly, assemblyItem = assemblyItemList.ToList()};
 
             }
             catch (Exception e)
             {
+                Console.WriteLine(e);
             }
 
-            return assemblyItemDTO;
+            return assemblyItemDto;
         }
 
         public IList<Assembly> SearchAssembly(string searchText)
@@ -292,7 +307,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
             throw new NotImplementedException();
         }
 
-        public bool AddItemToAssembly(int AssemblyId, AssemblyItem assemblyItem)
+        public bool AddItemToAssembly(int assemblyId, AssemblyItem assemblyItem)
         {
             throw new NotImplementedException();
         }
@@ -302,7 +317,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
         //    throw new NotImplementedException();
         //}
 
-        public decimal CalculateTotalCost(int AssemblyId)
+        public decimal CalculateTotalCost(int assemblyId)
         {
             throw new NotImplementedException();
         }

@@ -117,7 +117,7 @@
     function getMyAccount(ID) {
         openModal();
         $.ajax({
-            url: '@Url.Action("GetEmployeeByUserID", "Employee")',
+            url: '@Url.Action("GetEmployeeByUserId", "Employee")',
             type: 'POST',
             data: { userID: ID },
             success: function (data) {

@@ -8,6 +8,5 @@ namespace KRF.Core.Entities.Master
         public int EmpId { get; set; }
         public bool IsLead { get; set; }
         public bool Active { get; set; }
-
     }
 }

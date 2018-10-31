@@ -2,21 +2,19 @@
 using KRF.Core.Entities.Master;
 using KRF.Core.FunctionalContracts;
 using KRF.Core.Repository;
-using StructureMap;
-using System.Collections.Generic;
 
-namespace KRF.Persistence.FunctionalContractImplementation
+namespace KRF.Persistence.RepositoryImplementation
 {
     public class EquipmentManagementRepository : IEquipmentManagementRepository
     {
-        private readonly IEquipmentManagement _EquipmentManagement;
+        private readonly IEquipmentManagement equipmentManagement_;
 
         /// <summary>
         /// Constructor
         /// </summary>
         public EquipmentManagementRepository()
         {
-            _EquipmentManagement = ObjectFactory.GetInstance<IEquipmentManagement>();
+            equipmentManagement_ = ObjectFactory.GetInstance<IEquipmentManagement>();
         }
         /// <summary>
         /// Create Equipment
@@ -25,7 +23,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <returns></returns>
         public int Create(Equipment equipment)
         {
-            return _EquipmentManagement.CreateEquipment(equipment);
+            return equipmentManagement_.CreateEquipment(equipment);
         }
         /// <summary>
         /// Edit Equipment
@@ -34,26 +32,26 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <returns></returns>
         public bool Edit(Equipment equipment)
         {
-            return _EquipmentManagement.EditEquipment(equipment);
+            return equipmentManagement_.EditEquipment(equipment);
         }
         /// <summary>
         /// Active/Inactive Equipment status
         /// </summary>
-        /// <param name="equipmentID"></param>
+        /// <param name="equipmentId"></param>
         /// <param name="tobeEnabled"></param>
         /// <returns></returns>
-        public bool ToggleEquipmentStatus(int equipmentID, bool tobeEnabled)
+        public bool ToggleEquipmentStatus(int equipmentId, bool tobeEnabled)
         {
-            return _EquipmentManagement.ToggleEquipmentStatus(equipmentID, tobeEnabled);
+            return equipmentManagement_.ToggleEquipmentStatus(equipmentId, tobeEnabled);
         }
         /// <summary>
         /// Get Equipment by EquipmentID
         /// </summary>
-        /// <param name="equipmentID"></param>
+        /// <param name="equipmentId"></param>
         /// <returns></returns>
-        public EquipmentDTO GetEquipment(int equipmentID)
+        public EquipmentDTO GetEquipment(int equipmentId)
         {
-            return _EquipmentManagement.GetEquipment(equipmentID);
+            return equipmentManagement_.GetEquipment(equipmentId);
         }
         /// <summary>
         /// Get all Equipments
@@ -61,7 +59,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <returns></returns>
         public EquipmentDTO GetEquipments()
         {
-            return _EquipmentManagement.GetEquipments();
+            return equipmentManagement_.GetEquipments();
         }
 
     }

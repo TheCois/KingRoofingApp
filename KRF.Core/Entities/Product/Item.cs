@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using KRF.Core.Entities.ValueList;
-
-namespace KRF.Core.Entities.Product
+﻿namespace KRF.Core.Entities.Product
 {
     public class Item
     {

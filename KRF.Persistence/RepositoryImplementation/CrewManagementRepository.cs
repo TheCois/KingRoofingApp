@@ -1,22 +1,19 @@
 ﻿using KRF.Core.DTO.Master;
-using KRF.Core.Entities.Master;
 using KRF.Core.FunctionalContracts;
 using KRF.Core.Repository;
-using StructureMap;
-using System.Collections.Generic;
 
-namespace KRF.Persistence.FunctionalContractImplementation
+namespace KRF.Persistence.RepositoryImplementation
 {
     public class CrewManagementRepository : ICrewManagementRepository
     {
-        private readonly ICrewManagement _CrewManagement;
+        private readonly ICrewManagement crewManagement_;
 
         /// <summary>
         /// Constructor
         /// </summary>
         public CrewManagementRepository()
         {
-            _CrewManagement = ObjectFactory.GetInstance<ICrewManagement>();
+            crewManagement_ = ObjectFactory.GetInstance<ICrewManagement>();
         }
         /// <summary>
         /// Create Crew
@@ -25,7 +22,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <returns></returns>
         public int Create(CrewDTO crew)
         {
-            return _CrewManagement.CreateCrew(crew);
+            return crewManagement_.CreateCrew(crew);
         }
         /// <summary>
         /// Edit Crew
@@ -34,36 +31,36 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <returns></returns>
         public bool Edit(CrewDTO crew)
         {
-            return _CrewManagement.EditCrew(crew);
+            return crewManagement_.EditCrew(crew);
         }
         /// <summary>
         /// Active/Inactive Crew status
         /// </summary>
-        /// <param name="crewID"></param>
+        /// <param name="crewId"></param>
         /// <param name="tobeEnabled"></param>
         /// <returns></returns>
-        public bool SetActiveInactiveCrew(int crewID, bool tobeEnabled)
+        public bool SetActiveInactiveCrew(int crewId, bool tobeEnabled)
         {
-            return _CrewManagement.SetActiveInactiveCrew(crewID, tobeEnabled);
+            return crewManagement_.SetActiveInactiveCrew(crewId, tobeEnabled);
         }
         /// <summary>
         /// Active/Inactive Crew detail status
         /// </summary>
-        /// <param name="crewDetailID"></param>
+        /// <param name="crewDetailId"></param>
         /// <param name="tobeEnabled"></param>
         /// <returns></returns>
-        public bool SetActiveInactiveCrewDetail(int crewDetailID, bool tobeEnabled)
+        public bool SetActiveInactiveCrewDetail(int crewDetailId, bool tobeEnabled)
         {
-            return _CrewManagement.SetActiveInactiveCrewDetail(crewDetailID, tobeEnabled);
+            return crewManagement_.SetActiveInactiveCrewDetail(crewDetailId, tobeEnabled);
         }
         /// <summary>
         /// Get Crew by CrewID
         /// </summary>
-        /// <param name="crewID"></param>
+        /// <param name="crewId"></param>
         /// <returns></returns>
-        public CrewDTO GetCrew(int crewID)
+        public CrewDTO GetCrew(int crewId)
         {
-            return _CrewManagement.GetCrew(crewID);
+            return crewManagement_.GetCrew(crewId);
         }
         /// <summary>
         /// Get all Crews
@@ -71,7 +68,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <returns></returns>
         public CrewDTO GetCrews()
         {
-            return _CrewManagement.ListAllCrews();
+            return crewManagement_.ListAllCrews();
         }
 
     }

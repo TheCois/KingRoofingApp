@@ -20,14 +20,14 @@ namespace KRF.Core.Entities.Customer
         public int? JobCity { get; set; }
         public string JobZipCode { get; set; }
         public int EstimateID { get; set; }
-        public Nullable<DateTime> StartDate { get; set; }
-        public Nullable<DateTime> EndDate { get; set; }
+        public DateTime? StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
         public string Notes { get; set; }
         public decimal? EstimatedLabourHours { get; set; }
         public decimal? AverageWorkingHours { get; set; }
         public DateTime CreatedOn { get; set; }
         public int? JobStatusID { get; set; }
         public bool Status { get; set; }
-        public Nullable<DateTime> DateUpdated { get; set; }
+        public DateTime? DateUpdated { get; set; }
     }
 }

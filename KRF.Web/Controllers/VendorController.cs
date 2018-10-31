@@ -2,11 +2,8 @@
 using KRF.Core.Entities.Master;
 using KRF.Core.Repository;
 using KRF.Web.Models;
-using StructureMap;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 
 namespace KRF.Web.Controllers
@@ -19,7 +16,7 @@ namespace KRF.Web.Controllers
 
         public ActionResult Index()
         {
-            IVendorManagementRepository vendorRepo = ObjectFactory.GetInstance<IVendorManagementRepository>();
+            var vendorRepo = ObjectFactory.GetInstance<IVendorManagementRepository>();
             var vendors = vendorRepo.ListAllVendors();
             TempData["Vendors"] = vendors;
             return View();
@@ -28,22 +25,22 @@ namespace KRF.Web.Controllers
         /// <summary>
         /// Get Add Vendor
         /// </summary>
-        /// <param name="ID"></param>
+        /// <param name="id"></param>
         /// <returns></returns>
-        public ActionResult Add(int ID = 0)
+        public ActionResult Add(int id = 0)
         {
-            ViewBag.ID = ID;
+            ViewBag.ID = id;
             ViewBag.EditMode = true;
             return View();
         }
         /// <summary>
         /// Get Vendor Add View
         /// </summary>
-        /// <param name="ID"></param>
+        /// <param name="id"></param>
         /// <returns></returns>
-        public ActionResult View(int ID)
+        public ActionResult View(int id)
         {
-            ViewBag.ID = ID;
+            ViewBag.ID = id;
             ViewBag.EditMode = false;
             return View("Add");
         }
@@ -54,18 +51,16 @@ namespace KRF.Web.Controllers
         /// <returns></returns>
         public ActionResult GetVendors(jQueryDataTableParamModel param)
         {
-            IVendorManagementRepository vendorRepo = ObjectFactory.GetInstance<IVendorManagementRepository>();
+            var vendorRepo = ObjectFactory.GetInstance<IVendorManagementRepository>();
 
-            VendorDTO vendorDTO = (VendorDTO)TempData["Vendors"];
-            if (vendorDTO == null)
-                vendorDTO = vendorRepo.ListAllVendors();
+            var vendorDto = (VendorDTO)TempData["Vendors"] ?? vendorRepo.ListAllVendors();
 
             return Json(new
             {
                 sEcho = param.sEcho,
                 iTotalRecords = 97,
                 iTotalDisplayRecords = 3,
-                aaData = (from p in vendorDTO.Vendors.Where(p => p.Active == true)
+                aaData = (from p in vendorDto.Vendors.Where(p => p.Active)
                           select new string[] {
                               "<span class='edit-customer' data-val=" + p.ID.ToString() + "><ul><li class='edit'><a href='#non'>View</a></li></ul></span>",
                               "<span><ul><li><a class='noicon' href='" + @Url.Action("View", "Vendor", new { ID = p.ID })+ "'>" + p.VendorName + "</a></li></ul></span>",
@@ -81,16 +76,16 @@ namespace KRF.Web.Controllers
         /// <summary>
         /// Get Vendor by vendorID
         /// </summary>
-        /// <param name="crewID"></param>
+        /// <param name="vendorId"></param>
         /// <returns></returns>
-        public ActionResult GetVendor(int vendorID)
+        public ActionResult GetVendor(int vendorId)
         {
-            IVendorManagementRepository vendorRepo = ObjectFactory.GetInstance<IVendorManagementRepository>();
-            var vendorDTO = vendorRepo.GetVendor(vendorID);
+            var vendorRepo = ObjectFactory.GetInstance<IVendorManagementRepository>();
+            var vendorDto = vendorRepo.GetVendor(vendorId);
 
             return Json(new
             {
-                vendor = vendorDTO.Vendors.First()
+                vendor = vendorDto.Vendors.First()
             });
         }
 
@@ -102,31 +97,31 @@ namespace KRF.Web.Controllers
         [HttpPost]
         public JsonResult Save(Vendor vendor)
         {
-            IVendorManagementRepository vendorRepo = ObjectFactory.GetInstance<IVendorManagementRepository>();
-            bool hasSaved = true;
-            VendorDTO vendorDTO = new VendorDTO();
-            bool recordExist = false;
-            string message = string.Empty;
-            int ID = vendor.ID;
+            var vendorRepo = ObjectFactory.GetInstance<IVendorManagementRepository>();
+            var hasSaved = true;
+            var vendorDto = new VendorDTO();
+            var recordExist = false;
+            var message = string.Empty;
+            var id = vendor.ID;
             try
             {
-                VendorDTO vendorRecords = vendorRepo.ListAllVendors();
+                var vendorRecords = vendorRepo.ListAllVendors();
                 if (!string.IsNullOrEmpty(vendor.Email))
                 {
                     if (vendorRecords != null)
                     {
-                        if (vendorRecords.Vendors.Count() > 0)
+                        if (vendorRecords.Vendors.Any())
                         {
                             if (vendor.ID == 0)
                             {
-                                if (vendorRecords.Vendors.Where(c => c.Email.ToLower() == vendor.Email.ToLower() && c.Active == true).FirstOrDefault() != null)
+                                if (vendorRecords.Vendors.Where(c => c.Email.ToLower() == vendor.Email.ToLower() && c.Active).FirstOrDefault() != null)
                                 {
                                     recordExist = true;
                                 }
                             }
                             else
                             {
-                                if (vendorRecords.Vendors.Where(c => (c.Email != null && c.Email.ToLower() == vendor.Email.ToLower()) && c.ID != vendor.ID && c.Active == true).FirstOrDefault() != null)
+                                if (vendorRecords.Vendors.Where(c => (c.Email != null && c.Email.ToLower() == vendor.Email.ToLower()) && c.ID != vendor.ID && c.Active).FirstOrDefault() != null)
                                 {
                                     recordExist = true;
                                 }
@@ -142,12 +137,12 @@ namespace KRF.Web.Controllers
                         vendor.DateCreated = DateTime.Now;
                         vendor.DateUpdated = null;
                         vendor.Active = true;
-                        ID = vendorRepo.CreateVendor(vendor);
+                        id = vendorRepo.CreateVendor(vendor);
                         message = "Vendor detail inserted successfully.";
                     }
                     else
                     {
-                        Vendor vendorRecord = vendorRecords.Vendors.Where(c => c.ID == vendor.ID).FirstOrDefault();
+                        var vendorRecord = vendorRecords.Vendors.Where(c => c.ID == vendor.ID).FirstOrDefault();
                         vendor.DateUpdated = DateTime.Now;
                         vendor.Active = vendorRecord.Active;
                         vendor.DateCreated = vendorRecord.DateCreated;
@@ -171,19 +166,19 @@ namespace KRF.Web.Controllers
             }
 
 
-            return Json(new { hasSaved = hasSaved, message = message, ID = ID });
+            return Json(new { hasSaved = hasSaved, message = message, ID = id });
         }
         /// <summary>
         /// Active/Inactive Vendor status
         /// </summary>
-        /// <param name="vendorID"></param>
+        /// <param name="vendorId"></param>
         /// <param name="active"></param>
         /// <returns></returns>
-        public JsonResult SetActiveInactiveVendor(int vendorID, bool active)
+        public JsonResult SetActiveInactiveVendor(int vendorId, bool active)
         {
-            IVendorManagementRepository vendorRepo = ObjectFactory.GetInstance<IVendorManagementRepository>();
+            var vendorRepo = ObjectFactory.GetInstance<IVendorManagementRepository>();
 
-            vendorRepo.SetActiveInactiveVendor(vendorID, active);
+            vendorRepo.SetActiveInactiveVendor(vendorId, active);
 
             return Json(new { hasDeleted = true });
         }

@@ -36,8 +36,8 @@ namespace KRF.Core.Entities.Employee
         public string DLNo { get; set; }
         public string HourlyRate { get; set; }
         public int RoleId { get; set; }
-        public System.Nullable<DateTime> DateCreated { get; set; }
-        public System.Nullable<DateTime> DateUpdated { get; set; }
+        public DateTime? DateCreated { get; set; }
+        public DateTime? DateUpdated { get; set; }
         public int? UserID { get; set; }
         public bool? AppAccess { get; set; }
         public bool? Status { get; set; }

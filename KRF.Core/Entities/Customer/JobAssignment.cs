@@ -15,7 +15,7 @@ namespace KRF.Core.Entities.Customer
         /// </summary>
         public int ObjectPKID { get; set; }
         public string Type { get; set; }
-        public Nullable<DateTime> FromDate { get; set; }
-        public Nullable<DateTime> ToDate { get; set; }
+        public DateTime? FromDate { get; set; }
+        public DateTime? ToDate { get; set; }
     }
 }

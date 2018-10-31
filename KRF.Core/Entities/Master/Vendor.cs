@@ -15,7 +15,7 @@ namespace KRF.Core.Entities.Master
         public string Email { get; set; }
         public bool Active { get; set; }
         public DateTime DateCreated { get; set; }
-        public System.Nullable<DateTime> DateUpdated { get; set; }
+        public DateTime? DateUpdated { get; set; }
         public string WebSite { get; set; }
         public string Manager { get; set; }
         public string SalesRep { get; set; }

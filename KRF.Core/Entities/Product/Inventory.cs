@@ -12,12 +12,12 @@ namespace KRF.Core.Entities.Product
         /// </summary>
         public int ID { get; set; }
 
-        // <summary>
+        /// <summary>
         /// Assembly ID
         /// </summary>
         public int? AssemblyID { get; set; }
 
-        // <summary>
+        /// <summary>
         /// Assembly ID
         /// </summary>
         public int ItemID { get; set; }
@@ -42,7 +42,7 @@ namespace KRF.Core.Entities.Product
         /// </summary>
         public int ID { get; set; }
 
-        // <summary>
+        /// <summary>
         /// Assembly ID
         /// </summary>
         public int? AssemblyID { get; set; }

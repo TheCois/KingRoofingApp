@@ -5,8 +5,6 @@ using KRF.Core.Entities.ValueList;
 using KRF.Core.FunctionalContracts;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
-using System.Data.SqlClient;
 using System.Linq;
 using System.Transactions;
 
@@ -14,15 +12,6 @@ namespace KRF.Persistence.FunctionalContractImplementation
 {
     public class EquipmentManagement : IEquipmentManagement
     {
-        private string _connectionString;
-
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        public EquipmentManagement()
-        {
-            _connectionString = Convert.ToString(ConfigurationManager.AppSettings["ApplicationDSN"]);
-        }
         /// <summary>
         /// Create Equipment
         /// </summary>
@@ -32,17 +21,19 @@ namespace KRF.Persistence.FunctionalContractImplementation
         {
             using (var transactionScope = new TransactionScope())
             {
-                using (var sqlConnection = new SqlConnection(_connectionString))
+                var dbConnection = new DataAccessFactory();
+                using (var conn = dbConnection.CreateConnection())
                 {
-                    sqlConnection.Open();
+                    conn.Open();
                     equipment.Active = true;
                     equipment.DateCreated = DateTime.Now;
-                    var id = sqlConnection.Insert<Equipment>(equipment);
+                    var id = conn.Insert(equipment);
                     transactionScope.Complete();
                     return id;
                 }
             }
         }
+
         /// <summary>
         /// Edit Equipment
         /// </summary>
@@ -52,76 +43,86 @@ namespace KRF.Persistence.FunctionalContractImplementation
         {
             using (var transactionScope = new TransactionScope())
             {
-                using (var sqlConnection = new SqlConnection(_connectionString))
+                var dbConnection = new DataAccessFactory();
+                using (var conn = dbConnection.CreateConnection())
                 {
-                    sqlConnection.Open();
+                    conn.Open();
                     equipment.DateUpdated = DateTime.Now;
-                    var isEdited = sqlConnection.Update<Equipment>(equipment);
+                    var isEdited = conn.Update(equipment);
                     transactionScope.Complete();
                     return isEdited;
                 }
             }
         }
+
         /// <summary>
         /// Active/Inactive Equipment status
         /// </summary>
-        /// <param name="equipmentID"></param>
+        /// <param name="equipmentId"></param>
         /// <param name="tobeEnabled"></param>
         /// <returns></returns>
-        public bool ToggleEquipmentStatus(int equipmentID, bool tobeEnabled)
+        public bool ToggleEquipmentStatus(int equipmentId, bool tobeEnabled)
         {
-            using (var sqlConnection = new SqlConnection(_connectionString))
+            var dbConnection = new DataAccessFactory();
+            using (var conn = dbConnection.CreateConnection())
             {
-                var predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
-                sqlConnection.Open();
-                Equipment Equipment = sqlConnection.Get<Equipment>(equipmentID);
-                Equipment.Active = tobeEnabled;
-                Equipment.DateUpdated = DateTime.Now;
-                var isUpdated = sqlConnection.Update<Equipment>(Equipment);
+                var predicateGroup = new PredicateGroup
+                    {Operator = GroupOperator.And, Predicates = new List<IPredicate>()};
+                conn.Open();
+                var equipment = conn.Get<Equipment>(equipmentId);
+                equipment.Active = tobeEnabled;
+                equipment.DateUpdated = DateTime.Now;
+                var isUpdated = conn.Update(equipment);
                 return isUpdated;
             }
         }
+
         /// <summary>
         /// Get Equipment by EquipmentID
         /// </summary>
-        /// <param name="equipmentID"></param>
+        /// <param name="equipmentId"></param>
         /// <returns></returns>
-        public EquipmentDTO GetEquipment(int equipmentID)
+        public EquipmentDTO GetEquipment(int equipmentId)
         {
-            using (var sqlConnection = new SqlConnection(_connectionString))
+            var dbConnection = new DataAccessFactory();
+            using (var conn = dbConnection.CreateConnection())
             {
-                var predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
+                var predicateGroup = new PredicateGroup
+                    {Operator = GroupOperator.And, Predicates = new List<IPredicate>()};
                 //predicateGroup.Predicates.Add(Predicates.Field<Equipment>(s => s.EquipmentID, Operator.Eq, equipmentID));
-                sqlConnection.Open();
-                Equipment equpment = sqlConnection.Get<Equipment>(equipmentID);
-                IList<EquipmentStatus> equipmentStatus = sqlConnection.GetList<EquipmentStatus>().ToList();
+                conn.Open();
+                var equipment = conn.Get<Equipment>(equipmentId);
+                IList<EquipmentStatus> equipmentStatus = conn.GetList<EquipmentStatus>().ToList();
                 IList<Equipment> p = new List<Equipment>();
-                p.Add(equpment);
+                p.Add(equipment);
                 return new EquipmentDTO
                 {
                     Equipments = p,
                     EquipmentStatus = equipmentStatus
-                }; ;
+                };
             }
         }
+
         /// <summary>
         /// Get all Equipments
         /// </summary>
         /// <returns></returns>
         public EquipmentDTO GetEquipments()
         {
-            using (var sqlConnection = new SqlConnection(_connectionString))
+            var dbConnection = new DataAccessFactory();
+            using (var conn = dbConnection.CreateConnection())
             {
-                var predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
+                var predicateGroup = new PredicateGroup
+                    {Operator = GroupOperator.And, Predicates = new List<IPredicate>()};
                 predicateGroup.Predicates.Add(Predicates.Field<Equipment>(s => s.Active, Operator.Eq, true));
-                sqlConnection.Open();
-                IList<Equipment> equipments = sqlConnection.GetList<Equipment>(predicateGroup).ToList();
-                IList<EquipmentStatus> equipmentStatus = sqlConnection.GetList<EquipmentStatus>().ToList();
+                conn.Open();
+                IList<Equipment> equipments = conn.GetList<Equipment>(predicateGroup).ToList();
+                IList<EquipmentStatus> equipmentStatus = conn.GetList<EquipmentStatus>().ToList();
                 return new EquipmentDTO
                 {
                     Equipments = equipments,
                     EquipmentStatus = equipmentStatus
-                }; ;
+                };
             }
         }
     }

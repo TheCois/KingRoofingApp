@@ -7,7 +7,6 @@ using KRF.Core.Enums;
 using KRF.Core.Entities.ValueList;
 using KRF.Core.Repository;
 using KRF.Web.Models;
-using StructureMap;
 using System;
 using System.Collections.Generic;
 using System.IO;

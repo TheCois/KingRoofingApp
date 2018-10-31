@@ -6,12 +6,12 @@ using KRF.Web.Models;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Data.SqlClient;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using KRF.Persistence;
 
 namespace KRF.Web.Controllers
 {
@@ -48,11 +48,11 @@ namespace KRF.Web.Controllers
         private string GetRoofType(int roofTypeId)
         {
             var connectionString = Convert.ToString(ConfigurationManager.AppSettings["ApplicationDSN"]);
-            using (var sqlConnection = new SqlConnection(connectionString))
+            var dbConnection = new DataAccessFactory();             using (var conn = dbConnection.CreateConnection()) 
             {
-                sqlConnection.Open();
+                conn.Open();
                 const string query = "SELECT [Description] FROM RoofType WHERE [Active] = 1 AND ID = @ID";
-                string roofType = sqlConnection.Query<string>(query, new { ID = roofTypeId }).SingleOrDefault();
+                string roofType = conn.Query<string>(query, new { ID = roofTypeId }).SingleOrDefault();
 
                 return roofType;
             }

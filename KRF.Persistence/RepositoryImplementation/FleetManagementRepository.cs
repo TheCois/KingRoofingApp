@@ -1,22 +1,21 @@
-﻿using KRF.Core.DTO.Master;
+﻿using System.Collections.Generic;
+using KRF.Core.DTO.Master;
 using KRF.Core.Entities.Master;
 using KRF.Core.FunctionalContracts;
 using KRF.Core.Repository;
-using StructureMap;
-using System.Collections.Generic;
 
-namespace KRF.Persistence.FunctionalContractImplementation
+namespace KRF.Persistence.RepositoryImplementation
 {
     public class FleetManagementRepository : IFleetManagementRepository
     {
-        private readonly IFleetManagement _FleetManagement;
+        private readonly IFleetManagement fleetManagement_;
 
         /// <summary>
         /// Constructor
         /// </summary>
         public FleetManagementRepository()
         {
-            _FleetManagement = ObjectFactory.GetInstance<IFleetManagement>();
+            fleetManagement_ = ObjectFactory.GetInstance<IFleetManagement>();
         }
         /// <summary>
         /// Create new fleet record in DB
@@ -27,7 +26,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <returns></returns>
         public int Create(Fleet fleet, List<FleetService> fleetServices, List<FleetAssignment> fleetAssignments)
         {
-            return _FleetManagement.CreateFleet(fleet, fleetServices, fleetAssignments);
+            return fleetManagement_.CreateFleet(fleet, fleetServices, fleetAssignments);
         }
         /// <summary>
         /// Edit Fleet record
@@ -38,17 +37,17 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <returns></returns>
         public bool Edit(Fleet fleet, List<FleetService> fleetServices, List<FleetAssignment> fleetAssignments)
         {
-            return _FleetManagement.EditFleet(fleet, fleetServices, fleetAssignments);
+            return fleetManagement_.EditFleet(fleet, fleetServices, fleetAssignments);
         }
         /// <summary>
         /// Active/Inactive Fleet status
         /// </summary>
-        /// <param name="fleetID"></param>
+        /// <param name="fleetId"></param>
         /// <param name="tobeEnabled"></param>
         /// <returns></returns>
-        public bool ToggleFleetStatus(int fleetID, bool tobeEnabled)
+        public bool ToggleFleetStatus(int fleetId, bool tobeEnabled)
         {
-            return _FleetManagement.ToggleFleetStatus(fleetID, tobeEnabled);
+            return fleetManagement_.ToggleFleetStatus(fleetId, tobeEnabled);
         }
         /// <summary>
         /// Get Fleet Details
@@ -56,16 +55,16 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <returns></returns>
         public FleetDTO GetFleetDetails()
         {
-            return _FleetManagement.GetFleetDetails();
+            return fleetManagement_.GetFleetDetails();
         }
         /// <summary>
         /// Get Fleet Detail by FleetID
         /// </summary>
-        /// <param name="fleetID"></param>
+        /// <param name="fleetId"></param>
         /// <returns></returns>
-        public FleetDTO GetFleetDetail(int fleetID)
+        public FleetDTO GetFleetDetail(int fleetId)
         {
-            return _FleetManagement.GetFleetDetail(fleetID);
+            return fleetManagement_.GetFleetDetail(fleetId);
         }
 
     }

@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-
-namespace KRF.Web.Models
+﻿namespace KRF.Web.Models
 {
     public class ErrorModel
     {
