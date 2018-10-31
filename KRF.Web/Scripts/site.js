@@ -7,11 +7,21 @@ var EstimateNS = {
     items: {},
     assemblies: {}
 };
+
+var PagePrefixes = ['/Account', '/Lead', '/Customer', '/Estimate', '/Job', '/Product', '/Employee', '/Vendor', '/Fleet', '/Crew', '/Equipment', '/Administration', '/RolePermission'];
+
 // End of Global objects
 
 function getWebsiteBaseUrl() {
-    //return window.location.origin;
-    return window.location.href;
+    var currentUrl = window.location.href;
+    var index;
+    for (index = 0; index < PagePrefixes.length; ++index) {
+        var pos = currentUrl.indexOf(PagePrefixes[index]);
+        if (pos >= 0)   {
+            return currentUrl.substring(0, pos) + "/";
+        }
+    }
+    return window.location.origin;
 }
 
 function openModal() {
