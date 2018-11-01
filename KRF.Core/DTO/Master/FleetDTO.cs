@@ -1,5 +1,4 @@
-﻿using KRF.Core.Entities.AccessControl;
-using KRF.Core.Entities.ValueList;
+﻿using KRF.Core.Entities.ValueList;
 using KRF.Core.Entities.Master;
 using System.Collections.Generic;
 namespace KRF.Core.DTO.Master

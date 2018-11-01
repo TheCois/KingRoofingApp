@@ -1,10 +1,4 @@
-﻿using System;
-using KRF.Core.Entities.AccessControl;
-using KRF.Core.Entities.MISC;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-
-namespace KRF.Core.Entities.Customer
+﻿namespace KRF.Core.Entities.Customer
 {
     public class City
     {

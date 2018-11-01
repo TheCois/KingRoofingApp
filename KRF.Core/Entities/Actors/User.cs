@@ -1,6 +1,4 @@
 ﻿using System;
-using KRF.Core.Entities.AccessControl;
-using KRF.Core.Entities.MISC;
 
 namespace KRF.Core.Entities.Actors
 {

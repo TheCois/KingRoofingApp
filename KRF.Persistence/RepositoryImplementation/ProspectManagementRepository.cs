@@ -1,9 +1,7 @@
-﻿using KRF.Core.DTO.Product;
-using KRF.Core.DTO.Sales;
+﻿using KRF.Core.DTO.Sales;
 using KRF.Core.Entities.Sales;
 using KRF.Core.FunctionalContracts;
 using KRF.Core.Repository;
-using StructureMap;
 using System.Collections.Generic;
 
 namespace KRF.Persistence.FunctionalContractImplementation

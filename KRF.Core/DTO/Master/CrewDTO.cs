@@ -1,6 +1,4 @@
-﻿using KRF.Core.Entities.AccessControl;
-using KRF.Core.Entities.Sales;
-using KRF.Core.Entities.Master;
+﻿using KRF.Core.Entities.Master;
 using System.Collections.Generic;
 namespace KRF.Core.DTO.Master
 {

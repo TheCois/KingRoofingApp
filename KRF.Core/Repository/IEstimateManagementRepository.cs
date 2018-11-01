@@ -1,13 +1,6 @@
-﻿using KRF.Core.DTO.Product;
-using KRF.Core.DTO.Sales;
-using KRF.Core.Entities.Product;
+﻿using KRF.Core.DTO.Sales;
 using KRF.Core.Entities.Sales;
-using KRF.Core.Entities.ValueList;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace KRF.Core.Repository
 {

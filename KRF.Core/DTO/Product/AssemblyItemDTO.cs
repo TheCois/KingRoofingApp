@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using KRF.Core.Entities.ValueList;
+﻿using System.Collections.Generic;
 using KRF.Core.Entities.Product;
 
 namespace KRF.Core.DTO.Product

@@ -1,7 +1,4 @@
 ﻿using KRF.Core.DTO.Master;
-using KRF.Core.Entities.Master;
-using KRF.Core.Entities.Sales;
-using System.Collections.Generic;
 
 namespace KRF.Core.Repository
 {

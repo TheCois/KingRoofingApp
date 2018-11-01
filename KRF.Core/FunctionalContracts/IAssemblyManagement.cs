@@ -2,7 +2,6 @@
 using KRF.Core.Entities.Product;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
 
 namespace KRF.Core.FunctionalContracts
 {

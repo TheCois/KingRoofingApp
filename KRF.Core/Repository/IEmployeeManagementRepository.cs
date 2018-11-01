@@ -1,6 +1,5 @@
 ﻿using KRF.Core.DTO.Employee;
 using KRF.Core.Entities.Employee;
-using KRF.Core.Entities.Sales;
 using System.Collections.Generic;
 
 namespace KRF.Core.Repository

@@ -387,7 +387,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
             using (var conn = dbConnection.CreateConnection())
             {
                 conn.Open();
-                const string query = "select ID, EstimateID, Name, Type, Description, UploadDateTime, Null as Tesxt from EstimateDocument " +
+                const string query = "select ID, EstimateID, Name, Type, Description, UploadDateTime, Null as Text from EstimateDocument " +
                              "WHERE EstimateID = @EstimateID";
 
                 var estimateDocuments = conn.Query<EstimateDocument>(query,

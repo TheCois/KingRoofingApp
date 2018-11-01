@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using KRF.Core.Entities.AccessControl;
-using KRF.Core.Entities.MISC;
 using KRF.Core.Entities.Employee;
 using KRF.Core.DTO.Employee;
 

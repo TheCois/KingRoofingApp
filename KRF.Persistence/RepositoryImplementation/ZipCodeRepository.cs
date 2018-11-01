@@ -1,13 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using KRF.Core.FunctionalContracts;
+﻿using KRF.Core.FunctionalContracts;
 using KRF.Core.Repository.MISC;
-using KRF.Persistence.FunctionalContractImplementation;
-using KRF.Core.Entities.Actors;
-using StructureMap;
 using KRF.Core.Entities.MISC;
 
 namespace KRF.Persistence.RepositoryImplementation

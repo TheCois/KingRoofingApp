@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using KRF.Core.Entities.AccessControl;
 using KRF.Core.Entities.Customer;
 using KRF.Core.DTO.Job;
 using System;

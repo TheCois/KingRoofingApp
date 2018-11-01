@@ -1,9 +1,6 @@
 ﻿using KRF.Core.Entities.Sales;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using KRF.Core.DTO.Sales;
 
 namespace KRF.Core.FunctionalContracts

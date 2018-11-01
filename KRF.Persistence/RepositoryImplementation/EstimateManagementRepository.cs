@@ -1,14 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using KRF.Core.FunctionalContracts;
 using KRF.Core.Repository;
-using KRF.Core.Entities.Product;
-using StructureMap;
-using KRF.Core.Entities.ValueList;
-using KRF.Core.DTO.Product;
 using KRF.Core.Entities.Sales;
 using KRF.Core.DTO.Sales;
 

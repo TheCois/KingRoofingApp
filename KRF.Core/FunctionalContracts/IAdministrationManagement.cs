@@ -1,7 +1,4 @@
-﻿using KRF.Core.DTO.Master;
-using KRF.Core.Entities.Master;
-using KRF.Core.Entities.MISC;
-using KRF.Core.Entities.Sales;
+﻿using KRF.Core.Entities.MISC;
 using KRF.Core.Entities.ValueList;
 using System.Collections.Generic;
 

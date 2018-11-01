@@ -1,10 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using KRF.Core.Entities.Actors;
-using KRF.Core.Entities.Product;
 
 namespace KRF.Core.Entities.Sales
 {

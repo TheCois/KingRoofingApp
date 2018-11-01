@@ -15,7 +15,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
             var dbConnection = new DataAccessFactory();             using (var conn = dbConnection.CreateConnection()) 
             {
                 conn.Open();
-                const string query = "SELECT [City], [State] FROM ZipCode WHERE [ZipCode] = @zipCodeToFind";
+                const string query = "SELECT City, State FROM ZipCode WHERE ZipCode = @zipCodeToFind";
                 var objZipCode = conn.Query(query, new { zipCodeToFind = zipCode }).FirstOrDefault();
                 result = new CityAndState
                 {
@@ -36,7 +36,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
             var dbConnection = new DataAccessFactory();             using (var conn = dbConnection.CreateConnection()) 
             {
                 conn.Open();
-                const string query = "SELECT [Id] FROM City WHERE [Description] = @cityNameParam";
+                const string query = "SELECT Id FROM City WHERE Description = @cityNameParam";
                 var objCity = conn.Query(query, new { cityNameParam = cityName }).FirstOrDefault();
                 id = (objCity != null) ? objCity.Id : 0;
             }

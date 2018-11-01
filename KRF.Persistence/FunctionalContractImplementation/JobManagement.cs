@@ -8,11 +8,8 @@ using KRF.Core.Entities.Master;
 using KRF.Core.Entities.ValueList;
 using KRF.Core.FunctionalContracts;
 using KRF.Core.Repository;
-using StructureMap;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
-using System.Data.SqlClient;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -37,7 +34,6 @@ namespace KRF.Persistence.FunctionalContractImplementation
                 var job = conn.Get<Job>(jobId);
                 IList<Job> p = new List<Job>();
                 p.Add(job);
-
 
                 IList<Core.Entities.Sales.Lead> leads = conn.GetList<Core.Entities.Sales.Lead>().ToList();
                 var customerAddress = conn.GetList<KRF.Core.Entities.Sales.CustomerAddress>().ToList();

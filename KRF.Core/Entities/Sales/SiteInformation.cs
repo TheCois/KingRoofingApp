@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using KRF.Core.Entities.MISC;
+﻿using KRF.Core.Entities.MISC;
 using KRF.Core.Entities.ValueList;
 
 namespace KRF.Core.Entities.Sales

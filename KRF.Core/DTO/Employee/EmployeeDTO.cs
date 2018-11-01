@@ -1,6 +1,4 @@
-﻿using KRF.Core.Entities.AccessControl;
-using KRF.Core.Entities.Sales;
-using KRF.Core.Entities.ValueList;
+﻿using KRF.Core.Entities.ValueList;
 using System.Collections.Generic;
 namespace KRF.Core.DTO.Employee
 {
