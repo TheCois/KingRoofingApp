@@ -12,17 +12,19 @@ namespace KRF.Persistence.FunctionalContractImplementation
         public CityAndState GetCityAndState(string zipCode)
         {
             CityAndState result;
-            var dbConnection = new DataAccessFactory();             using (var conn = dbConnection.CreateConnection()) 
+            var dbConnection = new DataAccessFactory();
+            using (var conn = dbConnection.CreateConnection())
             {
                 conn.Open();
                 const string query = "SELECT City, State FROM ZipCode WHERE ZipCode = @zipCodeToFind";
-                var objZipCode = conn.Query(query, new { zipCodeToFind = zipCode }).FirstOrDefault();
+                var objZipCode = conn.Query(query, new {zipCodeToFind = zipCode}).FirstOrDefault();
                 result = new CityAndState
                 {
-                    CityId = GetCityId((objZipCode != null) ? objZipCode.City : null),
+                    CityId = GetCityId(objZipCode != null ? objZipCode.City : null),
                     StateName = (objZipCode != null) ? objZipCode.State : null
                 };
             }
+
             return result;
         }
 
@@ -33,17 +35,18 @@ namespace KRF.Persistence.FunctionalContractImplementation
             if (cityName == null)
                 return id;
 
-            var dbConnection = new DataAccessFactory();             using (var conn = dbConnection.CreateConnection()) 
+            var dbConnection = new DataAccessFactory();
+            using (var conn = dbConnection.CreateConnection())
             {
                 conn.Open();
                 const string query = "SELECT Id FROM City WHERE Description = @cityNameParam";
-                var objCity = conn.Query(query, new { cityNameParam = cityName }).FirstOrDefault();
+                var objCity = conn.Query(query, new {cityNameParam = cityName}).FirstOrDefault();
                 id = (objCity != null) ? objCity.Id : 0;
             }
 
             return id;
         }
-        
+
         #endregion
     }
 }

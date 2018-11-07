@@ -6,14 +6,14 @@ namespace KRF.Persistence.RepositoryImplementation
 {
     public class ZipCodeRepository:IZipCodeRepository
     {
-        private readonly IZipCode _zipCode;
+        private readonly IZipCode zipCode_;
 
         /// <summary>
         /// Constructor
         /// </summary>
         public ZipCodeRepository()
         {
-            _zipCode = ObjectFactory.GetInstance<IZipCode>();
+            zipCode_ = ObjectFactory.GetInstance<IZipCode>();
         }
 
         /// <summary>
@@ -23,7 +23,7 @@ namespace KRF.Persistence.RepositoryImplementation
         /// <returns></returns>
         public CityAndState GetCityAndState(string zipCode)
         {
-            return _zipCode.GetCityAndState(zipCode);
+            return zipCode_.GetCityAndState(zipCode);
         }
     }
 }

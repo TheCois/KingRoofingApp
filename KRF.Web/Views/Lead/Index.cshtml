@@ -861,7 +861,7 @@
                 type: "GET",
                 dataType: "json",
                 data: { zipCode: currentZipCode },
-                success: function (obj) {
+                success: function(obj) {
                     var cityId = obj['city'];
                     if (cityId != undefined && cityId != null)
                         $("#" + addressType + "-city-id").val(cityId);
@@ -881,22 +881,38 @@
             });
         }
 
-        $("#bill-zipcode").on("input propertychange paste", function () {
-            getCityAndState("bill");
-        });
+        $("#bill-zipcode").on("input propertychange paste",
+            function() {
+                getCityAndState("bill");
+            });
 
-        $("#job-zipcode").on("input propertychange paste", function () {
-            getCityAndState("job");
-        });
+        $("#job-zipcode").on("input propertychange paste",
+            function() {
+                getCityAndState("job");
+            });
 
-        $("#btn-bill-address").click(function () {
-            var url = 'http://maps.google.com/maps?daddr=' + $("#bill-address1").val() + "+" + $("#bill-address2").val() + "+" + $("#bill-zipcode").val() + "+" + $("#bill-city").val();
+        $("#btn-bill-address").click(function() {
+            var url = 'http://maps.google.com/maps?daddr=' +
+                $("#bill-address1").val() +
+                "+" +
+                $("#bill-address2").val() +
+                "+" +
+                $("#bill-zipcode").val() +
+                "+" +
+                $("#bill-city").val();
             var redirectWindow = window.open(url, '_blank');
             redirectWindow.location;
         });
 
-        $("#btn-job-address").click(function () {
-            var url = 'http://maps.google.com/maps?daddr=' + $("#job-address1").val() + "+" + $("#job-address2").val() + "+" + $("#job-zipcode").val() + "+" + $("#job-city").val();
+        $("#btn-job-address").click(function() {
+            var url = 'http://maps.google.com/maps?daddr=' +
+                $("#job-address1").val() +
+                "+" +
+                $("#job-address2").val() +
+                "+" +
+                $("#job-zipcode").val() +
+                "+" +
+                $("#job-city").val();
             var redirectWindow = window.open(url, '_blank');
             redirectWindow.location;
         });
@@ -908,7 +924,6 @@
         $("#fax").mask("(999) 999-9999");
 
         $("#office").mask("(999) 999-9999? x99999");
-
 
 
         function createLeadAddrTable(leadAddressTable) {
@@ -932,6 +947,7 @@
 
         function createLeadEstimatesTable(leadID) {
             $('#grid-lead-estimates').dataTable({
+                "retrieve": true,
                 "order": [[1, "desc"]],
                 "iDisplayLength": 10,
                 "scrollY": "360px",
@@ -951,12 +967,13 @@
             });
         }
 
-
-        $("#grid-lead-estimates").on("click", ".edit-estimate", function () {
-            var id = $(this).attr("data-val");
-            openModal();
-            $.ajax({
-                url: '@Url.Action("Estimate", "Estimate")',
+        $("#grid-lead-estimates").on("click",
+            ".edit-estimate",
+            function() {
+                var id = $(this).attr("data-val");
+                openModal();
+                $.ajax({
+                    url: '@Url.Action("Estimate", "Estimate")',
                 type: 'POST',
                 data: { id: id },
                 success: function (data) {

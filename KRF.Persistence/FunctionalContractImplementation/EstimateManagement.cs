@@ -6,7 +6,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Transactions;
-using System.Xml.Linq;
 using Dapper;
 using DapperExtensions;
 using DocumentFormat.OpenXml.Packaging;
@@ -76,7 +75,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
                     {
                         foreach (var c in estimateItem)
                         {
-                            if (!curEstimateList.Any(p => p.ItemAssemblyID == c.ItemAssemblyID))
+                            if (curEstimateList.All(p => p.ItemAssemblyID != c.ItemAssemblyID))
                             {
                                 var qtyToBeDelete = new List<EstimateItem> {c};
                                 DeleteQuantityInInventory(conn, qtyToBeDelete, estimate.ID);
@@ -99,7 +98,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
                         }
                         foreach (var c1 in curEstimateList)
                         {
-                            if (!estimateItem.Any(p => p.ItemAssemblyID == c1.ItemAssemblyID))
+                            if (estimateItem.All(p => p.ItemAssemblyID != c1.ItemAssemblyID))
                             {
                                 var qtyToBeDelete = new List<EstimateItem> {c1};
                                 AddQuantityInInventory(conn, qtyToBeDelete, estimate.ID);
@@ -138,7 +137,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
                     conn.Open();
                     var estimate = conn.Get<Estimate>(estimateId);
                     var estimateStatus = estimate.Status;
-                    isDeleted = conn.Delete<Estimate>(predicateGroup);
+                    conn.Delete<Estimate>(predicateGroup);
 
                     var predicateGroup1 = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
                     predicateGroup1.Predicates.Add(Predicates.Field<EstimateItem>(s => s.EstimateID, Operator.Eq, estimateId));
@@ -154,10 +153,10 @@ namespace KRF.Persistence.FunctionalContractImplementation
             }
         }
 
-        private void DeleteQuantityInInventory(IDbConnection conn, int assemblyID, decimal qty, int estimateId)
+        private void DeleteQuantityInInventory(IDbConnection conn, int assemblyId, decimal qty, int estimateId)
         {
             var predicateGroupInv = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
-            predicateGroupInv.Predicates.Add(Predicates.Field<AssemblyItem>(s => s.AssemblyId, Operator.Eq, assemblyID));
+            predicateGroupInv.Predicates.Add(Predicates.Field<AssemblyItem>(s => s.AssemblyId, Operator.Eq, assemblyId));
             var assemblyItems = conn.GetList<AssemblyItem>(predicateGroupInv).ToList();
             foreach (var assemblyItem in assemblyItems)
             {
@@ -173,10 +172,10 @@ namespace KRF.Persistence.FunctionalContractImplementation
                 }
             }
         }
-        private void AddQuantityInInventory(IDbConnection conn, int assemblyID, decimal qty, int estimateId)
+        private void AddQuantityInInventory(IDbConnection conn, int assemblyId, decimal qty, int estimateId)
         {
             var predicateGroupInv = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
-            predicateGroupInv.Predicates.Add(Predicates.Field<AssemblyItem>(s => s.AssemblyId, Operator.Eq, assemblyID));
+            predicateGroupInv.Predicates.Add(Predicates.Field<AssemblyItem>(s => s.AssemblyId, Operator.Eq, assemblyId));
             var assemblyItems = conn.GetList<AssemblyItem>(predicateGroupInv).ToList();
             foreach (var assemblyItem in assemblyItems)
             {
@@ -278,8 +277,6 @@ namespace KRF.Persistence.FunctionalContractImplementation
                 var predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
                 predicateGroup.Predicates.Add(Predicates.Field<EstimateItem>(s => s.EstimateID, Operator.Eq, estimateId));
 
-                conn.Open();
-
                 var estimate = conn.Get<Estimate>(estimateId);
 
                 estimateDto.Estimates = new List<Estimate> {estimate};
@@ -335,7 +332,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
             }
         }
 
-        public bool DeleteEstimateDocument(int estimateDocumentID)
+        public bool DeleteEstimateDocument(int estimateDocumentId)
         {
             using (var transactionScope = new TransactionScope())
             {
@@ -345,7 +342,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
                 {
                     conn.Open();
                     var predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
-                    predicateGroup.Predicates.Add(Predicates.Field<EstimateDocument>(s => s.ID, Operator.Eq, estimateDocumentID));
+                    predicateGroup.Predicates.Add(Predicates.Field<EstimateDocument>(s => s.ID, Operator.Eq, estimateDocumentId));
 
                     conn.Open();
                     isDeleted = conn.Delete<EstimateDocument>(predicateGroup);
@@ -356,18 +353,18 @@ namespace KRF.Persistence.FunctionalContractImplementation
             }
         }
 
-        public EstimateDocument GetEstimateDocument(int estimateDocumentID)
+        public EstimateDocument GetEstimateDocument(int estimateDocumentId)
         {
             var dbConnection = new DataAccessFactory();
             using (var conn = dbConnection.CreateConnection())
             {
                 conn.Open();
-                var estimateDocument = conn.Get<EstimateDocument>(estimateDocumentID);
+                var estimateDocument = conn.Get<EstimateDocument>(estimateDocumentId);
                 return estimateDocument;
             }
         }
 
-        public EstimateDocument GetEstimateDocumentByType(int type)
+        public EstimateDocument GetEstimateDocumentByType(string type)
         {
             var dbConnection = new DataAccessFactory();
             using (var conn = dbConnection.CreateConnection())
@@ -381,7 +378,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
             }
         }
 
-        public IList<EstimateDocument> GetEstimateDocuments(int estimateID)
+        public IList<EstimateDocument> GetEstimateDocuments(int estimateId)
         {
             var dbConnection = new DataAccessFactory();
             using (var conn = dbConnection.CreateConnection())
@@ -391,7 +388,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
                              "WHERE EstimateID = @EstimateID";
 
                 var estimateDocuments = conn.Query<EstimateDocument>(query,
-                       new { EstimateID = estimateID }).ToList();
+                       new { EstimateID = estimateId }).ToList();
                 return estimateDocuments;
             }
         }
@@ -460,26 +457,26 @@ namespace KRF.Persistence.FunctionalContractImplementation
             return sb.ToString().TrimEnd();
         }
 
-        public string ConvertNumbertoWords(int number)
+        public string ConvertNumberToWords(int number)
         {
             if (number == 0)
                 return "ZERO";
             if (number < 0)
-                return "minus " + ConvertNumbertoWords(Math.Abs(number));
+                return "minus " + ConvertNumberToWords(Math.Abs(number));
             var words = "";
             if ((number / 1000000) > 0)
             {
-                words += ConvertNumbertoWords(number / 1000000) + " MILLION ";
+                words += ConvertNumberToWords(number / 1000000) + " MILLION ";
                 number %= 1000000;
             }
             if ((number / 1000) > 0)
             {
-                words += ConvertNumbertoWords(number / 1000) + " THOUSAND ";
+                words += ConvertNumberToWords(number / 1000) + " THOUSAND ";
                 number %= 1000;
             }
             if ((number / 100) > 0)
             {
-                words += ConvertNumbertoWords(number / 100) + " HUNDRED ";
+                words += ConvertNumberToWords(number / 100) + " HUNDRED ";
                 number %= 100;
             }
             if (number > 0)
@@ -501,25 +498,25 @@ namespace KRF.Persistence.FunctionalContractImplementation
             return words;
         }
 
-        public byte[] CreateProposalDocument(int estimateID)
+        public byte[] CreateProposalDocument(int estimateId)
         {
             Estimate estimate;
             CustomerAddress customerAddress;
             Lead lead;
             Employee employee;
 
-            IList<City> cities = null;
-            IList<State> states = null;
-            List<Assembly> assemblies = null;
+            IList<City> cities;
+            IList<State> states;
+            List<Assembly> assemblies;
 
             var dbConnection = new DataAccessFactory();
             using (var conn = dbConnection.CreateConnection())
             {
                 conn.Open();
-                estimate = conn.Get<Estimate>(estimateID);
-                var leadID = estimate.LeadID;
+                estimate = conn.Get<Estimate>(estimateId);
+                var leadId = estimate.LeadID;
 
-                lead = conn.Get<Lead>(leadID);
+                lead = conn.Get<Lead>(leadId);
                 customerAddress = conn.Get<CustomerAddress>(estimate.JobAddressID);
                 employee = conn.Get<Employee>(lead.AssignedTo);
 
@@ -541,32 +538,28 @@ namespace KRF.Persistence.FunctionalContractImplementation
                          lookup.Add(s.Id, asm = s);
                      }
                      return asm;
-                 }, new { EstimateID = estimateID }
-                 ).AsQueryable();
+                 }, new { EstimateID = estimateId }
+                 );
 
                 assemblies = lookup.Values.ToList();
             }
 
-            var citiesKV = cities.ToDictionary(k => k.ID);
-            var statesKV = states.ToDictionary(k => k.ID);
+            var citiesKv = cities.ToDictionary(k => k.ID);
+            var statesKv = states.ToDictionary(k => k.ID);
 
-            if (lead == null || customerAddress == null)
+            if (customerAddress == null)
                 return null;
 
-            var document = GetEstimateDocumentByType(1);
+            var document = GetEstimateDocumentByType("pdf");
             var byteArray = document.Text;
 
             using (var mem = new MemoryStream())
             {
-                mem.Write(byteArray, 0, (int)byteArray.Length);
+                mem.Write(byteArray, 0, byteArray.Length);
                 using (var wordDoc =
                     WordprocessingDocument.Open(mem, true))
                 {
-                    XNamespace w =
-                        "http://schemas.openxmlformats.org/wordprocessingml/2006/main";
-
-
-                    IDictionary<String, BookmarkStart> bookmarkMap = new Dictionary<String, BookmarkStart>();
+                    IDictionary<string, BookmarkStart> bookmarkMap = new Dictionary<string, BookmarkStart>();
 
                     foreach (var bookmarkStart in wordDoc.MainDocumentPart.RootElement.Descendants<BookmarkStart>())
                     {
@@ -602,11 +595,14 @@ namespace KRF.Persistence.FunctionalContractImplementation
 
                                 if (bookmarkStart.Name.ToString() == "Address")
                                 {
-                                    var city = citiesKV[lead.BillCity].Description;
-                                    var state = statesKV[lead.BillState].Description;
+                                    var city = citiesKv[lead.BillCity].Description;
+                                    var state = statesKv[lead.BillState].Description;
 
                                     bookmarkText.GetFirstChild<Text>().Text = lead.BillAddress1.Trim() + ' ' +
-                                        (string.IsNullOrEmpty(lead.BillAddress2) ? "" : lead.BillAddress2.Trim() + ", ") + city + ", " + state; ;
+                                                                              (string.IsNullOrEmpty(lead.BillAddress2)
+                                                                                  ? ""
+                                                                                  : lead.BillAddress2.Trim() + ", ") +
+                                                                              city + ", " + state;
                                 }
 
                                 if (bookmarkStart.Name.ToString() == "Email")
@@ -616,8 +612,8 @@ namespace KRF.Persistence.FunctionalContractImplementation
 
                                 if (bookmarkStart.Name.ToString() == "Jobaddress")
                                 {
-                                    var city = citiesKV[customerAddress.City].Description;
-                                    var state = statesKV[customerAddress.State].Description;
+                                    var city = citiesKv[customerAddress.City].Description;
+                                    var state = statesKv[customerAddress.State].Description;
                                     bookmarkText.GetFirstChild<Text>().Text = customerAddress.Address1.Trim() + ',' + (string.IsNullOrEmpty(customerAddress.Address2) ? "" : customerAddress.Address2.Trim() + ", ") + city + ", " + state;
                                 }
 
@@ -648,7 +644,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
 
                                 if (bookmarkStart.Name.ToString() == "Contract")
                                 {
-                                    bookmarkText.GetFirstChild<Text>().Text = "(" + ConvertNumbertoWords(Convert.ToInt32(estimate.ContractPrice)) + ")" + " $ " + estimate.ContractPrice.ToString("N", new CultureInfo("en-US"));
+                                    bookmarkText.GetFirstChild<Text>().Text = "(" + ConvertNumberToWords(Convert.ToInt32(estimate.ContractPrice)) + ")" + " $ " + estimate.ContractPrice.ToString("N", new CultureInfo("en-US"));
                                 }
 
                                 if (bookmarkStart.Name.ToString() == "CurDate")
@@ -662,7 +658,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
 
                 var e = new EstimateDocument
                 {
-                    EstimateID = estimateID,
+                    EstimateID = estimateId,
                     Name = "Proposal.docx",
                     Description = "Proposal",
                     UploadDateTime = DateTime.Now,
