@@ -12,7 +12,7 @@ namespace KRF.Web.Models
         public string NewPassword { get; set; }
 
         [Required]
-        [Compare("UserPassword")]
+        [Compare("NewPassword")]
         public string ConfirmPassword { get; set; }
     }
 

@@ -120,10 +120,15 @@ namespace KRF.Web.Controllers
 
                         var code = KRF.Common.EncryptDecrypt.EncryptString(guid.ToString());
                         var mailSrvc = ObjectFactory.GetInstance<IMailService>();
+                        var relevantEmployee = employeeDto.Employees.FirstOrDefault();
+                        if (relevantEmployee == null)
+                        {
+                            throw new ArgumentException($"No employee corresponds to User ID {user.ID}");
+                        }
                         var resetEmailModel = new ResetPasswordEmailModel
                         {
-                            FirstName = employeeDto.Employees.FirstOrDefault().FirstName,
-                            LastName = employeeDto.Employees.FirstOrDefault().LastName,
+                            FirstName = relevantEmployee.FirstName,
+                            LastName = relevantEmployee.LastName,
                             Email = email
                         };
                         var url = Request.UrlReferrer.ToString().Substring(0, Request.UrlReferrer.ToString().IndexOf(Request.Url.Host) + Request.Url.Host.Length);
@@ -144,12 +149,13 @@ namespace KRF.Web.Controllers
             }
             catch (Exception ex)
             {
+                Console.WriteLine(ex);
                 success = false;
                 msg = "Some error occured. Please try again later.";
             }
             return Json(new
             {
-                success = success,
+                success,
                 message = msg,
             }, JsonRequestBehavior.AllowGet);
         }
@@ -201,7 +207,7 @@ namespace KRF.Web.Controllers
             {
                 msg = "Some error occured. Please try again";
             }
-            return Json(new { result = result, message = msg }, JsonRequestBehavior.AllowGet);
+            return Json(new {result, message = msg }, JsonRequestBehavior.AllowGet);
         }
 
         // TODO Write AccountController.Register
@@ -219,7 +225,7 @@ namespace KRF.Web.Controllers
             {
                 msg = "Some error occured. Please try again";
             }
-            return Json(new { result = result, message = msg }, JsonRequestBehavior.AllowGet);
+            return Json(new {result, message = msg }, JsonRequestBehavior.AllowGet);
         }
 
         // TODO Write AccountController.Manage
@@ -236,7 +242,7 @@ namespace KRF.Web.Controllers
             {
                 msg = "Some error occured. Please try again";
             }
-            return Json(new { result = result, message = msg }, JsonRequestBehavior.AllowGet);
+            return Json(new {result, message = msg }, JsonRequestBehavior.AllowGet);
         }
 
         // TODO Write AccountController.LogOff
@@ -253,7 +259,7 @@ namespace KRF.Web.Controllers
             {
                 msg = "Some error occured. Please try again";
             }
-            return Json(new { result = result, message = msg }, JsonRequestBehavior.AllowGet);
+            return Json(new {result, message = msg }, JsonRequestBehavior.AllowGet);
         }
     }
 }

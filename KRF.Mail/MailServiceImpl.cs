@@ -1,4 +1,6 @@
-﻿using KRF.Core.FunctionalContracts;
+﻿using System;
+using System.Configuration;
+using KRF.Core.FunctionalContracts;
 using RazorEngine;
 using RazorEngine.Configuration;
 using RazorEngine.Templating;
@@ -6,12 +8,16 @@ using System.IO;
 using System.Net.Mail;
 using System.Net.Mime;
 using System.Xml.Linq;
+using KRF.Core;
 
 namespace KRF.Mail
 {
     public class MailServiceImpl : IMailService
     {
+        private readonly SecretsReader sReader_;
+        
         #region Constructor
+
         public MailServiceImpl()
         {
             var config = new FluentTemplateServiceConfiguration(c => c.WithEncoding(Encoding.Raw));
@@ -21,11 +27,14 @@ namespace KRF.Mail
 
             // set the template service to our configured one
             Razor.SetTemplateService(myConfiguredTemplateService);
+            sReader_ = new SecretsReader(ConfigurationManager.AppSettings["ThirdPartySecretsFile"]);
         }
+
         #endregion
 
         // Note: MailTo, MailCC can have multiple comma separated email addresses.
-        public void SendMail<T>(T model, string templateName, string mailTo, string mailCc, string subject, string mailSettingPath, string configSectionName = null)
+        public void SendMail<T>(T model, string templateName, string mailTo, string mailCc, string subject,
+            string mailSettingPath, string configSectionName = null)
         {
             // read settings from config file.
             // using System.Net.Mail create mail object.
@@ -36,9 +45,9 @@ namespace KRF.Mail
 
             //Folder Path + Template name will give the Template File appended by ".cshtml" or ".txt"
             //string templateNameHTML = xmlConfigContents.Element("TemplateFolderPath").Value + "\\" + templateName + ".cshtml";
-            var templateNameHtml = mailSettingPath + "\\" + templateName + ".cshtml";
+            var templateNameHtml = Path.Combine(mailSettingPath, templateName + ".cshtml");
             //string templateNameText = xmlConfigContents.Element("TemplateFolderPath").Value + "\\" + templateName + ".txt";
-            var templateNameText = mailSettingPath + "\\" + templateName + ".txt";
+            var templateNameText = Path.Combine(mailSettingPath, templateName + ".txt");
 
             // If config section not found then use default setting.
             if (string.IsNullOrWhiteSpace(configSectionName) || xmlConfigContents.Element(configSectionName) == null)
@@ -59,9 +68,12 @@ namespace KRF.Mail
             if (mailContentsText != null)
                 mailContentsText = DoTokenReplacement(model, mailContentsText);
 
+            if (xmlConfigSection == null)
+            {
+                throw new ArgumentException("The Configuration Section desired is not present in the Mail settings XML file");
+            }
             //Create Mail Object
-            var objMail = new MailMessage();
-            objMail.From = new MailAddress(xmlConfigSection.Element("MailFrom").Value);
+            var objMail = new MailMessage {From = new MailAddress(xmlConfigSection.Element("MailFrom").Value)};
 
             // Add addresses which are passed as parameters.
             if (!string.IsNullOrWhiteSpace(mailTo))
@@ -91,10 +103,12 @@ namespace KRF.Mail
             if (mailContentsText != null)
             {
                 //Added Alternate view for Plain Text mail body
-                var objHtmlAltView = AlternateView.CreateAlternateViewFromString(mailContentsHtml, null, MediaTypeNames.Text.Html);
+                var objHtmlAltView =
+                    AlternateView.CreateAlternateViewFromString(mailContentsHtml, null, MediaTypeNames.Text.Html);
                 objMail.AlternateViews.Add(objHtmlAltView);
 
-                var objPlainAltView = AlternateView.CreateAlternateViewFromString(mailContentsText, null, MediaTypeNames.Text.Plain);
+                var objPlainAltView =
+                    AlternateView.CreateAlternateViewFromString(mailContentsText, null, MediaTypeNames.Text.Plain);
                 objMail.AlternateViews.Add(objPlainAltView);
             }
             else
@@ -103,20 +117,22 @@ namespace KRF.Mail
                 objMail.IsBodyHtml = true;
             }
 
-            var client = new SmtpClient(xmlConfigSection.Element("host").Value) {UseDefaultCredentials = false};
+            var client = new SmtpClient(xmlConfigSection.Element("host").Value
+                , int.Parse(xmlConfigSection.Element("port").Value)) {UseDefaultCredentials = false, EnableSsl = true};
 
-            var loginInfo = new System.Net.NetworkCredential(xmlConfigSection.Element("userName").Value, xmlConfigSection.Element("password").Value);
+            var loginInfo = new System.Net.NetworkCredential(xmlConfigSection.Element("userName").Value,
+                sReader_["SmtpPassword"]);
             client.Credentials = loginInfo;
             client.Send(objMail);
         }
 
         #region Private Methods
+
         private XElement GetConfigFileContents(string mailSettingPath)
         {
             //string filePath = new Uri(Assembly.GetExecutingAssembly().CodeBase).LocalPath;
             //filePath = Path.GetDirectoryName(filePath);
-            var filePath = mailSettingPath;
-            filePath += filePath.EndsWith(@"\") ? "MailSettings.xml" : @"\MailSettings.xml";
+            var filePath = Path.Combine(mailSettingPath, "MailSettings.xml");
 
             return XElement.Parse(ReadFile(filePath));
         }
@@ -134,6 +150,7 @@ namespace KRF.Mail
         {
             return Razor.Parse(templateContents, model);
         }
+
         #endregion
     }
 }

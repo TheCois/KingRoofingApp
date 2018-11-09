@@ -2,12 +2,12 @@
 <MailSettings>
   <TemplateFolderPath>..\..\..\..\MailTemplates</TemplateFolderPath>
   <DefaultMailSettings>
-    <host>mail.myprogrammer.com</host>
-    <userName>my.programmer</userName>
-    <password>netprojects123</password>
+    <host>email-smtp.eu-west-1.amazonaws.com</host>
+    <userName>AKIAJTKLVCRWC6S2KSBQ</userName>
+    <password>This Value Comes From Secrets File</password>
     <networkenableSsl>false</networkenableSsl>
-    <port>25</port>
-    <MailFrom>my.programmer@myprogrammer.com</MailFrom>
+    <port>587</port>
+    <MailFrom>do-not-reply@thecois.net</MailFrom>
     <MailTo></MailTo>
     <MailCC></MailCC>
     <MailBCC></MailBCC>

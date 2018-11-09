@@ -52,7 +52,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
                 using (var conn = dbConnection.CreateConnection())
                 {
                     conn.Open();
-                    const string query = "UPDATE [User] set ResetCode = @Code where Email = @Email";
+                    const string query = "UPDATE User set ResetCode = @Code where Email = @Email";
                     conn.Execute(query, new { Code = code, Email = email });
                     return true;
                 }
