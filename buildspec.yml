@@ -28,8 +28,8 @@ phases:
     - # echo Copying Local Data Service binaries to Deployment folder
     - cp ./KRF.Web/favicon.ico ./DeployFolders
     - cp ./KRF.Web/Global.asax ./DeployFolders
-    - cp ./KRF.Web/bin/Release/*.dll ./DeployFolders/bin
-    - cp ./KRF.Web/bin/Release/*.exe ./DeployFolders/bin
+    - cp ./KRF.Web/bin/*.dll ./DeployFolders/bin
+    - cp ./KRF.Web/bin/*.exe ./DeployFolders/bin
     - cp ./KRF.Web/Web.Release.config ./DeployFolders/web.config
     - cp -r ./KRF.Web/Content ./DeployFolders
     - cp -r ./KRF.Web/Images ./DeployFolders
