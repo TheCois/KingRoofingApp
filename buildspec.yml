@@ -20,7 +20,6 @@ phases:
     - mkdir ./DeployFolders/bin
     - mkdir ./DeployFolders/Content
     - mkdir ./DeployFolders/Images
-    - mkdir ./DeployFolders/Content
     - mkdir ./DeployFolders/MailTemplates
     - mkdir ./DeployFolders/Scripts
     - mkdir ./DeployFolders/Views
