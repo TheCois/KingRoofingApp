@@ -102,6 +102,14 @@ namespace KRF.Web.Controllers
             }
             else
             {
+                // TODO this is a terrible hack to fix a bad situation.
+                if (lead.LeadStage < 1)
+                {
+                    var oldLead = leadRepo.GetLead(ID);
+                    lead.LeadStage = oldLead.Leads.First().LeadStage;
+                }
+
+                // ----------------------------------------------------
                 message = "Record successfully updated!";
                 leadRepo.Edit(lead);
             }
