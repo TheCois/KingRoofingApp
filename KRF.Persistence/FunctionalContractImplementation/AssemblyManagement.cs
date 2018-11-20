@@ -120,7 +120,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
                         decimal totalLabourCost = 0;
                         foreach (var i in assembly.assemblyItem)
                         {
-                            Item item = conn.Get<Item>(i.ItemId);
+                            var item = conn.Get<Item>(i.ItemId);
                             if (item.ItemTypeId == (int) Core.Enums.ItemType.Labor)
                             {
                                 totalLabourCost += Convert.ToDecimal(i.RetailCost);
@@ -170,7 +170,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <returns>True - if successful deletion; False - If failure.</returns>
         public bool Delete(int assemblyId)
         {
-            bool isDeleted = false;
+            var isDeleted = false;
             using (var transactionScope = new TransactionScope())
             {
                 var dbConnection = new DataAccessFactory();

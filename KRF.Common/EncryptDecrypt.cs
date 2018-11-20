@@ -13,8 +13,8 @@ namespace KRF.Common
         /// <returns></returns>
         public static string EncryptString(string password)
         {
-            string strmsg = string.Empty;
-            byte[] encode = new byte[password.Length];
+            var strmsg = string.Empty;
+            var encode = new byte[password.Length];
             encode = Encoding.UTF8.GetBytes(password);
             strmsg = Convert.ToBase64String(encode);
             return strmsg;
@@ -26,12 +26,12 @@ namespace KRF.Common
         /// <returns></returns>
         public static string DecryptString(string encryptpwd)
         {
-            string decryptpwd = string.Empty;
-            UTF8Encoding encodepwd = new UTF8Encoding();
-            Decoder Decode = encodepwd.GetDecoder();
-            byte[] todecode_byte = Convert.FromBase64String(encryptpwd);
-            int charCount = Decode.GetCharCount(todecode_byte, 0, todecode_byte.Length);
-            char[] decoded_char = new char[charCount];
+            var decryptpwd = string.Empty;
+            var encodepwd = new UTF8Encoding();
+            var Decode = encodepwd.GetDecoder();
+            var todecode_byte = Convert.FromBase64String(encryptpwd);
+            var charCount = Decode.GetCharCount(todecode_byte, 0, todecode_byte.Length);
+            var decoded_char = new char[charCount];
             Decode.GetChars(todecode_byte, 0, todecode_byte.Length, decoded_char, 0);
             decryptpwd = new String(decoded_char);
             return decryptpwd;
@@ -46,7 +46,7 @@ namespace KRF.Common
             }
 
             // First, remove everything except of numbers
-            Regex regexObj = new Regex(@"[^\d]");
+            var regexObj = new Regex(@"[^\d]");
             phoneNum = regexObj.Replace(phoneNum, "");
 
             // Second, format numbers to phone string 

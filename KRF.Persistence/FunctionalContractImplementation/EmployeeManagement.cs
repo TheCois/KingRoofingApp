@@ -38,7 +38,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
                         predicateGroup.Predicates.Add(Predicates.Field<User>(s => s.Email, Operator.Eq, employee.EmailID));
                         IList<User> users = conn.GetList<User>(predicateGroup).ToList();
 
-                        User user = users.Any() ? users[0] : new User();
+                        var user = users.Any() ? users[0] : new User();
                         user.UserName = employee.EmailID.Substring(0, (employee.EmailID.Length > 20 ? 20 : employee.EmailID.Length));
                         user.Email = employee.EmailID;
                         user.Password = employee.Password;
@@ -60,7 +60,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
                     var id = conn.Insert(employee);
                     if (skillItems != null)
                     {
-                        foreach (tbl_EmpSkillDetails skillItem in skillItems)
+                        foreach (var skillItem in skillItems)
                         {
                             skillItem.EmpID = id;
                             conn.Insert(skillItem);
@@ -159,7 +159,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
             var predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
             predicateGroup.Predicates.Add(Predicates.Field<CrewDetail>(s => s.EmpId, Operator.Eq, id));
             var allCrewDetails = conn.GetList<CrewDetail>(predicateGroup).ToList();
-            foreach (CrewDetail crewDetailToBeDelete in allCrewDetails)
+            foreach (var crewDetailToBeDelete in allCrewDetails)
             {
                 if (crewItems.Find(c => c.CrewID == crewDetailToBeDelete.CrewID) == null)
                 {
@@ -246,10 +246,10 @@ namespace KRF.Persistence.FunctionalContractImplementation
                 conn.Open();
                 var predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
                 predicateGroup.Predicates.Add(Predicates.Field<Employee>(s => s.EmpId, Operator.Eq, empId));
-                Employee employee = conn.Get<Employee>(empId);
+                var employee = conn.Get<Employee>(empId);
                 if (employee != null && (employee.UserID ?? 0) > 0)
                 {
-                    User user = conn.Get<User>(employee.UserID);
+                    var user = conn.Get<User>(employee.UserID);
                     employee.Password = Common.EncryptDecrypt.DecryptString(user.Password);
                 }
                 IList<Employee> p = new List<Employee>();

@@ -20,13 +20,13 @@ namespace KRF.Persistence.RepositoryImplementation
 
         public int Create(AssemblyItemDTO assembly)
         {
-           int id = _AssemblyManagement.Create(assembly);
+           var id = _AssemblyManagement.Create(assembly);
            return id;
         }
 
         public Assembly Edit(AssemblyItemDTO assembly)
         {
-            Assembly a = _AssemblyManagement.Edit(assembly);
+            var a = _AssemblyManagement.Edit(assembly);
             return a;
         }
 

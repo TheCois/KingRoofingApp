@@ -28,8 +28,8 @@ namespace KRF.Web.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult GetRoles()
         {
-            IAdministrationRepository administrationRepo = ObjectFactory.GetInstance<IAdministrationRepository>();
-            List<MasterRecords> roles = administrationRepo.GetMasterRecordsByType((int)AdministrationTypes.Role);
+            var administrationRepo = ObjectFactory.GetInstance<IAdministrationRepository>();
+            var roles = administrationRepo.GetMasterRecordsByType((int)AdministrationTypes.Role);
             return Json(new
             {
                 roles = roles.Where(p => p.Description != ADMINMANAGER_ROLENAME && p.Active == true).OrderBy(p=>p.Description) //"Admin Manager" is fixed name which cannot be changed through application
@@ -43,8 +43,8 @@ namespace KRF.Web.Controllers
         /// <returns></returns>
         public ActionResult GetRolePermissions(jQueryDataTableParamModel param, int roleID)
         {
-            IRolePermissionRepository rolePermissionRepo = ObjectFactory.GetInstance<IRolePermissionRepository>();
-            RolePermissionDTO rolePermissionDTO = new RolePermissionDTO();
+            var rolePermissionRepo = ObjectFactory.GetInstance<IRolePermissionRepository>();
+            var rolePermissionDTO = new RolePermissionDTO();
             rolePermissionDTO = rolePermissionRepo.GetRolePermissionDetail(roleID);
 
             return Json(new
@@ -61,17 +61,17 @@ namespace KRF.Web.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult SaveRolePermissions(int roleID, string permissions)
         {
-            IRolePermissionRepository rolePermissionRepo = ObjectFactory.GetInstance<IRolePermissionRepository>();
-            string message = string.Empty;
-            bool success = false;
-            List<RolePermission> rolePerms = new List<RolePermission>();
-            string[] pagePermissions = permissions.Replace("[", "").Replace("]", "").Replace("\"", "").Split(',');
-            foreach(string pagePermission in pagePermissions)
+            var rolePermissionRepo = ObjectFactory.GetInstance<IRolePermissionRepository>();
+            var message = string.Empty;
+            var success = false;
+            var rolePerms = new List<RolePermission>();
+            var pagePermissions = permissions.Replace("[", "").Replace("]", "").Replace("\"", "").Split(',');
+            foreach(var pagePermission in pagePermissions)
             {
                 if (string.IsNullOrEmpty(pagePermission))
                     continue;
-                string[] perms = pagePermission.Split('_');
-                RolePermission rolePerm = new RolePermission();
+                var perms = pagePermission.Split('_');
+                var rolePerm = new RolePermission();
                 rolePerm.RoleID = roleID;
                 rolePerm.PageID = int.Parse(perms[0]);
                 rolePerm.PermissionID = int.Parse(perms[1]);

@@ -16,10 +16,10 @@ namespace KRF.Web.Common
         /// <returns></returns>
         public static bool IsUserAuthorizeToPerformThisAction(int roleID, int pageID, int permissionID)
         {
-            bool allow = true;
+            var allow = true;
             if (SessionManager.RoleId != (int)Core.Enums.RoleType.AdminManager)
             {
-                IRolePermissionRepository rolePermissionRepo = ObjectFactory.GetInstance<IRolePermissionRepository>();
+                var rolePermissionRepo = ObjectFactory.GetInstance<IRolePermissionRepository>();
                 var rolePermissions = rolePermissionRepo.GetRolePermission(SessionManager.RoleId, pageID);
                 if (!rolePermissions.Any(r => r.PermissionID == permissionID))
                 {
@@ -36,10 +36,10 @@ namespace KRF.Web.Common
         /// <returns></returns>
         public static bool IsUserHasBothViewAndEditPermission(int roleID, int pageID)
         {
-            bool allow = true;
+            var allow = true;
             if (SessionManager.RoleId != (int)Core.Enums.RoleType.AdminManager)
             {
-                IRolePermissionRepository rolePermissionRepo = ObjectFactory.GetInstance<IRolePermissionRepository>();
+                var rolePermissionRepo = ObjectFactory.GetInstance<IRolePermissionRepository>();
                 var rolePermissions = rolePermissionRepo.GetRolePermission(SessionManager.RoleId, pageID);
                 if (!rolePermissions.Any())
                 {
@@ -59,7 +59,7 @@ namespace KRF.Web.Common
             }
 
             // First, remove everything except of numbers
-            Regex regexObj = new Regex(@"[^\d]");
+            var regexObj = new Regex(@"[^\d]");
             phoneNum = regexObj.Replace(phoneNum, "");
 
             // Second, format numbers to phone string 

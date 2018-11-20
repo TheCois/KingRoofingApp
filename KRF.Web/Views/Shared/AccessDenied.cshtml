@@ -1,6 +1,6 @@
 ﻿@{
     ViewBag.Title = "Access Denied";
-    string title = Convert.ToString(ViewData["Title"]);
+    var title = Convert.ToString(ViewData["Title"]);
     Layout = "~/Views/Shared/_LayoutPage2.cshtml";
 }
 @Html.AntiForgeryToken()

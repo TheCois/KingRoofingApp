@@ -16,7 +16,7 @@ namespace KRF.Web.Controllers
 
         public ActionResult Index()
         {
-            IItemManagementRepository itemRepository = ObjectFactory.GetInstance<IItemManagementRepository>();
+            var itemRepository = ObjectFactory.GetInstance<IItemManagementRepository>();
             var product = itemRepository.GetProduct();
             TempData["Product"] = product;
             return View();
@@ -24,7 +24,7 @@ namespace KRF.Web.Controllers
 
         public ActionResult GetInventory(jQueryDataTableParamModel param)
         {
-            IItemManagementRepository itemRepository = ObjectFactory.GetInstance<IItemManagementRepository>();
+            var itemRepository = ObjectFactory.GetInstance<IItemManagementRepository>();
             var product = itemRepository.GetInventory();
             var categories = product.Categories;
             var manufacturers = product.Manufacturers;
@@ -66,7 +66,7 @@ namespace KRF.Web.Controllers
         [HttpPost]
         public ActionResult GetInventoryHistory(int ID)
         {
-            IItemManagementRepository itemRepository = ObjectFactory.GetInstance<IItemManagementRepository>();
+            var itemRepository = ObjectFactory.GetInstance<IItemManagementRepository>();
             var product = itemRepository.GetInventoryAudit(ID);
             var items = product.Items;
             var inventories = product.InventoryAudits;
@@ -87,11 +87,11 @@ namespace KRF.Web.Controllers
         [HttpPost]
         public JsonResult UpdateInventory(InventoryData inventoryData)
         {
-            bool success = false;
-            string message = string.Empty;
+            var success = false;
+            var message = string.Empty;
 
-            List<ProductNS.Inventory> inventoryList = ModelData.ToInventoryList(inventoryData);
-            IItemManagementRepository itemRepository = ObjectFactory.GetInstance<IItemManagementRepository>();
+            var inventoryList = ModelData.ToInventoryList(inventoryData);
+            var itemRepository = ObjectFactory.GetInstance<IItemManagementRepository>();
             success = itemRepository.UpdateInventory(inventoryList);
             if(success)
             {
@@ -107,11 +107,11 @@ namespace KRF.Web.Controllers
         [HttpPost]
         public JsonResult DeleteInventory(InventoryData inventoryData)
         {
-            bool success = false;
-            string message = string.Empty;
+            var success = false;
+            var message = string.Empty;
 
-            List<ProductNS.Inventory> inventoryList = ModelData.ToInventoryList(inventoryData);
-            IItemManagementRepository itemRepository = ObjectFactory.GetInstance<IItemManagementRepository>();
+            var inventoryList = ModelData.ToInventoryList(inventoryData);
+            var itemRepository = ObjectFactory.GetInstance<IItemManagementRepository>();
             success = itemRepository.DeleteInventory(inventoryList);
             if (success)
             {

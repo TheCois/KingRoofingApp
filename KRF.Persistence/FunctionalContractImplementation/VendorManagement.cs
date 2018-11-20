@@ -67,7 +67,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
             using (var conn = dbConnection.CreateConnection())
             {
                 conn.Open();
-                Vendor vendor = conn.Get<Vendor>(vendorId);
+                var vendor = conn.Get<Vendor>(vendorId);
                 vendor.Active = active;
                 vendor.DateUpdated = DateTime.Now;
                 var isUpdated = conn.Update(vendor);
@@ -86,7 +86,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
             using (var conn = dbConnection.CreateConnection())
             {
                 conn.Open();
-                Vendor vendor = conn.Get<Vendor>(vendorId);
+                var vendor = conn.Get<Vendor>(vendorId);
                 IList<Vendor> p = new List<Vendor>();
                 p.Add(vendor);
                 return new VendorDTO

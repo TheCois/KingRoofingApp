@@ -137,7 +137,7 @@ namespace KRF.Web.Models
         public static string GetCategoryName(IList<ValueListNS.Category> categories, int id)
         {
 
-            string name = (from i in categories where i.Id == id select i.Name).First();
+            var name = (from i in categories where i.Id == id select i.Name).First();
             return name;
 
         }
@@ -190,9 +190,9 @@ namespace KRF.Web.Models
 
         public static IList<Division> Divisions()
         {
-            Division m = new Division { ID = "1", Description = "Division 1" };
-            Division m1 = new Division { ID = "2", Description = "Division 2" };
-            Division m2 = new Division { ID = "3", Description = "Division 3" };
+            var m = new Division { ID = "1", Description = "Division 1" };
+            var m1 = new Division { ID = "2", Description = "Division 2" };
+            var m2 = new Division { ID = "3", Description = "Division 3" };
 
             IList<Division> divisions = new List<Division>();
             divisions.Add(m);
@@ -204,11 +204,11 @@ namespace KRF.Web.Models
 
         public static ProductNS.Item PopulateEntityItem(Item item)
         {
-            decimal price = decimal.Parse(string.IsNullOrEmpty(item.Price) ? "0" : item.Price);
-            int categoryId = int.Parse(item.CategoryId);
-            int manufacturerId = int.Parse(item.ManufacturerId);
-            int unitOfMeasureId = int.Parse(item.UnitOfMeasureId);
-            ProductNS.Item entityItem = new ProductNS.Item
+            var price = decimal.Parse(string.IsNullOrEmpty(item.Price) ? "0" : item.Price);
+            var categoryId = int.Parse(item.CategoryId);
+            var manufacturerId = int.Parse(item.ManufacturerId);
+            var unitOfMeasureId = int.Parse(item.UnitOfMeasureId);
+            var entityItem = new ProductNS.Item
             {
                 Id = int.Parse(item.Id),
                 ItemTypeId = item.ItemTypeId,
@@ -227,7 +227,7 @@ namespace KRF.Web.Models
 
         public static Item PopulateModelItem(ProductNS.Item item)
         {
-            Item item1 = new Item
+            var item1 = new Item
             {
                 Name = item.Name,
                 ItemTypeId = item.ItemTypeId,
@@ -266,7 +266,7 @@ namespace KRF.Web.Models
                                     RetailCost = i.RetailCost
                                 }).ToList();
 
-            Assembly a = new Assembly
+            var a = new Assembly
             {
                 ID = assemblyDTO.Id.ToString(),
                 Code = assemblyDTO.Code,
@@ -287,8 +287,8 @@ namespace KRF.Web.Models
 
         public static AssemblyItemDTO populateAssemblyEntity(Assembly assembly)
         {
-            int assemblyId = int.Parse(assembly.ID);
-            AssemblyItemDTO assemblyItemDTO = new AssemblyItemDTO();
+            var assemblyId = int.Parse(assembly.ID);
+            var assemblyItemDTO = new AssemblyItemDTO();
 
             assemblyItemDTO.assembly = new ProductNS.Assembly
             {
@@ -353,7 +353,7 @@ namespace KRF.Web.Models
 
         public static List<ProductNS.Inventory> ToInventoryList(InventoryData inventoryData)
         {
-            List<ProductNS.Inventory> inventoryList = new List<ProductNS.Inventory>();
+            var inventoryList = new List<ProductNS.Inventory>();
             if (inventoryData.Inventories != null && inventoryData.Inventories.Any())
             {
                 inventoryList = inventoryData.Inventories.Select(p => new ProductNS.Inventory() { ID = p.ID, Qty = p.Qty }).ToList();

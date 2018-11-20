@@ -47,7 +47,7 @@ namespace KRF.Web.Controllers
         [HttpGet]
         public JsonResult GetCityAndState(string zipCode)
         {
-            IZipCodeRepository repository = ObjectFactory.GetInstance<IZipCodeRepository>();
+            var repository = ObjectFactory.GetInstance<IZipCodeRepository>();
             var cityAndState = repository.GetCityAndState(zipCode);
             return Json(new { city = cityAndState.CityId, state = cityAndState.StateName }, JsonRequestBehavior.AllowGet);
         }

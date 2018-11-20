@@ -17,7 +17,7 @@ namespace KRF.Web.Controllers
 
         public ActionResult Index()
         {
-            ILeadManagementRepository leadRepo = ObjectFactory.GetInstance<ILeadManagementRepository>();
+            var leadRepo = ObjectFactory.GetInstance<ILeadManagementRepository>();
             var customers = leadRepo.GetLeads(GetCustomersPredicate());
             TempData["Customers"] = customers;
             return View();
@@ -25,14 +25,14 @@ namespace KRF.Web.Controllers
 
         public ActionResult GetCustomers(jQueryDataTableParamModel param)
         {
-            ILeadManagementRepository leadRepo = ObjectFactory.GetInstance<ILeadManagementRepository>();
-            IEstimateManagementRepository estimateRepo = ObjectFactory.GetInstance<IEstimateManagementRepository>();
+            var leadRepo = ObjectFactory.GetInstance<ILeadManagementRepository>();
+            var estimateRepo = ObjectFactory.GetInstance<IEstimateManagementRepository>();
 
-            EstimateDTO estimateDTO = (EstimateDTO)TempData["Estimates"];
+            var estimateDTO = (EstimateDTO)TempData["Estimates"];
             if (estimateDTO == null)
                 estimateDTO = estimateRepo.ListAll();
 
-            LeadDTO customerDTO = (LeadDTO)TempData["Customers"];
+            var customerDTO = (LeadDTO)TempData["Customers"];
             if (customerDTO == null)
                 customerDTO = leadRepo.GetLeads(GetCustomersPredicate());
 
@@ -71,7 +71,7 @@ namespace KRF.Web.Controllers
 
         public ActionResult GetCustomer(int id)
         {
-            ILeadManagementRepository leadRepo = ObjectFactory.GetInstance<ILeadManagementRepository>();
+            var leadRepo = ObjectFactory.GetInstance<ILeadManagementRepository>();
             var customertDTO = leadRepo.GetLead(id);
             return Json(new
             {
@@ -90,7 +90,7 @@ namespace KRF.Web.Controllers
         //[ValidateAntiForgeryToken]
         public JsonResult Save(CustomerData customerData)
         {
-            ILeadManagementRepository leadRepo = ObjectFactory.GetInstance<ILeadManagementRepository>();
+            var leadRepo = ObjectFactory.GetInstance<ILeadManagementRepository>();
             var customer = customerData.Lead;
             var customerAddress = customerData.CustomerAddress;
 
@@ -110,7 +110,7 @@ namespace KRF.Web.Controllers
         //[ValidateAntiForgeryToken]
         public JsonResult SaveJobAddress(CustomerData customerData)
         {
-            ILeadManagementRepository leadRepo = ObjectFactory.GetInstance<ILeadManagementRepository>();
+            var leadRepo = ObjectFactory.GetInstance<ILeadManagementRepository>();
             var customer = customerData.Lead;
             var customerAddress = customerData.CustomerAddress;
             if (customerAddress[0].ID == 0)
@@ -137,15 +137,15 @@ namespace KRF.Web.Controllers
 
         public JsonResult DeleteJobAddress(int id)
         {
-            ILeadManagementRepository leadRepo = ObjectFactory.GetInstance<ILeadManagementRepository>();
-            bool isDeleted = leadRepo.DeleteJobAddress(id);
+            var leadRepo = ObjectFactory.GetInstance<ILeadManagementRepository>();
+            var isDeleted = leadRepo.DeleteJobAddress(id);
 
             return Json(new { hasDeleted = isDeleted});
         }
 
         public JsonResult DeleteCustomer(int id)
         {
-            ILeadManagementRepository leadRepo = ObjectFactory.GetInstance<ILeadManagementRepository>();
+            var leadRepo = ObjectFactory.GetInstance<ILeadManagementRepository>();
             leadRepo.Delete(id);
 
             return Json(new { hasDeleted = true });

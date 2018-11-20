@@ -97,10 +97,10 @@ namespace KRF.Persistence.FunctionalContractImplementation
         static DataTable ConvertListToDataTable(List<string[]> list)
         {
             // New table.
-            DataTable table = new DataTable();
+            var table = new DataTable();
 
             // Get max columns.
-            int columns = 0;
+            var columns = 0;
             foreach (var array in list)
             {
                 if (array.Length > columns)
@@ -110,7 +110,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
             }
 
             // Add columns.
-            for (int i = 0; i < columns; i++)
+            for (var i = 0; i < columns; i++)
             {
                 table.Columns.Add();
             }
@@ -189,7 +189,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
                 var predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
                 predicateGroup.Predicates.Add(Predicates.Field<Prospect>(s => s.ID, Operator.Eq, id));
                 conn.Open();
-                Prospect prospect = conn.Get<Prospect>(id);
+                var prospect = conn.Get<Prospect>(id);
                 IList<Prospect> p = new List<Prospect>();
                 p.Add(prospect);
                 return new ProspectDTO { Propects = p }; ;
@@ -220,7 +220,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
         private Lead InsertProspectIntoLead(Prospect prospect)
         {
 
-            Lead lead = new Lead
+            var lead = new Lead
             {
                 FirstName = prospect.FirstName,
                 LastName = prospect.LastName,

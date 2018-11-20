@@ -61,13 +61,13 @@ namespace KRF.Persistence.FunctionalContractImplementation
                     var predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
                     predicateGroup.Predicates.Add(Predicates.Field<RolePermission>(s => s.RoleID, Operator.Eq, roleId));
                     IList<RolePermission> currentRolePermissions = conn.GetList<RolePermission>(predicateGroup).ToList();
-                    foreach (RolePermission rolePermission in currentRolePermissions)
+                    foreach (var rolePermission in currentRolePermissions)
                     {
                         conn.Delete(rolePermission);
                     }
                     if(rolePermissions != null && rolePermissions.Count > 0)
                     {
-                        foreach (RolePermission rolePermission in rolePermissions)
+                        foreach (var rolePermission in rolePermissions)
                         {
                             conn.Insert(rolePermission);
                         }
@@ -89,7 +89,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <returns></returns>
         public List<RolePermission> GetRolePermission(int roleId, int pageId)
         {
-            List<RolePermission> rolePermissions = new List<RolePermission>();
+            var rolePermissions = new List<RolePermission>();
             try
             {
                 var dbConnection = new DataAccessFactory();

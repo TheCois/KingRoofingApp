@@ -50,7 +50,7 @@ namespace KRF.DependencyResolution
         /// </returns>
         public IDependencyScope BeginScope()
         {
-            IContainer child = Container.GetNestedContainer();
+            var child = Container.GetNestedContainer();
             return new StructureMapDependencyResolver(child);
         }
 

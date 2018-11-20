@@ -22,7 +22,7 @@ namespace KRF.Web
             set { HttpContext.Current.Session[USERID] = value; }
             get
             {
-                int userID = 0;
+                var userID = 0;
                 if (HttpContext.Current.Session[USERID] != null)
                 {
                     int.TryParse(HttpContext.Current.Session[USERID].ToString(), out userID);
@@ -38,7 +38,7 @@ namespace KRF.Web
             set { HttpContext.Current.Session[ROLEID] = value; }
             get
             {
-                int roleID = 0;
+                var roleID = 0;
                 if (HttpContext.Current.Session[ROLEID] != null)
                 {
                     int.TryParse(HttpContext.Current.Session[ROLEID].ToString(), out roleID);
@@ -54,7 +54,7 @@ namespace KRF.Web
             set { HttpContext.Current.Session[EMPID] = value; }
             get
             {
-                int empID = 0;
+                var empID = 0;
                 if (HttpContext.Current.Session[EMPID] != null)
                 {
                     int.TryParse(HttpContext.Current.Session[EMPID].ToString(), out empID);

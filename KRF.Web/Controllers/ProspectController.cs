@@ -18,7 +18,7 @@ namespace KRF.Web.Controllers
         {
             return RedirectToAction("Index", "Lead");
 
-            IProspectManagementRepository prospectRepo = ObjectFactory.GetInstance<IProspectManagementRepository>();
+            var prospectRepo = ObjectFactory.GetInstance<IProspectManagementRepository>();
             var prospects = prospectRepo.GetProspects();
             TempData["Prospects"] = prospects;
             return View();
@@ -26,10 +26,10 @@ namespace KRF.Web.Controllers
 
         public ActionResult GetProspects(jQueryDataTableParamModel param)
         {
-            ProspectDTO prospectDTO = (ProspectDTO)TempData["Prospects"];
+            var prospectDTO = (ProspectDTO)TempData["Prospects"];
             if (prospectDTO == null)
             {
-                IProspectManagementRepository prospectRepo = ObjectFactory.GetInstance<IProspectManagementRepository>();
+                var prospectRepo = ObjectFactory.GetInstance<IProspectManagementRepository>();
                 prospectDTO = prospectRepo.GetProspects();
             }
 
@@ -52,7 +52,7 @@ namespace KRF.Web.Controllers
 
         public ActionResult GetProspect(int id)
         {
-            IProspectManagementRepository prospectRepo = ObjectFactory.GetInstance<IProspectManagementRepository>();
+            var prospectRepo = ObjectFactory.GetInstance<IProspectManagementRepository>();
             var prospectDTO = prospectRepo.GetProspect(id);
             return Json(new { prospect = prospectDTO.Propects.First() });
         }
@@ -60,22 +60,22 @@ namespace KRF.Web.Controllers
         [ValidateAntiForgeryToken]
         public JsonResult Save(Prospect prospect)
         {
-            string message = string.Empty;
-            IProspectManagementRepository prospectRepo = ObjectFactory.GetInstance<IProspectManagementRepository>();
+            var message = string.Empty;
+            var prospectRepo = ObjectFactory.GetInstance<IProspectManagementRepository>();
             if (prospect.ID == 0) { return Json(new { id = prospectRepo.Create(prospect), message = "Record successfully inserted!" }); }
             else { return Json(new { id = prospect.ID, prospect = prospectRepo.Edit(prospect), message = "Record successfully updated!" }); }
         }
 
         public ActionResult DeleteProspect(int id)
         {
-            IProspectManagementRepository prospectRepo = ObjectFactory.GetInstance<IProspectManagementRepository>();
+            var prospectRepo = ObjectFactory.GetInstance<IProspectManagementRepository>();
             return Json(new { prospect = prospectRepo.Delete(id) });
         }
 
         public ActionResult ImportProspect(ProspectModel prospectModel)
         {
-            ProspectDTO prospectDTO = (ProspectDTO)TempData["Prospects"];
-            IProspectManagementRepository prospectRepo = ObjectFactory.GetInstance<IProspectManagementRepository>(); ;
+            var prospectDTO = (ProspectDTO)TempData["Prospects"];
+            var prospectRepo = ObjectFactory.GetInstance<IProspectManagementRepository>(); ;
             if (prospectDTO == null)
             {
                 prospectDTO = prospectRepo.GetProspects();
@@ -91,7 +91,7 @@ namespace KRF.Web.Controllers
                 var prospectexistsData = p.FirstName.Trim() + p.LastName.Trim() + p.Address1.Trim();
                 if (!existingProspect.ContainsKey(prospectexistsData))
                 {
-                    Prospect prospect = new Prospect
+                    var prospect = new Prospect
                     {
                         Status = 1,
                         Address1 = p.Address1,

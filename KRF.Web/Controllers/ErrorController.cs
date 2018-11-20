@@ -7,7 +7,7 @@ namespace KRF.Web.Controllers
     {
         public ActionResult HttpError404(string error)
         {
-            ErrorModel errorModel = new ErrorModel();
+            var errorModel = new ErrorModel();
             errorModel.Title = "Sorry, an error occurred while processing your request. (404)";
             errorModel.Description = error;
             return View("Error", errorModel);
@@ -15,7 +15,7 @@ namespace KRF.Web.Controllers
 
         public ActionResult HttpError500(string error)
         {
-            ErrorModel errorModel = new ErrorModel();
+            var errorModel = new ErrorModel();
             errorModel.Title = "Sorry, an error occurred while processing your request. (500)";
             errorModel.Description = error;
             return View("Error", errorModel);
@@ -24,7 +24,7 @@ namespace KRF.Web.Controllers
 
         public ActionResult General(string error)
         {
-            ErrorModel errorModel = new ErrorModel();
+            var errorModel = new ErrorModel();
             errorModel.Title = "Sorry, an error occurred while processing your request.";
             errorModel.Description = error;
             return View("Error", errorModel);

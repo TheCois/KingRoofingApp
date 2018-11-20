@@ -17,7 +17,7 @@ namespace KRF.Web.Controllers
     {
         public ActionResult Index()
         {
-            ILeadManagementRepository leadRepo = ObjectFactory.GetInstance<ILeadManagementRepository>();
+            var leadRepo = ObjectFactory.GetInstance<ILeadManagementRepository>();
             var leads = leadRepo.GetLeads(GetNonConvertedLeadsPredicate());
             TempData["Leads"] = leads;
             return View();
@@ -25,25 +25,25 @@ namespace KRF.Web.Controllers
 
         public ActionResult Getleads(jQueryDataTableParamModel param)
         {
-            ILeadManagementRepository leadRepo = ObjectFactory.GetInstance<ILeadManagementRepository>();
+            var leadRepo = ObjectFactory.GetInstance<ILeadManagementRepository>();
 
-            LeadDTO leadDTO = (LeadDTO)TempData["Leads"];
-            if (leadDTO == null)
-                leadDTO = leadRepo.GetLeads(GetNonConvertedLeadsPredicate());
+            var leadDto = (LeadDTO)TempData["Leads"];
+            if (leadDto == null)
+                leadDto = leadRepo.GetLeads(GetNonConvertedLeadsPredicate());
 
-            IEstimateManagementRepository estimateRepo = ObjectFactory.GetInstance<IEstimateManagementRepository>();
+            var estimateRepo = ObjectFactory.GetInstance<IEstimateManagementRepository>();
 
-            EstimateDTO estimateDTO = (EstimateDTO)TempData["Estimates"];
-            if (estimateDTO == null)
-                estimateDTO = estimateRepo.ListAll();
+            var estimateDto = (EstimateDTO)TempData["Estimates"];
+            if (estimateDto == null)
+                estimateDto = estimateRepo.ListAll();
 
             return Json(new
             {
                 sEcho = param.sEcho,
                 iTotalRecords = 97,
                 iTotalDisplayRecords = 3,
-                aaData = (from p in leadDTO.Leads
-                          select new string[] {
+                aaData = (from p in leadDto.Leads
+                          select new[] {
                               "<span class='edit-lead' data-val=" + p.ID.ToString() + "><ul><li class='edit'><a href='#non'>View</a></li></ul></span>",
                               p.ID.ToString(),
                               p.FirstName,
@@ -52,26 +52,26 @@ namespace KRF.Web.Controllers
                               p.Telephone,
                               p.Cell,
                               p.Office,
-                              p.Status == 0 ? "": leadDTO.Statuses.Where(k => k.ID == p.Status).First().Description,
-                              (estimateDTO.Estimates.Where(e => e.LeadID == p.ID).FirstOrDefault() != null ? estimateDTO.Estimates.Where(e => e.LeadID == p.ID).Count().ToString() : "0"),
+                              p.Status == 0 ? "": leadDto.Statuses.First(k => k.ID == p.Status).Description,
+                              (estimateDto.Estimates.FirstOrDefault(e => e.LeadID == p.ID) != null ? estimateDto.Estimates.Count(e => e.LeadID == p.ID).ToString() : "0"),
                               "<span class='delete-lead' data-val=" + p.ID.ToString() + "><ul><li class='delete'><a href='#non'>Delete</a></li></ul></span>"
                           }).ToArray(),
                 keyValue = new
                 {
-                    state = leadDTO.States,
-                    city = leadDTO.Cities,
-                    country = leadDTO.Countries,
-                    status = leadDTO.Statuses,
-                    contactMethod = leadDTO.ContactMethod,
-                    hearAboutUsList = leadDTO.HearAboutUsList,
-                    propertyRelationship = leadDTO.PropertyRelationship,
-                    projectStartTimelines = leadDTO.ProjectStartTimelines,
-                    projectTypes = leadDTO.ProjectTypes,
-                    roofAgeList = leadDTO.RoofAgeList,
-                    buildingStoriesList = leadDTO.BuildingStoriesList,
-                    roofTypes = leadDTO.RoofTypes,
-                    existingRoofs = leadDTO.ExistingRoofs,
-                    employees = (from e in leadDTO.Employees select new {ID= e.EmpId, Description= e.LastName+", "+ e.FirstName}).ToList()
+                    state = leadDto.States,
+                    city = leadDto.Cities,
+                    country = leadDto.Countries,
+                    status = leadDto.Statuses,
+                    contactMethod = leadDto.ContactMethod,
+                    hearAboutUsList = leadDto.HearAboutUsList,
+                    propertyRelationship = leadDto.PropertyRelationship,
+                    projectStartTimelines = leadDto.ProjectStartTimelines,
+                    projectTypes = leadDto.ProjectTypes,
+                    roofAgeList = leadDto.RoofAgeList,
+                    buildingStoriesList = leadDto.BuildingStoriesList,
+                    roofTypes = leadDto.RoofTypes,
+                    existingRoofs = leadDto.ExistingRoofs,
+                    employees = (from e in leadDto.Employees select new {ID= e.EmpId, Description= e.LastName+", "+ e.FirstName}).ToList()
                 }
             }, JsonRequestBehavior.AllowGet);
         }
@@ -83,29 +83,29 @@ namespace KRF.Web.Controllers
 
         public ActionResult GetLead(int id)
         {
-            ILeadManagementRepository leadRepo = ObjectFactory.GetInstance<ILeadManagementRepository>();
-            var leadtDTO = leadRepo.GetLead(id);
-            return Json(new { lead = leadtDTO.Leads.First(), appointment = leadtDTO.Leads.First() .AppointmentDateTime.ToString()});
+            var leadRepo = ObjectFactory.GetInstance<ILeadManagementRepository>();
+            var leadtDto = leadRepo.GetLead(id);
+            return Json(new { lead = leadtDto.Leads.First(), appointment = leadtDto.Leads.First() .AppointmentDateTime.ToString()});
         }
 
         [ValidateAntiForgeryToken]
         public JsonResult Save(Lead lead)
         {
-            int ID = lead.ID;
-            string message = string.Empty;
-            ILeadManagementRepository leadRepo = ObjectFactory.GetInstance<ILeadManagementRepository>();
+            var id = lead.ID;
+            string message;
+            var leadRepo = ObjectFactory.GetInstance<ILeadManagementRepository>();
             if (lead.ID == 0)
             {
                 message = "Record successfully inserted!";
                 lead.LeadStage = (int)LeadStageType.Lead;
-                ID = leadRepo.Create(lead);
+                id = leadRepo.Create(lead);
             }
             else
             {
                 // TODO this is a terrible hack to fix a bad situation.
                 if (lead.LeadStage < 1)
                 {
-                    var oldLead = leadRepo.GetLead(ID);
+                    var oldLead = leadRepo.GetLead(id);
                     lead.LeadStage = oldLead.Leads.First().LeadStage;
                 }
 
@@ -114,21 +114,21 @@ namespace KRF.Web.Controllers
                 leadRepo.Edit(lead);
             }
 
-            return Json(new { hasSaved = true, id = ID, message = message });
+            return Json(new { hasSaved = true, id = id, message = message });
         }
 
         public JsonResult DeleteLead(int id)
         {
-            ILeadManagementRepository leadRepo = ObjectFactory.GetInstance<ILeadManagementRepository>();
-            bool hasSaved = leadRepo.Delete(id);
+            var leadRepo = ObjectFactory.GetInstance<ILeadManagementRepository>();
+            var hasSaved = leadRepo.Delete(id);
 
             return Json(new { hasSaved = hasSaved });
         }
 
         [HttpGet]
-        public JsonResult GetItems(jQueryDataTableParamModel param, int ID)
+        public JsonResult GetItems(jQueryDataTableParamModel param, int id)
         {
-            Item item = new Item { ItemCode = "FHR-1001", Name = "Coil Nails", Category = "Category 1", Manufacturer = "Manufacturer1", Price = "$100" };
+            var item = new Item { ItemCode = "FHR-1001", Name = "Coil Nails", Category = "Category 1", Manufacturer = "Manufacturer1", Price = "$100" };
             IList<Item> items = new List<Item>();
             items.Add(item);
             return Json(new

@@ -748,8 +748,10 @@
                     $("#job-state").populateDropDownList(keyValue.state, data.lead.JobState);
 
                     $("#bill-city-id").val(data.lead.BillCity);
-                    if (data.lead.BillCity > 0)
+                    if (data.lead.BillCity > 0)    {
                         $("#bill-city").val(keyValue.city[(data.lead.BillCity - 1)].Description);
+                        console.log('index in keyValue.city[] is ' + (data.lead.BillCity - 1) + ' and there are ' + keyValue.city.length + ' elements');
+                    }
                     $("#job-city-id").val(data.lead.JobCity);
                     if (data.lead.JobCity > 0)
                         $("#job-city").val(keyValue.city[(data.lead.JobCity - 1)].Description);

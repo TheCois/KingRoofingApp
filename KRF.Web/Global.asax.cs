@@ -44,7 +44,7 @@ namespace KRF.Web
         private bool IsAjaxRequest()
         {
             //The easy way
-            bool isAjaxRequest = (Request["X-Requested-With"] == "XMLHttpRequest")
+            var isAjaxRequest = (Request["X-Requested-With"] == "XMLHttpRequest")
             || ((Request.Headers != null)
             && (Request.Headers["X-Requested-With"] == "XMLHttpRequest"));
 
@@ -55,20 +55,20 @@ namespace KRF.Web
                 try
                 {
                     //The controller and action
-                    string controllerName = Request.RequestContext.
+                    var controllerName = Request.RequestContext.
                                             RouteData.Values["controller"].ToString();
-                    string actionName = Request.RequestContext.
+                    var actionName = Request.RequestContext.
                                         RouteData.Values["action"].ToString();
 
                     //We create a controller instance
-                    DefaultControllerFactory controllerFactory = new DefaultControllerFactory();
-                    Controller controller = controllerFactory.CreateController(
+                    var controllerFactory = new DefaultControllerFactory();
+                    var controller = controllerFactory.CreateController(
                     Request.RequestContext, controllerName) as Controller;
 
                     //We get the controller actions
-                    ReflectedControllerDescriptor controllerDescriptor =
+                    var controllerDescriptor =
                     new ReflectedControllerDescriptor(controller.GetType());
-                    ActionDescriptor[] controllerActions =
+                    var controllerActions =
                     controllerDescriptor.GetCanonicalActions();
 
                     //We search for our action
@@ -171,7 +171,7 @@ namespace KRF.Web
 
             var valueProviderResult = bindingContext.GetValueFromValueProvider(shouldPerformRequestValidation);
 
-            string incomingData = string.Empty;
+            var incomingData = string.Empty;
             // Get the raw attempted value from the value provider
             if (valueProviderResult != null)
             {
@@ -180,7 +180,7 @@ namespace KRF.Web
 
             if (!string.IsNullOrEmpty(incomingData))
             {
-                JavaScriptSerializer json_serializer = new JavaScriptSerializer();
+                var json_serializer = new JavaScriptSerializer();
                 var model = json_serializer.Deserialize<T>(incomingData);
 
                 return model;
