@@ -72,8 +72,6 @@
             <ul>
                 <li><a href="#tabs-1">Contact Information</a></li>
                 <li><a href="#tabs-2">Job Addresses</a></li>
-                <li><a href="#tabs-3">Estimates</a></li>
-                <li><a href="#tabs-4">Proposals</a></li>
             </ul>
             <div id="tabs-1" style="height: 100% !important;">
                 <div class="m_block" style="height: 85% !important;">
@@ -264,36 +262,6 @@
                 <div class="clear_fix"></div><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
             </div>
 
-            <div id="tabs-3" style="height: 100% !important;">
-                @if (true || Convert.ToBoolean(ViewBag.AllowEdit))
-                {
-                    <a id="add-estimate" class="addLead_saveCancel" href="#">New Estimate</a><br /><br />
-                }
-                <div class="table-container" style="height: 90% !important;">
-                    <table id="grid-customer-estimates" class="display" width="100%" cellspacing="0">
-                        <thead>
-                            <tr>
-                                @if (Convert.ToBoolean(ViewBag.AllowEdit))
-                                {
-                                    <th></th>
-                                }
-                                <th>ID</th>
-                                <th>Name</th>
-                                <th>Roof Type</th>
-                                <th>Created Date</th>
-                                <th>Contract Price</th>
-                                <th>Status</th>
-                                @if (Convert.ToBoolean(ViewBag.AllowEdit))
-                                {
-                                    <th></th>
-                                }
-                            </tr>
-                        </thead>
-                    </table>
-                </div>
-
-                <div class="clear_fix"></div><br />
-            </div>
         </div>
     </div>
 
@@ -666,20 +634,6 @@
                 }
             });
 
-        });
-
-        $("#tabs-3").on("click", "#add-estimate", function () {
-            openModal();
-            $.ajax({
-                url: '@Url.Action("Estimate", "Estimate")',
-                type: 'POST',
-                data: { id: 0 },
-                success: function (data) {
-                    var customerID = parseInt($("#customer-id").val());
-                    createCustEstimatesTable(customerID);
-                    closeModal();
-                }
-            });
         });
 
         $(document).on("click", "#grid-customer-estimates .delete-estimate", function () {
