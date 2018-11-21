@@ -629,6 +629,7 @@
 
         function createCustEstimatesTable(customerID) {
             $('#grid-customer-estimates').dataTable({
+                "retrieve": true,
                 "order": [[1, "desc"]],
                 "iDisplayLength": 10,
                 "scrollY": "360px",
