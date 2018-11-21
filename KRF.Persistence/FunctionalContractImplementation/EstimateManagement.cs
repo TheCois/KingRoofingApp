@@ -562,8 +562,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
 
             if (customerAddress == null)
             {
-                logger_.Warn("Customer Address is null. returning null");
-                return null;
+                logger_.Warn("Customer Address is null. Will use a Placeholder");
             }
 
             var document = GetEstimateDocumentByType("pdf");
@@ -649,13 +648,20 @@ namespace KRF.Persistence.FunctionalContractImplementation
 
                                     case "Jobaddress":
                                     {
-                                        var city = citiesKv[customerAddress.City].Description;
-                                        var state = statesKv[customerAddress.State].Description;
-                                        bookmarkText.GetFirstChild<Text>().Text =
-                                            customerAddress.Address1.Trim() + ',' +
-                                            (string.IsNullOrEmpty(customerAddress.Address2)
-                                                ? ""
-                                                : customerAddress.Address2.Trim() + ", ") + city + ", " + state;
+                                        var addressLine = "[Job Address not set]";
+                                        if (customerAddress != null)
+                                        {
+                                            var city = citiesKv[customerAddress.City].Description;
+                                            var state = statesKv[customerAddress.State].Description;
+                                            addressLine =
+                                                customerAddress.Address1.Trim() + ',' +
+                                                (string.IsNullOrEmpty(customerAddress.Address2)
+                                                    ? ""
+                                                    : customerAddress.Address2.Trim() + ", ") + city + ", " + state;
+                                        }
+
+                                        bookmarkText.GetFirstChild<Text>().Text = addressLine;
+
                                         break;
                                     }
 
