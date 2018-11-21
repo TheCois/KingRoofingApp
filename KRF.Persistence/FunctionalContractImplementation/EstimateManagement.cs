@@ -373,7 +373,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
                 var predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
                 predicateGroup.Predicates.Add(Predicates.Field<EstimateDocument>(s => s.Type, Operator.Eq, type));
 
-                var estimateDocument = conn.GetList<EstimateDocument>(predicateGroup).First();
+                var estimateDocument = conn.GetList<EstimateDocument>(predicateGroup).FirstOrDefault();
                 return estimateDocument;
             }
         }
@@ -551,7 +551,9 @@ namespace KRF.Persistence.FunctionalContractImplementation
                 return null;
 
             var document = GetEstimateDocumentByType("pdf");
-            var byteArray = document.Text;
+            if (document == null)
+                return new byte[0];
+            var byteArray = document.Text;            
 
             using (var mem = new MemoryStream())
             {
@@ -566,90 +568,121 @@ namespace KRF.Persistence.FunctionalContractImplementation
                         bookmarkMap[bookmarkStart.Name] = bookmarkStart;
                     }
 
-                    foreach (var bookmarkStart in bookmarkMap.Values)
+                    foreach (var x in bookmarkMap)
                     {
-                        if (!bookmarkStart.Name.ToString().Trim().StartsWith("_"))
+                        var bmName = x.Key.Trim();
+                        var bmObject = x.Value;
+                        if (!bmName.StartsWith("_"))
                         {
-                            var bookmarkText = bookmarkStart.NextSibling<Run>();
+                            var bookmarkText = bmObject.NextSibling<Run>();
                             if (bookmarkText != null)
                             {
-                                if (bookmarkStart.Name.ToString() == "Name")
+                                switch (bmName)
                                 {
-                                    bookmarkText.GetFirstChild<Text>().Text = lead.LastName + ',' + lead.FirstName;
-                                }
-
-                                if (bookmarkStart.Name.ToString() == "Phone")
-                                {
-                                    bookmarkText.GetFirstChild<Text>().Text = "";
-                                }
-
-                                if (bookmarkStart.Name.ToString() == "PH")
-                                {
-                                    bookmarkText.GetFirstChild<Text>().Text = Common.EncryptDecrypt.formatPhoneNumber(lead.Telephone, "(###) ###-####");
-                                }
-
-                                if (bookmarkStart.Name.ToString() == "Date")
-                                {
-                                    bookmarkText.GetFirstChild<Text>().Text = String.Format("{0:MM/dd/yyyy}", estimate.CreatedDate);
-                                }
-
-                                if (bookmarkStart.Name.ToString() == "Address")
-                                {
-                                    var city = citiesKv[lead.BillCity].Description;
-                                    var state = statesKv[lead.BillState].Description;
-
-                                    bookmarkText.GetFirstChild<Text>().Text = lead.BillAddress1.Trim() + ' ' +
-                                                                              (string.IsNullOrEmpty(lead.BillAddress2)
-                                                                                  ? ""
-                                                                                  : lead.BillAddress2.Trim() + ", ") +
-                                                                              city + ", " + state;
-                                }
-
-                                if (bookmarkStart.Name.ToString() == "Email")
-                                {
-                                    bookmarkText.GetFirstChild<Text>().Text = lead.Email;
-                                }
-
-                                if (bookmarkStart.Name.ToString() == "Jobaddress")
-                                {
-                                    var city = citiesKv[customerAddress.City].Description;
-                                    var state = statesKv[customerAddress.State].Description;
-                                    bookmarkText.GetFirstChild<Text>().Text = customerAddress.Address1.Trim() + ',' + (string.IsNullOrEmpty(customerAddress.Address2) ? "" : customerAddress.Address2.Trim() + ", ") + city + ", " + state;
-                                }
-
-                                if (bookmarkStart.Name.ToString() == "Salesrep")
-                                {
-                                    bookmarkText.GetFirstChild<Text>().Text = employee.LastName.Trim() + ", " + employee.FirstName.Trim();
-                                }
-
-                                if (bookmarkStart.Name.ToString() == "PP")
-                                {
-                                    bookmarkText.GetFirstChild<Text>().Text = "Install New                                            Roofing Including:";
-                                }
-
-                                if (bookmarkStart.Name.ToString() == "PText")
-                                {
-                                    var list = new StringBuilder();
-                                    var count = 1;
-                                    foreach (var i in assemblies)
+                                    case "Name":
                                     {
-                                        if (!string.IsNullOrWhiteSpace(i.ProposalText))
-                                        {
-                                            list.AppendLine((count++).ToString() + ". " + i.ProposalText);
-                                        }
+                                        bookmarkText.GetFirstChild<Text>().Text = lead.LastName + ',' + lead.FirstName;
+                                        break;
                                     }
 
-                                    bookmarkText.GetFirstChild<Text>().Text = list.ToString();
-                                }
+                                    case "Phone":
+                                    {
+                                        bookmarkText.GetFirstChild<Text>().Text = "";
+                                        break;
+                                    }
 
-                                if (bookmarkStart.Name.ToString() == "Contract")
-                                {
-                                    bookmarkText.GetFirstChild<Text>().Text = "(" + ConvertNumberToWords(Convert.ToInt32(estimate.ContractPrice)) + ")" + " $ " + estimate.ContractPrice.ToString("N", new CultureInfo("en-US"));
-                                }
+                                    case "PH":
+                                    {
+                                        bookmarkText.GetFirstChild<Text>().Text =
+                                            Common.EncryptDecrypt.formatPhoneNumber(lead.Telephone, "(###) ###-####");
+                                        break;
+                                    }
 
-                                if (bookmarkStart.Name.ToString() == "CurDate")
-                                {
-                                    bookmarkText.GetFirstChild<Text>().Text = String.Format("{0:MM/dd/yyyy}", DateTime.Now);
+                                    case "Date":
+                                    {
+                                        bookmarkText.GetFirstChild<Text>().Text =
+                                            $"{estimate.CreatedDate:MM/dd/yyyy}";
+                                        break;
+                                    }
+
+                                    case "Address":
+                                    {
+                                        var city = citiesKv[lead.BillCity].Description;
+                                        var state = statesKv[lead.BillState].Description;
+
+                                        bookmarkText.GetFirstChild<Text>().Text = lead.BillAddress1.Trim() + ' ' +
+                                                                                  (string.IsNullOrEmpty(
+                                                                                          lead.BillAddress2)
+                                                                                          ? ""
+                                                                                          : lead.BillAddress2.Trim() +
+                                                                                            ", "
+                                                                                  ) +
+                                                                                  city + ", " + state;
+                                        break;
+                                    }
+
+                                    case "Email":
+                                    {
+                                        bookmarkText.GetFirstChild<Text>().Text = lead.Email;
+                                        break;
+                                    }
+
+                                    case "Jobaddress":
+                                    {
+                                        var city = citiesKv[customerAddress.City].Description;
+                                        var state = statesKv[customerAddress.State].Description;
+                                        bookmarkText.GetFirstChild<Text>().Text =
+                                            customerAddress.Address1.Trim() + ',' +
+                                            (string.IsNullOrEmpty(customerAddress.Address2)
+                                                ? ""
+                                                : customerAddress.Address2.Trim() + ", ") + city + ", " + state;
+                                        break;
+                                    }
+
+                                    case "Salesrep":
+                                    {
+                                        bookmarkText.GetFirstChild<Text>().Text =
+                                            employee.LastName.Trim() + ", " + employee.FirstName.Trim();
+                                        break;
+                                    }
+
+                                    case "PP":
+                                    {
+                                        bookmarkText.GetFirstChild<Text>().Text =
+                                            "Install New                                            Roofing Including:";
+                                        break;
+                                    }
+
+                                    case "PText":
+                                    {
+                                        var list = new StringBuilder();
+                                        var count = 1;
+                                        foreach (var i in assemblies)
+                                        {
+                                            if (!string.IsNullOrWhiteSpace(i.ProposalText))
+                                            {
+                                                list.AppendLine((count++).ToString() + ". " + i.ProposalText);
+                                            }
+                                        }
+
+                                        bookmarkText.GetFirstChild<Text>().Text = list.ToString();
+                                        break;
+                                    }
+
+                                    case "Contract":
+                                    {
+                                        bookmarkText.GetFirstChild<Text>().Text =
+                                            "(" + ConvertNumberToWords(Convert.ToInt32(estimate.ContractPrice)) + ")" +
+                                            " $ " + estimate.ContractPrice.ToString("N", new CultureInfo("en-US"));
+                                        break;
+                                    }
+
+                                    case "CurDate":
+                                    {
+                                        bookmarkText.GetFirstChild<Text>().Text =
+                                            $"{DateTime.Now:MM/dd/yyyy}";
+                                        break;
+                                    }
                                 }
                             }
                         }
