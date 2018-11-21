@@ -17,11 +17,19 @@ using KRF.Core.Entities.Sales;
 using KRF.Core.Entities.ValueList;
 using KRF.Core.Enums;
 using KRF.Core.FunctionalContracts;
+using NLog;
 
 namespace KRF.Persistence.FunctionalContractImplementation
 {
     public class EstimateManagement : IEstimateManagement
     {
+        private Logger logger_;
+
+        public EstimateManagement()
+        {
+            logger_ = NLog.LogManager.GetCurrentClassLogger();
+        }
+        
         public int Create(Estimate estimate, IList<EstimateItem> estimateItem)
         {
             using (var transactionScope = new TransactionScope())
@@ -374,6 +382,9 @@ namespace KRF.Persistence.FunctionalContractImplementation
                 predicateGroup.Predicates.Add(Predicates.Field<EstimateDocument>(s => s.Type, Operator.Eq, type));
 
                 var estimateDocument = conn.GetList<EstimateDocument>(predicateGroup).FirstOrDefault();
+                logger_.Info(
+                    "Getting Estimate Document of type {0} yielded document with ID {1} and Name '{2}' with Text Length {3}",
+                    type, estimateDocument?.ID, estimateDocument?.Name, estimateDocument?.Text?.Length);
                 return estimateDocument;
             }
         }
@@ -500,6 +511,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
 
         public byte[] CreateProposalDocument(int estimateId)
         {
+            logger_.Info("CreateProposalDocument for estimate Id {0}", estimateId);
             Estimate estimate;
             CustomerAddress customerAddress;
             Lead lead;
@@ -517,6 +529,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
                 var leadId = estimate.LeadID;
 
                 lead = conn.Get<Lead>(leadId);
+                logger_.Info("Retrieving customer address for JobAddress ID {0}", estimate.JobAddressID);
                 customerAddress = conn.Get<CustomerAddress>(estimate.JobAddressID);
                 employee = conn.Get<Employee>(lead.AssignedTo);
 
@@ -548,11 +561,18 @@ namespace KRF.Persistence.FunctionalContractImplementation
             var statesKv = states.ToDictionary(k => k.ID);
 
             if (customerAddress == null)
+            {
+                logger_.Warn("Customer Address is null. returning null");
                 return null;
+            }
 
             var document = GetEstimateDocumentByType("pdf");
             if (document == null)
+            {
+                logger_.Warn("Returned document is null. Returning an empty byte[]");
                 return new byte[0];
+            }
+
             var byteArray = document.Text;            
 
             using (var mem = new MemoryStream())

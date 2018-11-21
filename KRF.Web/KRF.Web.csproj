@@ -435,6 +435,9 @@
     <Content Include="MailTemplates\ResetPassword.cshtml" />
     <None Include="Scripts\jquery-1.8.2.intellisense.js" />
     <Content Include="MailTemplates\MailSettings.xml" />
+    <Content Include="NLog.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Scripts\abcDropDown.js" />
     <Content Include="Scripts\bootstrap-2.3.2.min.js" />
     <Content Include="Scripts\bootstrap-dialog.js" />

@@ -30,6 +30,7 @@ phases:
     - cp ./KRF.Web/Global.asax ./DeployFolders
     - cp ./KRF.Web/bin/*.dll ./DeployFolders/bin
     - cp ./KRF.Web/bin/*.exe ./DeployFolders/bin
+    - cp ./KRF.Web/NLog.config ./DeployFolders/NLog.config
     - cp ./KRF.Web/Web.Release.config ./DeployFolders/web.config
     - cp -r ./KRF.Web/Content ./DeployFolders
     - cp -r ./KRF.Web/Images ./DeployFolders

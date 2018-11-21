@@ -11,12 +11,19 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using KRF.Persistence;
+using NLog;
 
 namespace KRF.Web.Controllers
 {
     [CustomActionFilter.CustomActionFilter]
     public class EstimateController : BaseController
     {
+        private Logger logger_;
+
+        public EstimateController()
+        {
+            logger_ = NLog.LogManager.GetCurrentClassLogger();
+        }
         //
         // GET: /Estimate/
 
@@ -351,11 +358,11 @@ namespace KRF.Web.Controllers
 
             //return Json(new { documentCreate = true});
 
-            var b = estimateRepo.CreateProposalDocument(estimateId);
+            var documentAsByteArray = estimateRepo.CreateProposalDocument(estimateId);
+            logger_.Debug("Created Proposal Document is in a byte[] of length {0}", documentAsByteArray?.Length);
             const string filename = "Proposal.docx";
-            var contentType = filename.Split('.').LastOrDefault();
             Response.AppendHeader("Content-Disposition", "attachment; filename=" + filename + ";");
-            return new FileContentResult(b, "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+            return new FileContentResult(documentAsByteArray, "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
         }
     }
 }
