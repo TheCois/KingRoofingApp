@@ -47,7 +47,7 @@
 
 <div id="lead-form-popup" class="form_popup" style="height: 800px !important;">
     <input id="lead-id" type="hidden" value="0" name="prospect-id">
-    <div class="gridBlockLarge_btnHolder_head">
+    <div id="lead-form-title" class="gridBlockLarge_btnHolder_head">
         Add Lead
     </div>
 
@@ -58,8 +58,6 @@
             <ul>
                 <li><a href="#tabs-1">Contact Information</a></li>
                 <li><a href="#tabs-2">Project Information</a></li>
-                <li><a href="#tabs-3">Estimates</a></li>
-                <li><a href="#tabs-4">Proposals</a></li>
             </ul>
             <div id="tabs-1" style="height: 90% !important;">
                 <fieldset style="border: 1px solid #dcdcdc;">
@@ -445,37 +443,6 @@
                     </div>
                 </div>
             </div>
-
-            <div id="tabs-3" style="height: 100% !important;">
-                @if (true || Convert.ToBoolean(ViewBag.AllowEdit))
-                {
-                    <a id="add-estimate" class="addLead_saveCancel" href="#">New Estimate</a><br /><br />
-                }
-                <div class="table-container" style="height: 90% !important;">
-                    <table id="grid-lead-estimates" class="display" width="100%" cellspacing="0">
-                        <thead>
-                            <tr>
-                                @if (Convert.ToBoolean(ViewBag.AllowEdit))
-                                {
-                                    <th></th>
-                                }
-                                <th>ID</th>
-                                <th>Name</th>
-                                <th>Roof Type</th>
-                                <th>Created Date</th>
-                                <th>Contract Price</th>
-                                <th>Status</th>
-                                @if (Convert.ToBoolean(ViewBag.AllowEdit))
-                                {
-                                    <th></th>
-                                }
-                            </tr>
-                        </thead>
-                    </table>
-                </div>
-
-                <div class="clear_fix"></div><br />
-            </div>
         </div>
         <div class="clear_fix"></div>
         <div class="popup-footer">
@@ -807,6 +774,7 @@
                     createLeadEstimatesTable(data.lead.ID);
 
                     $("#tabs").tabs("option", "active", 0);
+                    $("#lead-form-title").html('Edit Lead');
                     $("#lead-form-popup").show();
                     $('#lead-form-popup').css(
                         { "top": (window.pageYOffset + 10) + 'px' });
@@ -987,20 +955,6 @@
                 }
             });
 
-        });
-
-        $("#tabs-3").on("click", "#add-estimate", function () {
-            openModal();
-            $.ajax({
-                url: '@Url.Action("Estimate", "Estimate")',
-                type: 'POST',
-                data: { id: 0 },
-                success: function (data) {
-                    var leadID = parseInt($("#lead-id").val());
-                    createLeadEstimatesTable(leadID);
-                    closeModal();
-                }
-            });
         });
 
         $(document).on("click", "#grid-lead-estimates .delete-estimate", function () {
