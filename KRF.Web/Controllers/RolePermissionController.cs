@@ -53,8 +53,8 @@ namespace KRF.Web.Controllers
                 iTotalRecords = 97,
                 iTotalDisplayRecords = 3,
                 aaData = (from p in rolePermissionDTO.Pages.Where(p => p.Active == true)
-                          select new string[] { p.PageName, (rolePermissionDTO.RolePermissions.Where(rp=>rp.RoleID == roleID && rp.PageID == p.PageID && rp.PermissionID == (int)PermissionType.View).FirstOrDefault() != null ? "<input id='"+ p.PageID.ToString()  +"_"+ (int)PermissionType.View +"' type='checkbox' class='view' checked>" : "<input  id='"+ p.PageID.ToString()  +"_"+ (int)PermissionType.View +"' type='checkbox' class='view' />"), 
-                              (rolePermissionDTO.RolePermissions.Where(rp=>rp.RoleID == roleID && rp.PageID == p.PageID && rp.PermissionID == (int)PermissionType.Edit).FirstOrDefault() != null ? "<input  id='"+ p.PageID.ToString()  +"_"+ (int)PermissionType.Edit +"' type='checkbox' class='edit' checked>" : "<input  id='"+ p.PageID.ToString()  +"_"+ (int)PermissionType.Edit +"' type='checkbox' class='edit' />")}).ToArray()
+                          select new string[] { p.PageName, (rolePermissionDTO.RolePermissions.Where(rp=>rp.RoleID == roleID && rp.PageID == p.PageID && rp.PermissionID == (int)PermissionType.View).FirstOrDefault() != null ? "<input id='"+ p.PageID  +"_"+ (int)PermissionType.View +"' type='checkbox' class='view' checked>" : "<input  id='"+ p.PageID  +"_"+ (int)PermissionType.View +"' type='checkbox' class='view' />"), 
+                              (rolePermissionDTO.RolePermissions.Where(rp=>rp.RoleID == roleID && rp.PageID == p.PageID && rp.PermissionID == (int)PermissionType.Edit).FirstOrDefault() != null ? "<input  id='"+ p.PageID  +"_"+ (int)PermissionType.Edit +"' type='checkbox' class='edit' checked>" : "<input  id='"+ p.PageID  +"_"+ (int)PermissionType.Edit +"' type='checkbox' class='edit' />")}).ToArray()
             }, JsonRequestBehavior.AllowGet);
         }
         

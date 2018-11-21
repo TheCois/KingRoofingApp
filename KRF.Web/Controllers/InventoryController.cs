@@ -44,14 +44,14 @@ namespace KRF.Web.Controllers
                 iTotalDisplayRecords = 3,
                 aaData = (from p in list
                           select new string[] {
-                              "<span class='edit-item' data-val=" + p.Id.ToString() + "><ul><li class='edit'><a href='#non' tabIndex='-1'>View</a></li></ul></span>",
+                              "<span class='edit-item' data-val=" + p.Id + "><ul><li class='edit'><a href='#non' tabIndex='-1'>View</a></li></ul></span>",
                               p.Code,
                               p.Name,
                               p.Description,
                               "<input type='text' style='width:100px' maxlength='8' class='qty'  onkeypress='enterOnlyNumericForQty(this, event)' value = " + ((p.Qty == 0) ? string.Empty : p.Qty.ToString()) + ">",
-                              "<span class='update-inventory' data-val=" + p.InventoryID.ToString() + "><ul><li class='update'><a href='#non' tabIndex='-1'>Update</a></li></ul></span>",
-                              "<span class='view-history' data-val=" + p.InventoryID.ToString() + "><ul><li class='history'><a href='#non' tabIndex='-1'>History</a></li></ul></span>",
-                              "<span class='delete-inventory' data-val=" + p.InventoryID.ToString() + "><ul><li class='delete'><a href='#non' tabIndex='-1'>Delete</a></li></ul></span>"
+                              "<span class='update-inventory' data-val=" + p.InventoryID + "><ul><li class='update'><a href='#non' tabIndex='-1'>Update</a></li></ul></span>",
+                              "<span class='view-history' data-val=" + p.InventoryID + "><ul><li class='history'><a href='#non' tabIndex='-1'>History</a></li></ul></span>",
+                              "<span class='delete-inventory' data-val=" + p.InventoryID + "><ul><li class='delete'><a href='#non' tabIndex='-1'>Delete</a></li></ul></span>"
                           }).ToArray(),
                 keyValue = new
                 {

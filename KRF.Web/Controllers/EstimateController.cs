@@ -79,16 +79,14 @@ namespace KRF.Web.Controllers
                         : p.CreatedDate.ToShortDateString()
                     select new[]
                     {
-                        "<span class='edit-customer edit-estimate' data-val=" + p.ID +
-                        "><ul><li class='edit'><a href='#non'>View</a></li></ul></span>",
+                        "<span class='edit-customer edit-estimate' data-val=" + p.ID + "><ul><li class='edit'><a href='#non'>View</a></li></ul></span>",
                         p.ID.ToString(),
-                        roofType,
                         p.Name,
+                        roofType,
                         createdDate,
                         p.ContractPrice.ToString("N", new CultureInfo("en-US")),
                         status,
-                        "<span class='delete-customer delete-estimate' data-val=" + p.ID +
-                        "><ul><li class='delete'><a href='#non'>Delete</a></li></ul></span>"
+                        "<span class='delete-customer delete-estimate' data-val=" + p.ID + "><ul><li class='delete'><a href='#non'>Delete</a></li></ul></span>"
                     }).ToArray();
             }
             else
@@ -106,8 +104,7 @@ namespace KRF.Web.Controllers
                         : p.CreatedDate.ToShortDateString()
                     select new[]
                     {
-                        "<span class='edit-customer edit-estimate' data-val=" + p.ID +
-                        "><ul><li class='edit'><a href='#non'>View</a></li></ul></span>",
+                        "<span class='edit-customer edit-estimate' data-val=" + p.ID + "><ul><li class='edit'><a href='#non'>View</a></li></ul></span>",
                         p.ID.ToString(),
                         p.Name,
                         roofType,
@@ -115,8 +112,7 @@ namespace KRF.Web.Controllers
                         createdDate,
                         p.ContractPrice.ToString("N", new CultureInfo("en-US")),
                         status,
-                        "<span class='delete-customer delete-estimate' data-val=" + p.ID +
-                        "><ul><li class='delete'><a href='#non'>Delete</a></li></ul></span>"
+                        "<span class='delete-customer delete-estimate' data-val=" + p.ID + "><ul><li class='delete'><a href='#non'>Delete</a></li></ul></span>"
                     }).ToArray();
             }
 

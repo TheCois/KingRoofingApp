@@ -43,7 +43,7 @@ namespace KRF.Web.Controllers
                 iTotalDisplayRecords = 3,
                 aaData = (from p in customerDTO.Leads
                           select new string[] {
-                              "<span class='edit-customer' data-val=" + p.ID.ToString() + "><ul><li class='edit'><a href='#non'>View</a></li></ul></span>",
+                              "<span class='edit-customer' data-val=" + p.ID + "><ul><li class='edit'><a href='#non'>View</a></li></ul></span>",
                               p.ID.ToString(),
                               p.FirstName,
                               p.LastName,
@@ -52,7 +52,7 @@ namespace KRF.Web.Controllers
                               p.Cell,
                               p.Office,
                               (estimateDTO.Estimates.Where(e => e.LeadID == p.ID).FirstOrDefault() != null ? estimateDTO.Estimates.Where(e => e.LeadID == p.ID).Count().ToString() : "0"),
-                              "<span class='delete-customer' data-val=" + p.ID.ToString() + "><ul><li class='delete'><a href='#non'>Delete</a></li></ul></span>"
+                              "<span class='delete-customer' data-val=" + p.ID + "><ul><li class='delete'><a href='#non'>Delete</a></li></ul></span>"
                           }).ToArray(),
                 keyValue = new
                 {
@@ -81,8 +81,8 @@ namespace KRF.Web.Controllers
                   p.City == 0?"": customertDTO.Cities.Where(k=>k.ID == p.City).First().Description, 
                   p.State == 0?"": customertDTO.States.Where(k=>k.ID == p.State).First().Description, 
                   p.ZipCode,
-                    "<span class='edit-cust-addr' data-val=" + p.ID.ToString() + "><ul><li class='edit'><a href='#non'>Edit</a></li></ul></span>", 
-                    "<span class='delete-cust-addr' data-val=" + p.ID.ToString() + "><ul><li class='delete'><a href='#non'>Delete</a></li></ul></span>"}),
+                    "<span class='edit-cust-addr' data-val=" + p.ID + "><ul><li class='edit'><a href='#non'>Edit</a></li></ul></span>", 
+                    "<span class='delete-cust-addr' data-val=" + p.ID + "><ul><li class='delete'><a href='#non'>Delete</a></li></ul></span>"}),
                 customerAddress = customertDTO.CustomerAddress
             });
         }
@@ -129,8 +129,8 @@ namespace KRF.Web.Controllers
                   p.City == 0?"": customertDTO.Cities.Where(k=>k.ID == p.City).First().Description, 
                   p.State == 0?"": customertDTO.States.Where(k=>k.ID == p.State).First().Description, 
                   p.ZipCode,
-                    "<span class='edit-cust-addr' data-val=" + p.ID.ToString() + "><ul><li class='edit'><a href='#non'>Edit</a></li></ul></span>", 
-                    "<span class='delete-cust-addr' data-val=" + p.ID.ToString() + "><ul><li class='delete'><a href='#non'>Delete</a></li></ul></span>"}),
+                    "<span class='edit-cust-addr' data-val=" + p.ID + "><ul><li class='edit'><a href='#non'>Edit</a></li></ul></span>", 
+                    "<span class='delete-cust-addr' data-val=" + p.ID + "><ul><li class='delete'><a href='#non'>Delete</a></li></ul></span>"}),
                 customerAddress = customertDTO.CustomerAddress
             });
         }

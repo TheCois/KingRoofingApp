@@ -62,14 +62,14 @@ namespace KRF.Web.Controllers
                 iTotalDisplayRecords = 3,
                 aaData = (from p in vendorDto.Vendors.Where(p => p.Active)
                           select new string[] {
-                              "<span class='edit-customer' data-val=" + p.ID.ToString() + "><ul><li class='edit'><a href='#non'>View</a></li></ul></span>",
+                              "<span class='edit-customer' data-val=" + p.ID + "><ul><li class='edit'><a href='#non'>View</a></li></ul></span>",
                               "<span><ul><li><a class='noicon' href='" + @Url.Action("View", "Vendor", new { ID = p.ID })+ "'>" + p.VendorName + "</a></li></ul></span>",
                               p.Manager,
                               (p.SalesRep ?? ""),
                               p.Phone,
                               p.Fax,
                               "<a href=\"mailto:" + p.Email + "\" >" + p.Email + "</a>",
-                              "<span class='delete-customer' data-val=" + p.ID.ToString() + "><ul><li class='delete'><a href='#non'>Delete</a></li></ul></span>"
+                              "<span class='delete-customer' data-val=" + p.ID + "><ul><li class='delete'><a href='#non'>Delete</a></li></ul></span>"
                           }).ToArray()
             }, JsonRequestBehavior.AllowGet);
         }

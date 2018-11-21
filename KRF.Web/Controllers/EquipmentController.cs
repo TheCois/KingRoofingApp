@@ -61,13 +61,13 @@ namespace KRF.Web.Controllers
                 iTotalDisplayRecords = 3,
                 aaData = (from p in equipmentDto.Equipments.Where(p => p.Active)
                           select new[] {
-                              "<span class='edit-equipment' data-val=" + p.ID.ToString() + "><ul><li class='edit'><a href='#non'>View</a></li></ul></span>",
+                              "<span class='edit-equipment' data-val=" + p.ID + "><ul><li class='edit'><a href='#non'>View</a></li></ul></span>",
                               p.ID.ToString(),
                               "<span><ul><li><a class='noicon' href='" +@Url.Action("View", "Equipment", new {p.ID})+ "'>"+p.EquipmentName+"</a></li></ul></span>", p.EquipmentID == 0 ? string.Empty : p.EquipmentID.ToString(), p.ModelNumber, p.SNNo, (p.PurchaseDate != null ? Convert.ToDateTime(p.PurchaseDate).ToShortDateString() : ""),
                               p.PurchasePrice.ToString("0.00"),
                               Convert.ToString(p.Vendor),
                               equipmentDto.EquipmentStatus.FirstOrDefault(s => s.EquipmentStatusID == p.EquipmentStatusID)?.StatusName,
-                              "<span class='delete-equipment' data-val=" + p.ID.ToString() + "><ul><li class='delete'><a href='#non'>Delete</a></li></ul></span>" }).ToArray(),
+                              "<span class='delete-equipment' data-val=" + p.ID + "><ul><li class='delete'><a href='#non'>Delete</a></li></ul></span>" }).ToArray(),
                 keyValue = new
                 {
                     equipmentStatus = equipmentDto.EquipmentStatus.Where(p=>p.Active).Select(k => new { ID = k.EquipmentStatusID, Description = k.StatusName})

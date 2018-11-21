@@ -41,8 +41,8 @@ namespace KRF.Web.Controllers
                 aaData = (from p in prospectDTO.Propects
                           select new string[] {p.ID.ToString(), p.FirstName, p.LastName, "<a href=\"mailto:"+p.Email+"\" >"+p.Email+"</a>", p.Telephone,
                              p.Status == 0? "":  prospectDTO.Statuses.Where(k=>k.ID==p.Status).First().Description,
-                    "<span class='edit-prospect' data-val=" + p.ID.ToString() + "><ul><li class='edit'><a href='#non'>Edit</a></li></ul></span>", 
-                    "<span class='delete-prospect' data-val=" + p.ID.ToString() + "><ul><li class='delete'><a href='#non'>Delete</a></li></ul></span>" }).ToArray(),
+                    "<span class='edit-prospect' data-val=" + p.ID + "><ul><li class='edit'><a href='#non'>Edit</a></li></ul></span>", 
+                    "<span class='delete-prospect' data-val=" + p.ID + "><ul><li class='delete'><a href='#non'>Delete</a></li></ul></span>" }).ToArray(),
                 cities = prospectDTO.Cities,
                 states = prospectDTO.States,
                 countries = prospectDTO.Countries,

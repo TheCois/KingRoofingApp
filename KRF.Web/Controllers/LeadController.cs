@@ -44,7 +44,7 @@ namespace KRF.Web.Controllers
                 iTotalDisplayRecords = 3,
                 aaData = (from p in leadDto.Leads
                           select new[] {
-                              "<span class='edit-lead' data-val=" + p.ID.ToString() + "><ul><li class='edit'><a href='#non'>View</a></li></ul></span>",
+                              "<span class='edit-lead' data-val=" + p.ID + "><ul><li class='edit'><a href='#non'>View</a></li></ul></span>",
                               p.ID.ToString(),
                               p.FirstName,
                               p.LastName,
@@ -54,7 +54,7 @@ namespace KRF.Web.Controllers
                               p.Office,
                               p.Status == 0 ? "": leadDto.Statuses.First(k => k.ID == p.Status).Description,
                               (estimateDto.Estimates.FirstOrDefault(e => e.LeadID == p.ID) != null ? estimateDto.Estimates.Count(e => e.LeadID == p.ID).ToString() : "0"),
-                              "<span class='delete-lead' data-val=" + p.ID.ToString() + "><ul><li class='delete'><a href='#non'>Delete</a></li></ul></span>"
+                              "<span class='delete-lead' data-val=" + p.ID + "><ul><li class='delete'><a href='#non'>Delete</a></li></ul></span>"
                           }).ToArray(),
                 keyValue = new
                 {

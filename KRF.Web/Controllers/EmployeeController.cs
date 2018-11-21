@@ -64,7 +64,7 @@ namespace KRF.Web.Controllers
                 aaData = (from p in employeeDto.Employees.Where(p => p.Status == true)
                     let firstEmployeeWithTheRole = employeeDto.Roles.FirstOrDefault(r => r.RoleId == p.RoleId)
                     select new string[] {
-                              "<span class='edit-customer' data-val=" + p.EmpId.ToString() + "><ul><li class='edit'><a href='#non'>View</a></li></ul></span>",
+                              "<span class='edit-customer' data-val=" + p.EmpId + "><ul><li class='edit'><a href='#non'>View</a></li></ul></span>",
                               p.EmpId.ToString(),
                               p.FirstName + " " + p.LastName,
                               p.EmpType,
@@ -73,7 +73,7 @@ namespace KRF.Web.Controllers
                               p.EmergencyCPhNo,
                               p.HourlyRate,
                               (firstEmployeeWithTheRole != null ? firstEmployeeWithTheRole.RoleName : ""),
-                              (p.EmailID != null && p.EmailID.ToLower() == "adminmanager" ? "" : "<span class='delete-customer' data-val=" + p.EmpId.ToString() + "><ul><li class='delete'><a href='#non'>Delete</a></li></ul></span>")
+                              (p.EmailID != null && p.EmailID.ToLower() == "adminmanager" ? "" : "<span class='delete-customer' data-val=" + p.EmpId + "><ul><li class='delete'><a href='#non'>Delete</a></li></ul></span>")
                           }).ToArray(),
                 keyValue = new
                 {

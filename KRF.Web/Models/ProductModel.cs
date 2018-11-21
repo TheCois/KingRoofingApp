@@ -118,7 +118,7 @@ namespace KRF.Web.Models
                      //itemTypesKeyValue[m.ItemTypeId].Description : string.Empty
                      select new Item
                      {
-                         Id = m.Id.ToString() + "," + m.Code + "," + m.Price.ToString(),
+                         Id = m.Id + "," + m.Code + "," + m.Price,
                          ItemCode = m.Code,
                          //Description = m.Description, //Commented on 14-Apr-2015 - Convering search to dropdown
                          Description = m.Code + "[" + m.Name + " (" + (product.ItemTypes.FirstOrDefault(p => p.Id == m.ItemTypeId) != null ? product.ItemTypes.FirstOrDefault(p => p.Id == m.ItemTypeId).Description.Trim() : "") + ")" + "]",
@@ -339,7 +339,7 @@ namespace KRF.Web.Models
                                  where selected == null || (selected.Count() == 0) || selected.Any(k => k != item.Id)
                                  select new AvailableAssemblyItem
                                  {
-                                     ID = item.Id.ToString()+","+item.Code+","+item.Price.ToString(),
+                                     ID = item.Id+","+item.Code+","+item.Price,
                                      Description = item.Code+"["+ item.Name +"]",
                                      ItemID = item.Id.ToString(),
                                      ItemCode = item.Code,
