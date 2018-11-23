@@ -1,5 +1,4 @@
 ﻿using KRF.Web.Models;
-using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using KRF.Core.Repository;
@@ -33,18 +32,18 @@ namespace KRF.Web.Controllers
             var inventories = product.Inventories;
 
             var list = from p in items
-                       where p.IsInventoryItem == true
+                       where p.IsInventoryItem
                        join q in inventories 
                        on p.Id equals q.ItemID
-                       select new { p.Id, p.Code, InventoryID = q == null ? 0 : q.ID, p.Name, p.Description, Qty = q == null ? 0 : q.Qty };
+                       select new { p.Id, p.Code, InventoryID = q?.ID ?? 0, p.Name, p.Description, Qty = q?.Qty ?? 0 };
             return Json(new
             {
                 sEcho = param.sEcho,
                 iTotalRecords = 97,
                 iTotalDisplayRecords = 3,
                 aaData = (from p in list
-                          select new string[] {
-                              "<span class='edit-item' data-val=" + p.Id + "><ul><li class='edit'><a href='#non' tabIndex='-1'>View</a></li></ul></span>",
+                          select new[] {
+                              "<span class='edit-item' data-val=" + p.Id + "><ul></ul></span>",
                               p.Code,
                               p.Name,
                               p.Description,
@@ -64,10 +63,10 @@ namespace KRF.Web.Controllers
             }, JsonRequestBehavior.AllowGet);
         }
         [HttpPost]
-        public ActionResult GetInventoryHistory(int ID)
+        public ActionResult GetInventoryHistory(int id)
         {
             var itemRepository = ObjectFactory.GetInstance<IItemManagementRepository>();
-            var product = itemRepository.GetInventoryAudit(ID);
+            var product = itemRepository.GetInventoryAudit(id);
             var items = product.Items;
             var inventories = product.InventoryAudits;
 
@@ -80,49 +79,28 @@ namespace KRF.Web.Controllers
             return Json(new
             {
                 aaData = (from p in list
-                          select new string[] { "<span>"+ p.Qty +"</span>", p.Type, p.Comment,
+                          select new[] { "<span>"+ p.Qty +"</span>", p.Type, p.Comment,
                               "<span>"+ p.DateCreated.ToString("MM/dd/yyyy HH:mm") +"</span>"}).ToArray()
             }, JsonRequestBehavior.AllowGet);
         }
         [HttpPost]
         public JsonResult UpdateInventory(InventoryData inventoryData)
         {
-            var success = false;
-            var message = string.Empty;
-
             var inventoryList = ModelData.ToInventoryList(inventoryData);
             var itemRepository = ObjectFactory.GetInstance<IItemManagementRepository>();
-            success = itemRepository.UpdateInventory(inventoryList);
-            if(success)
-            {
-                message = "Inventory updated successfully.";
-            }
-            else
-            {
-                message = "Inventory could not be updated.";
-            }
+            var success = itemRepository.UpdateInventory(inventoryList);
+            var message = success ? "Inventory updated successfully." : "Inventory could not be updated.";
             return Json(new { success = success, message = message }, JsonRequestBehavior.AllowGet);
         }
 
         [HttpPost]
         public JsonResult DeleteInventory(InventoryData inventoryData)
         {
-            var success = false;
-            var message = string.Empty;
-
             var inventoryList = ModelData.ToInventoryList(inventoryData);
             var itemRepository = ObjectFactory.GetInstance<IItemManagementRepository>();
-            success = itemRepository.DeleteInventory(inventoryList);
-            if (success)
-            {
-                message = "Inventory item deleted successfully.";
-            }
-            else
-            {
-                message = "Inventory item could not be updated.";
-            }
+            var success = itemRepository.DeleteInventory(inventoryList);
+            var message = success ? "Inventory item deleted successfully." : "Inventory item could not be updated.";
             return Json(new { success = success, message = message }, JsonRequestBehavior.AllowGet);
         }
-
     }
 }

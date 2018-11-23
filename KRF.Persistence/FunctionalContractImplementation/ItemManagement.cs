@@ -308,14 +308,22 @@ namespace KRF.Persistence.FunctionalContractImplementation
                         foreach (var inventory in inventories)
                         {
                             var curInventory = conn.Get<Inventory>(inventory.ID);
-                            if (curInventory.Qty != inventory.Qty)
+                            if (curInventory.Qty == inventory.Qty) continue;
+                            var auditItem = new InventoryAudit
                             {
-                                curInventory.Type = curInventory.Qty > inventory.Qty ? "Deleted" : "Added";
+                                AssemblyID = curInventory.AssemblyID,
+                                Comment = curInventory.Comment,
+                                DateCreated = curInventory.DateUpdated,
+                                DateUpdated = DateTime.Now,
+                                ItemID = curInventory.ItemID,
+                                Qty = Math.Abs(curInventory.Qty - inventory.Qty),
+                                Type = curInventory.Qty > inventory.Qty ? "Deleted" : "Added"
+                            };
 
-                                curInventory.Comment = "";
-                                curInventory.Qty = inventory.Qty;
-                                conn.Update(curInventory);
-                            }
+                            curInventory.Comment = "";
+                            curInventory.Qty = inventory.Qty;
+                            conn.Update(curInventory);
+                            conn.Insert(auditItem);
                         }
                     }
 

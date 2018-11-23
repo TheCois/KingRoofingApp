@@ -33,7 +33,6 @@ namespace KRF.Core.Entities.Product
     }
     public class InventoryAudit
     {
-        public int InventoryAuditID { get; set; }
         /// <summary>
         /// Inventory unique identifier
         /// </summary>
