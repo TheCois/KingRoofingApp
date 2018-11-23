@@ -26,11 +26,11 @@ namespace KRF.Web.Controllers
 
         public ActionResult GetProspects(jQueryDataTableParamModel param)
         {
-            var prospectDTO = (ProspectDTO)TempData["Prospects"];
-            if (prospectDTO == null)
+            var prospectDto = (ProspectDTO)TempData["Prospects"];
+            if (prospectDto == null)
             {
                 var prospectRepo = ObjectFactory.GetInstance<IProspectManagementRepository>();
-                prospectDTO = prospectRepo.GetProspects();
+                prospectDto = prospectRepo.GetProspects();
             }
 
             return Json(new
@@ -38,32 +38,32 @@ namespace KRF.Web.Controllers
                 sEcho = param.sEcho,
                 iTotalRecords = 97,
                 iTotalDisplayRecords = 3,
-                aaData = (from p in prospectDTO.Propects
-                          select new string[] {p.ID.ToString(), p.FirstName, p.LastName, "<a href=\"mailto:"+p.Email+"\" >"+p.Email+"</a>", p.Telephone,
-                             p.Status == 0? "":  prospectDTO.Statuses.Where(k=>k.ID==p.Status).First().Description,
+                aaData = (from p in prospectDto.Propects
+                          select new[] {p.ID.ToString(), p.FirstName, p.LastName, "<a href=\"mailto:"+p.Email+"\" >"+p.Email+"</a>", p.Telephone,
+                             p.Status == 0? "":  prospectDto.Statuses.First(k => k.ID==p.Status).Description,
                     "<span class='edit-prospect' data-val=" + p.ID + "><ul><li class='edit'><a href='#non'>Edit</a></li></ul></span>", 
                     "<span class='delete-prospect' data-val=" + p.ID + "><ul><li class='delete'><a href='#non'>Delete</a></li></ul></span>" }).ToArray(),
-                cities = prospectDTO.Cities,
-                states = prospectDTO.States,
-                countries = prospectDTO.Countries,
-                status = prospectDTO.Statuses
+                cities = prospectDto.Cities,
+                states = prospectDto.States,
+                countries = prospectDto.Countries,
+                status = prospectDto.Statuses
             }, JsonRequestBehavior.AllowGet);
         }
 
         public ActionResult GetProspect(int id)
         {
             var prospectRepo = ObjectFactory.GetInstance<IProspectManagementRepository>();
-            var prospectDTO = prospectRepo.GetProspect(id);
-            return Json(new { prospect = prospectDTO.Propects.First() });
+            var prospectDto = prospectRepo.GetProspect(id);
+            return Json(new { prospect = prospectDto.Propects.First() });
         }
 
         [ValidateAntiForgeryToken]
         public JsonResult Save(Prospect prospect)
         {
-            var message = string.Empty;
             var prospectRepo = ObjectFactory.GetInstance<IProspectManagementRepository>();
             if (prospect.ID == 0) { return Json(new { id = prospectRepo.Create(prospect), message = "Record successfully inserted!" }); }
-            else { return Json(new { id = prospect.ID, prospect = prospectRepo.Edit(prospect), message = "Record successfully updated!" }); }
+
+            return Json(new { id = prospect.ID, prospect = prospectRepo.Edit(prospect), message = "Record successfully updated!" });
         }
 
         public ActionResult DeleteProspect(int id)
@@ -74,16 +74,16 @@ namespace KRF.Web.Controllers
 
         public ActionResult ImportProspect(ProspectModel prospectModel)
         {
-            var prospectDTO = (ProspectDTO)TempData["Prospects"];
-            var prospectRepo = ObjectFactory.GetInstance<IProspectManagementRepository>(); ;
-            if (prospectDTO == null)
+            var prospectDto = (ProspectDTO)TempData["Prospects"];
+            var prospectRepo = ObjectFactory.GetInstance<IProspectManagementRepository>();
+            if (prospectDto == null)
             {
-                prospectDTO = prospectRepo.GetProspects();
+                prospectDto = prospectRepo.GetProspects();
             }
 
-            var cities = prospectDTO.Cities.ToDictionary(k => k.Description.Trim());
-            var states = prospectDTO.States.ToDictionary(k => k.Abbreviation.Trim());
-            var existingProspect = prospectDTO.Propects.ToDictionary(k => k.FirstName.Trim() + k.LastName.Trim() + k.Address1.Trim());
+            var cities = prospectDto.Cities.ToDictionary(k => k.Description.Trim());
+            var states = prospectDto.States.ToDictionary(k => k.Abbreviation.Trim());
+            var existingProspect = prospectDto.Propects.ToDictionary(k => k.FirstName.Trim() + k.LastName.Trim() + k.Address1.Trim());
             IList<Prospect> prospects = new List<Prospect>();
 
             foreach (var p in prospectModel.ProspectData)

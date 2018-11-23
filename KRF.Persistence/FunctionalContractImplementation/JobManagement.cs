@@ -15,6 +15,7 @@ using System.IO;
 using System.Linq;
 using System.Transactions;
 using System.Xml.Linq;
+using KRF.Core.Entities.Product;
 
 namespace KRF.Persistence.FunctionalContractImplementation
 {
@@ -359,10 +360,10 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <summary>
         /// Set Task status
         /// </summary>
-        /// <param name="taskID"></param>
+        /// <param name="taskId"></param>
         /// <param name="isCompleted"></param>
         /// <returns></returns>
-        public bool UpdateTaskStatus(int taskID, bool isCompleted)
+        public bool UpdateTaskStatus(int taskId, bool isCompleted)
         {
             using (var transactionScope = new TransactionScope())
             {
@@ -370,7 +371,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
                 using (var conn = dbConnection.CreateConnection())
                 {
                     conn.Open();
-                    var jobTaskCurrent = conn.Get<JobTask>(taskID);
+                    var jobTaskCurrent = conn.Get<JobTask>(taskId);
                     jobTaskCurrent.IsCompleted = isCompleted;
                     jobTaskCurrent.DateUpdated = DateTime.Now;
 
@@ -384,11 +385,11 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <summary>
         /// Calculate Estimated Labor Hours
         /// </summary>
-        /// <param name="jobID"></param>
+        /// <param name="jobId"></param>
         /// <param name="jobStartDate"></param>
         /// <param name="jobAssigments"></param>
         /// <returns></returns>
-        public decimal CalculateEstimatedLaborCost(int jobID, DateTime jobStartDate, List<JobAssignment> jobAssigments)
+        public decimal CalculateEstimatedLaborCost(int jobId, DateTime jobStartDate, List<JobAssignment> jobAssigments)
         {
             decimal totalLaborCost = 0;
             decimal estimatedLaborHours = 0;
@@ -399,7 +400,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
                 using (var conn = dbConnection.CreateConnection())
                 {
                     conn.Open();
-                    var job = conn.Get<Job>(jobID);
+                    var job = conn.Get<Job>(jobId);
                     if (job != null)
                     {
                         var estimate =
@@ -449,7 +450,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
             }
             catch (Exception ex)
             {
-
+                Console.WriteLine(ex);
             }
 
             return estimatedLaborHours;
@@ -467,11 +468,11 @@ namespace KRF.Persistence.FunctionalContractImplementation
             var jobEndDate = new DateTime();
             try
             {
-                var totalHours = estimatedWorkgHours / (decimal) avgWorkingHours;
+                var totalHours = estimatedWorkgHours / avgWorkingHours;
                 var intPart = 0;
                 decimal decimalPart = 0;
-                intPart = (int) Decimal.Truncate(totalHours);
-                decimalPart = totalHours - Decimal.Truncate(intPart);
+                intPart = (int) decimal.Truncate(totalHours);
+                decimalPart = totalHours - decimal.Truncate(intPart);
                 var businessDays = intPart;
                 if (decimalPart > 0)
                 {
@@ -486,48 +487,48 @@ namespace KRF.Persistence.FunctionalContractImplementation
             }
             catch (Exception ex)
             {
-
+                Console.WriteLine(ex);
             }
 
             return jobEndDate;
         }
 
-        public DateTime CalculateBusinessDaysFromInputDate(DateTime StartDate, int NumberOfBusinessDays)
+        public DateTime CalculateBusinessDaysFromInputDate(DateTime startDate, int numberOfBusinessDays)
         {
             //Knock the start date down one day if it is on a weekend.
-            if (StartDate.DayOfWeek == DayOfWeek.Saturday |
-                StartDate.DayOfWeek == DayOfWeek.Sunday)
+            if (startDate.DayOfWeek == DayOfWeek.Saturday |
+                startDate.DayOfWeek == DayOfWeek.Sunday)
             {
-                NumberOfBusinessDays -= 1;
+                numberOfBusinessDays -= 1;
             }
 
-            if (StartDate.DayOfWeek == DayOfWeek.Monday |
-                StartDate.DayOfWeek == DayOfWeek.Tuesday |
-                StartDate.DayOfWeek == DayOfWeek.Wednesday |
-                StartDate.DayOfWeek == DayOfWeek.Thursday |
-                StartDate.DayOfWeek == DayOfWeek.Friday)
+            if (startDate.DayOfWeek == DayOfWeek.Monday |
+                startDate.DayOfWeek == DayOfWeek.Tuesday |
+                startDate.DayOfWeek == DayOfWeek.Wednesday |
+                startDate.DayOfWeek == DayOfWeek.Thursday |
+                startDate.DayOfWeek == DayOfWeek.Friday)
             {
-                NumberOfBusinessDays = NumberOfBusinessDays - 1;
+                numberOfBusinessDays = numberOfBusinessDays - 1;
             }
 
-            var index = 0;
+            int index;
 
-            for (index = 1; index <= NumberOfBusinessDays; index++)
+            for (index = 1; index <= numberOfBusinessDays; index++)
             {
-                switch (StartDate.DayOfWeek)
+                switch (startDate.DayOfWeek)
                 {
                     case DayOfWeek.Sunday:
-                        StartDate = StartDate.AddDays(2);
+                        startDate = startDate.AddDays(2);
                         break;
                     case DayOfWeek.Monday:
                     case DayOfWeek.Tuesday:
                     case DayOfWeek.Wednesday:
                     case DayOfWeek.Thursday:
                     case DayOfWeek.Friday:
-                        StartDate = StartDate.AddDays(1);
+                        startDate = startDate.AddDays(1);
                         break;
                     case DayOfWeek.Saturday:
-                        StartDate = StartDate.AddDays(3);
+                        startDate = startDate.AddDays(3);
                         break;
                 }
             }
@@ -536,32 +537,32 @@ namespace KRF.Persistence.FunctionalContractImplementation
             //If so move it ahead to Monday.
             //You could also bump it back to the Friday before if you desired to. 
             //Just change the code to -2 and -1.
-            if (StartDate.DayOfWeek == DayOfWeek.Saturday)
+            if (startDate.DayOfWeek == DayOfWeek.Saturday)
             {
-                StartDate = StartDate.AddDays(2);
+                startDate = startDate.AddDays(2);
             }
-            else if (StartDate.DayOfWeek == DayOfWeek.Sunday)
+            else if (startDate.DayOfWeek == DayOfWeek.Sunday)
             {
-                StartDate = StartDate.AddDays(1);
+                startDate = startDate.AddDays(1);
             }
 
-            return StartDate;
+            return startDate;
         }
 
         /// <summary>
         /// Mark job status as complete
         /// </summary>
-        /// <param name="jobID"></param>
+        /// <param name="jobId"></param>
         /// <param name="tobeEnabled"></param>
         /// <returns></returns>
-        public bool ToggleJobStatus(int jobID, bool tobeEnabled)
+        public bool ToggleJobStatus(int jobId, bool tobeEnabled)
         {
             var dbConnection = new DataAccessFactory();
             using (var conn = dbConnection.CreateConnection())
 
             {
                 conn.Open();
-                var job = conn.Get<Job>(jobID);
+                var job = conn.Get<Job>(jobId);
                 if (tobeEnabled)
                 {
                     job.JobStatusID = (int) Core.Entities.MISC.Status.Complete;
@@ -577,9 +578,9 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <summary>
         /// Get List of Job POs
         /// </summary>
-        /// <param name="jobID"></param>
+        /// <param name="jobId"></param>
         /// <returns></returns>
-        public List<JobPO> GetJobPOs(int jobID)
+        public List<JobPO> GetJobPOs(int jobId)
         {
             var dbConnection = new DataAccessFactory();
             using (var conn = dbConnection.CreateConnection())
@@ -588,7 +589,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
                 conn.Open();
                 var predicateGroup = new PredicateGroup
                     {Operator = GroupOperator.And, Predicates = new List<IPredicate>()};
-                predicateGroup.Predicates.Add(Predicates.Field<JobPO>(s => s.JobID, Operator.Eq, jobID));
+                predicateGroup.Predicates.Add(Predicates.Field<JobPO>(s => s.JobID, Operator.Eq, jobId));
                 predicateGroup.Predicates.Add(Predicates.Field<JobPO>(s => s.Active, Operator.Eq, true));
                 IList<JobPO> jobPOs = conn.GetList<JobPO>(predicateGroup).ToList();
                 return jobPOs.ToList();
@@ -598,20 +599,20 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <summary>
         /// Toggle job PO status
         /// </summary>
-        /// <param name="poID"></param>
+        /// <param name="poId"></param>
         /// <param name="active"></param>
         /// <returns></returns>
-        public bool ToggleJobPOStatus(int poID, bool active)
+        public bool ToggleJobPOStatus(int poId, bool active)
         {
             var dbConnection = new DataAccessFactory();
             using (var conn = dbConnection.CreateConnection())
 
             {
                 conn.Open();
-                var jobPO = conn.Get<JobPO>(poID);
-                jobPO.Active = active;
-                jobPO.DateUpdated = DateTime.Now;
-                var isUpdated = conn.Update(jobPO);
+                var jobPo = conn.Get<JobPO>(poId);
+                jobPo.Active = active;
+                jobPo.DateUpdated = DateTime.Now;
+                var isUpdated = conn.Update(jobPo);
                 return isUpdated;
             }
         }
@@ -619,25 +620,25 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <summary>
         /// Get List of Job PO
         /// </summary>
-        /// <param name="poID"></param>
+        /// <param name="poId"></param>
         /// <returns></returns>
-        public JobDTO GetJobPO(int poID)
+        public JobDTO GetJobPO(int poId)
         {
             var dbConnection = new DataAccessFactory();
             using (var conn = dbConnection.CreateConnection())
 
             {
                 conn.Open();
-                var jobPO = conn.Get<JobPO>(poID);
+                var jobPo = conn.Get<JobPO>(poId);
                 var predicateGroup = new PredicateGroup
                     {Operator = GroupOperator.And, Predicates = new List<IPredicate>()};
-                predicateGroup.Predicates.Add(Predicates.Field<POEstimateItem>(s => s.POID, Operator.Eq, poID));
-                IList<POEstimateItem> jobPOItems = conn.GetList<POEstimateItem>(predicateGroup).ToList();
+                predicateGroup.Predicates.Add(Predicates.Field<POEstimateItem>(s => s.POID, Operator.Eq, poId));
+                IList<POEstimateItem> jobPoItems = conn.GetList<POEstimateItem>(predicateGroup).ToList();
 
                 return new JobDTO()
                 {
-                    JobPO = jobPO,
-                    POEstimateItems = jobPOItems.ToList()
+                    JobPO = jobPo,
+                    POEstimateItems = jobPoItems.ToList()
                 };
             }
         }
@@ -645,10 +646,10 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <summary>
         /// Create Job PO
         /// </summary>
-        /// <param name="jobPO"></param>
+        /// <param name="jobPo"></param>
         /// <param name="poEstimateItems"></param>
         /// <returns></returns>
-        public int CreateJobPO(JobPO jobPO, List<POEstimateItem> poEstimateItems)
+        public int CreateJobPO(JobPO jobPo, List<POEstimateItem> poEstimateItems)
         {
             using (var transactionScope = new TransactionScope())
             {
@@ -657,24 +658,24 @@ namespace KRF.Persistence.FunctionalContractImplementation
 
                 {
                     conn.Open();
-                    jobPO.DateCreated = DateTime.Now;
-                    jobPO.Active = true;
+                    jobPo.DateCreated = DateTime.Now;
+                    jobPo.Active = true;
 
-                    var jobPOLast = conn.GetList<JobPO>().OrderByDescending(p => p.POID).FirstOrDefault();
+                    var jobPoLast = conn.GetList<JobPO>().OrderByDescending(p => p.POID).FirstOrDefault();
                     var pocodeid = 0;
-                    if (jobPOLast != null)
+                    if (jobPoLast != null)
                     {
-                        if (jobPOLast.POCode.Contains("-"))
+                        if (jobPoLast.POCode.Contains("-"))
                         {
-                            pocodeid = Convert.ToInt32(jobPOLast.POCode.Split('-')[1]);
+                            pocodeid = Convert.ToInt32(jobPoLast.POCode.Split('-')[1]);
                         }
                     }
 
-                    var POCode = "PO-";
+                    var poCode = "PO-";
                     pocodeid = (pocodeid == 0 ? 1000 : (pocodeid + 1));
-                    POCode += pocodeid;
-                    jobPO.POCode = POCode;
-                    var id = conn.Insert(jobPO);
+                    poCode += pocodeid;
+                    jobPo.POCode = poCode;
+                    var id = conn.Insert(jobPo);
 
                     foreach (var poItem in poEstimateItems)
                     {
@@ -691,10 +692,10 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <summary>
         /// Edit Job PO
         /// </summary>
-        /// <param name="jobPO"></param>
+        /// <param name="jobPo"></param>
         /// <param name="poEstimateItems"></param>
         /// <returns></returns>
-        public bool EditJobPO(JobPO jobPO, List<POEstimateItem> poEstimateItems)
+        public bool EditJobPO(JobPO jobPo, List<POEstimateItem> poEstimateItems)
         {
             using (var transactionScope = new TransactionScope())
             {
@@ -702,20 +703,20 @@ namespace KRF.Persistence.FunctionalContractImplementation
                 using (var conn = dbConnection.CreateConnection())
 
                 {
-                    var id = jobPO.POID;
-                    var jobPOCurrent = conn.Get<JobPO>(id);
-                    jobPO.DateCreated = jobPOCurrent.DateCreated;
-                    jobPO.Active = jobPOCurrent.Active;
-                    jobPO.DateUpdated = DateTime.Now;
+                    var id = jobPo.POID;
+                    var jobPoCurrent = conn.Get<JobPO>(id);
+                    jobPo.DateCreated = jobPoCurrent.DateCreated;
+                    jobPo.Active = jobPoCurrent.Active;
+                    jobPo.DateUpdated = DateTime.Now;
 
 
                     var predicateGroup = new PredicateGroup
                         {Operator = GroupOperator.And, Predicates = new List<IPredicate>()};
                     predicateGroup.Predicates.Add(Predicates.Field<POEstimateItem>(s => s.POID, Operator.Eq, id));
-                    IList<POEstimateItem> jobPOItems = conn.GetList<POEstimateItem>(predicateGroup).ToList();
-                    foreach (var jobPOItem in jobPOItems)
+                    IList<POEstimateItem> jobPoItems = conn.GetList<POEstimateItem>(predicateGroup).ToList();
+                    foreach (var jobPoItem in jobPoItems)
                     {
-                        conn.Delete(jobPOItem);
+                        conn.Delete(jobPoItem);
                     }
 
                     if (poEstimateItems != null)
@@ -727,7 +728,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
                         }
                     }
 
-                    var isEdited = conn.Update(jobPO);
+                    var isEdited = conn.Update(jobPo);
                     transactionScope.Complete();
                     return isEdited;
                 }
@@ -749,9 +750,9 @@ namespace KRF.Persistence.FunctionalContractImplementation
             }
         }
 
-        public byte[] CreatePODocument(int poID)
+        public byte[] CreatePODocument(int poId)
         {
-            JobPO jobPO = null;
+            JobPO jobPo = null;
             Job job = null;
             KRF.Core.Entities.Sales.CustomerAddress custAdd = null;
             Core.Entities.Sales.Lead lead = null;
@@ -767,29 +768,29 @@ namespace KRF.Persistence.FunctionalContractImplementation
             {
                 conn.Open();
 
-                jobPO = conn.Get<JobPO>(poID);
-                job = conn.Get<Job>(jobPO.JobID);
+                jobPo = conn.Get<JobPO>(poId);
+                job = conn.Get<Job>(jobPo.JobID);
                 custAdd = conn.Get<KRF.Core.Entities.Sales.CustomerAddress>(job.JobAddressID);
                 city = conn.Get<KRF.Core.Entities.ValueList.City>(custAdd.City);
                 state = conn.Get<State>(custAdd.State);
                 lead = conn.Get<Core.Entities.Sales.Lead>(job.LeadID);
-                vendor = conn.Get<Vendor>(jobPO.VendorID);
+                vendor = conn.Get<Vendor>(jobPo.VendorID);
 
                 var predicateGroup = new PredicateGroup
                     {Operator = GroupOperator.And, Predicates = new List<IPredicate>()};
-                predicateGroup.Predicates.Add(Predicates.Field<POEstimateItem>(s => s.POID, Operator.Eq, jobPO.POID));
+                predicateGroup.Predicates.Add(Predicates.Field<POEstimateItem>(s => s.POID, Operator.Eq, jobPo.POID));
 
                 poEstimates = conn.GetList<POEstimateItem>(predicateGroup).ToList();
             }
 
-            var estDTO = estimateRepo.Select(jobPO.EstimateID ?? 0);
+            var estDto = estimateRepo.Select(jobPo.EstimateID ?? 0);
 
             var document = GetJobDocumentByType(-1); // -1 = Purchase Order Document
             var byteArray = document.Text;
 
             using (var mem = new MemoryStream())
             {
-                mem.Write(byteArray, 0, (int) byteArray.Length);
+                mem.Write(byteArray, 0, byteArray.Length);
                 using (var wordDoc =
                     WordprocessingDocument.Open(mem, true))
                 {
@@ -797,7 +798,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
                         "http://schemas.openxmlformats.org/wordprocessingml/2006/main";
 
 
-                    IDictionary<String, BookmarkStart> bookmarkMap = new Dictionary<String, BookmarkStart>();
+                    IDictionary<string, BookmarkStart> bookmarkMap = new Dictionary<string, BookmarkStart>();
 
                     foreach (var bookmarkStart in wordDoc.MainDocumentPart.RootElement
                         .Descendants<BookmarkStart>())
@@ -814,7 +815,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
                             {
                                 if (bookmarkStart.Name.ToString() == "PONO")
                                 {
-                                    bookmarkText.GetFirstChild<Text>().Text = jobPO.POCode;
+                                    bookmarkText.GetFirstChild<Text>().Text = jobPo.POCode;
                                 }
 
                                 if (bookmarkStart.Name.ToString() == "CURRENTDATE")
@@ -872,7 +873,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
                                 if (bookmarkStart.Name.ToString() == "DELIVERYDATE")
                                 {
                                     bookmarkText.GetFirstChild<Text>().Text =
-                                        String.Format("{0:MMMM dd, yyyy}", jobPO.DeliveryDate);
+                                        string.Format("{0:MMMM dd, yyyy}", jobPo.DeliveryDate);
                                 }
 
                                 if (bookmarkStart.Name.ToString() == "VENDOREMAIL")
@@ -882,7 +883,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
 
                                 if (bookmarkStart.Name.ToString() == "VENDORREP")
                                 {
-                                    bookmarkText.GetFirstChild<Text>().Text = jobPO.VendorRep;
+                                    bookmarkText.GetFirstChild<Text>().Text = jobPo.VendorRep;
                                 }
 
                                 //Job Address
@@ -924,14 +925,14 @@ namespace KRF.Persistence.FunctionalContractImplementation
 
                                 if (bookmarkStart.Name.ToString() == "ITEMTOTALAMOUNT")
                                 {
-                                    bookmarkText.GetFirstChild<Text>().Text = jobPO.TotalAmount.ToString();
+                                    bookmarkText.GetFirstChild<Text>().Text = jobPo.TotalAmount.ToString();
                                 }
 
                                 if (bookmarkStart.Name.ToString() == "PERCENTTOTAL")
                                 {
-                                    var percentTotal = (jobPO.TotalAmount * 6) / 100;
+                                    var percentTotal = (jobPo.TotalAmount * 6) / 100;
                                     percentTotal = Math.Round(percentTotal, 2);
-                                    var total = jobPO.TotalAmount + percentTotal;
+                                    var total = jobPo.TotalAmount + percentTotal;
                                     bookmarkText.GetFirstChild<Text>().Text = (percentTotal).ToString();
 
                                     var bookmarkSt = bookmarkMap["TOTAL"];
@@ -949,7 +950,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
                     var maxrows = poEstimates.Count() < 15 ? poEstimates.Count() : 15;
                     for (var rowindex = 1; rowindex <= maxrows; rowindex++)
                     {
-                        var bookmarkStart = bookmarkMap["QTY" + rowindex.ToString()];
+                        var bookmarkStart = bookmarkMap["QTY" + rowindex];
                         var bookmarkText = bookmarkStart.NextSibling<Run>();
                         if (bookmarkText != null)
                         {
@@ -963,7 +964,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
                             runProperties.Append(new Text() {Text = poEstimates[rowindex - 1].Quantity.ToString()});
                         }
 
-                        bookmarkStart = bookmarkMap["UM" + rowindex.ToString()];
+                        bookmarkStart = bookmarkMap["UM" + rowindex];
                         bookmarkText = bookmarkStart.NextSibling<Run>();
                         if (bookmarkText != null)
                         {
@@ -974,8 +975,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
                         var itemDesc = string.Empty;
                         if (poEstimates[rowindex - 1].ItemAssemblyType == 1)
                         {
-                            var assembly = estDTO.Assemblies
-                                .Where(p => p.Id == poEstimates[rowindex - 1].ItemAssemblyID).FirstOrDefault();
+                            var assembly = estDto.Assemblies.FirstOrDefault(p => p.Id == poEstimates[rowindex - 1].ItemAssemblyID);
                             if (assembly != null)
                             {
                                 itemCode = assembly.Code;
@@ -984,7 +984,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
                         }
                         else
                         {
-                            var item = estDTO.Items
+                            var item = estDto.Items
                                 .FirstOrDefault(p => p.Id == poEstimates[rowindex - 1].ItemAssemblyID);
                             if (item != null)
                             {
@@ -993,7 +993,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
                             }
                         }
 
-                        bookmarkStart = bookmarkMap["ITEMCODE" + rowindex.ToString()];
+                        bookmarkStart = bookmarkMap["ITEMCODE" + rowindex];
                         bookmarkText = bookmarkStart.NextSibling<Run>();
                         if (bookmarkText != null)
                         {
@@ -1008,7 +1008,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
                             //bookmarkText.GetFirstChild<Text>().Text = itemCode;
                         }
 
-                        bookmarkStart = bookmarkMap["ITEMDESC" + rowindex.ToString()];
+                        bookmarkStart = bookmarkMap["ITEMDESC" + rowindex];
                         bookmarkText = bookmarkStart.NextSibling<Run>();
                         if (bookmarkText != null)
                         {
@@ -1023,7 +1023,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
                             //bookmarkText.GetFirstChild<Text>().Text = itemDesc;
                         }
 
-                        bookmarkStart = bookmarkMap["ITEMCOST" + rowindex.ToString()];
+                        bookmarkStart = bookmarkMap["ITEMCOST" + rowindex];
                         bookmarkText = bookmarkStart.NextSibling<Run>();
                         if (bookmarkText != null)
                         {
@@ -1038,7 +1038,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
                             //bookmarkText.GetFirstChild<Text>().Text = poEstimates[rowindex - 1].Price.ToString();
                         }
 
-                        bookmarkStart = bookmarkMap["ITEMAMOUNT" + rowindex.ToString()];
+                        bookmarkStart = bookmarkMap["ITEMAMOUNT" + rowindex];
                         bookmarkText = bookmarkStart.NextSibling<Run>();
                         if (bookmarkText != null)
                         {
@@ -1058,7 +1058,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
 
                 var e = new JobDocument
                 {
-                    JobID = jobPO.JobID,
+                    JobID = jobPo.JobID,
                     Name = "Purchase Order.docx",
                     Description = "Purchase Order",
                     UploadDateTime = DateTime.Now,
@@ -1072,25 +1072,25 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <summary>
         /// Get List of Job CO
         /// </summary>
-        /// <param name="coID"></param>
+        /// <param name="coId"></param>
         /// <returns></returns>
-        public JobDTO GetJobCO(int coID)
+        public JobDTO GetJobCO(int coId)
         {
             var dbConnection = new DataAccessFactory();
             using (var conn = dbConnection.CreateConnection())
 
             {
                 conn.Open();
-                var jobCO = conn.Get<JobCO>(coID);
+                var jobCo = conn.Get<JobCO>(coId);
                 var predicateGroup = new PredicateGroup
                     {Operator = GroupOperator.And, Predicates = new List<IPredicate>()};
-                predicateGroup.Predicates.Add(Predicates.Field<COEstimateItem>(s => s.COID, Operator.Eq, coID));
-                IList<COEstimateItem> jobCOItems = conn.GetList<COEstimateItem>(predicateGroup).ToList();
+                predicateGroup.Predicates.Add(Predicates.Field<COEstimateItem>(s => s.COID, Operator.Eq, coId));
+                IList<COEstimateItem> jobCoItems = conn.GetList<COEstimateItem>(predicateGroup).ToList();
 
                 return new JobDTO()
                 {
-                    JobCO = jobCO,
-                    COEstimateItems = jobCOItems.ToList()
+                    JobCO = jobCo,
+                    COEstimateItems = jobCoItems.ToList()
                 };
             }
         }
@@ -1098,9 +1098,9 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <summary>
         /// Get List of Job COs
         /// </summary>
-        /// <param name="jobID"></param>
+        /// <param name="jobId"></param>
         /// <returns></returns>
-        public List<JobCO> GetJobCOs(int jobID)
+        public List<JobCO> GetJobCOs(int jobId)
         {
             var dbConnection = new DataAccessFactory();
             using (var conn = dbConnection.CreateConnection())
@@ -1109,7 +1109,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
                 conn.Open();
                 var predicateGroup = new PredicateGroup
                     {Operator = GroupOperator.And, Predicates = new List<IPredicate>()};
-                predicateGroup.Predicates.Add(Predicates.Field<JobCO>(s => s.JobID, Operator.Eq, jobID));
+                predicateGroup.Predicates.Add(Predicates.Field<JobCO>(s => s.JobID, Operator.Eq, jobId));
                 predicateGroup.Predicates.Add(Predicates.Field<JobCO>(s => s.Active, Operator.Eq, true));
                 IList<JobCO> jobCOs = conn.GetList<JobCO>(predicateGroup).ToList();
                 return jobCOs.ToList();
@@ -1119,10 +1119,10 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <summary>
         /// Create Job CO
         /// </summary>
-        /// <param name="jobCO"></param>
+        /// <param name="jobCo"></param>
         /// <param name="coEstimateItems"></param>
         /// <returns></returns>
-        public int CreateJobCO(JobCO jobCO, List<COEstimateItem> coEstimateItems)
+        public int CreateJobCO(JobCO jobCo, List<COEstimateItem> coEstimateItems)
         {
             using (var transactionScope = new TransactionScope())
             {
@@ -1131,22 +1131,22 @@ namespace KRF.Persistence.FunctionalContractImplementation
 
                 {
                     conn.Open();
-                    jobCO.DateCreated = DateTime.Now;
-                    jobCO.Active = true;
-                    jobCO.SalesRepID = (jobCO.SalesRepID == 0 ? null : jobCO.SalesRepID);
+                    jobCo.DateCreated = DateTime.Now;
+                    jobCo.Active = true;
+                    jobCo.SalesRepID = (jobCo.SalesRepID == 0 ? null : jobCo.SalesRepID);
 
                     var predicateGroup = new PredicateGroup
                         {Operator = GroupOperator.And, Predicates = new List<IPredicate>()};
-                    predicateGroup.Predicates.Add(Predicates.Field<JobCO>(s => s.JobID, Operator.Eq, jobCO.JobID));
-                    var jobCOLast = conn.GetList<JobCO>(predicateGroup).OrderByDescending(p => p.COID)
+                    predicateGroup.Predicates.Add(Predicates.Field<JobCO>(s => s.JobID, Operator.Eq, jobCo.JobID));
+                    var jobCoLast = conn.GetList<JobCO>(predicateGroup).OrderByDescending(p => p.COID)
                         .FirstOrDefault();
-                    var COCode = "CO-";
+                    var coCode = "CO-";
                     var cocodeid = 0;
-                    if (jobCOLast != null)
+                    if (jobCoLast != null)
                     {
-                        if (jobCOLast.COCode.Contains("-"))
+                        if (jobCoLast.COCode.Contains("-"))
                         {
-                            cocodeid = Convert.ToInt32(jobCOLast.COCode.Split('-')[1]);
+                            cocodeid = Convert.ToInt32(jobCoLast.COCode.Split('-')[1]);
                         }
                     }
                     else
@@ -1156,11 +1156,11 @@ namespace KRF.Persistence.FunctionalContractImplementation
 
                     if (cocodeid < 10)
                     {
-                        COCode += "0" + (cocodeid + 1);
+                        coCode += "0" + (cocodeid + 1);
                     }
 
-                    jobCO.COCode = COCode;
-                    var id = conn.Insert(jobCO);
+                    jobCo.COCode = coCode;
+                    var id = conn.Insert(jobCo);
 
                     foreach (var coItem in coEstimateItems)
                     {
@@ -1177,10 +1177,10 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <summary>
         /// Edit Job CO
         /// </summary>
-        /// <param name="jobCO"></param>
+        /// <param name="jobCo"></param>
         /// <param name="coEstimateItems"></param>
         /// <returns></returns>
-        public bool EditJobCO(JobCO jobCO, List<COEstimateItem> coEstimateItems)
+        public bool EditJobCO(JobCO jobCo, List<COEstimateItem> coEstimateItems)
         {
             using (var transactionScope = new TransactionScope())
             {
@@ -1188,21 +1188,21 @@ namespace KRF.Persistence.FunctionalContractImplementation
                 using (var conn = dbConnection.CreateConnection())
 
                 {
-                    var id = jobCO.COID;
-                    var jobCOCurrent = conn.Get<JobCO>(id);
-                    jobCO.DateCreated = jobCOCurrent.DateCreated;
-                    jobCO.Active = jobCOCurrent.Active;
-                    jobCO.DateUpdated = DateTime.Now;
-                    jobCO.SalesRepID = (jobCO.SalesRepID == 0 ? null : jobCO.SalesRepID);
+                    var id = jobCo.COID;
+                    var jobCoCurrent = conn.Get<JobCO>(id);
+                    jobCo.DateCreated = jobCoCurrent.DateCreated;
+                    jobCo.Active = jobCoCurrent.Active;
+                    jobCo.DateUpdated = DateTime.Now;
+                    jobCo.SalesRepID = (jobCo.SalesRepID == 0 ? null : jobCo.SalesRepID);
 
 
                     var predicateGroup = new PredicateGroup
                         {Operator = GroupOperator.And, Predicates = new List<IPredicate>()};
                     predicateGroup.Predicates.Add(Predicates.Field<COEstimateItem>(s => s.COID, Operator.Eq, id));
-                    IList<COEstimateItem> jobCOItems = conn.GetList<COEstimateItem>(predicateGroup).ToList();
-                    foreach (var jobCOItem in jobCOItems)
+                    IList<COEstimateItem> jobCoItems = conn.GetList<COEstimateItem>(predicateGroup).ToList();
+                    foreach (var jobCoItem in jobCoItems)
                     {
-                        conn.Delete(jobCOItem);
+                        conn.Delete(jobCoItem);
                     }
 
                     if (coEstimateItems != null)
@@ -1214,7 +1214,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
                         }
                     }
 
-                    var isEdited = conn.Update(jobCO);
+                    var isEdited = conn.Update(jobCo);
                     transactionScope.Complete();
                     return isEdited;
                 }
@@ -1224,20 +1224,20 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <summary>
         /// Toggle job CO status
         /// </summary>
-        /// <param name="coID"></param>
+        /// <param name="coId"></param>
         /// <param name="active"></param>
         /// <returns></returns>
-        public bool ToggleJobCOStatus(int coID, bool active)
+        public bool ToggleJobCOStatus(int coId, bool active)
         {
             var dbConnection = new DataAccessFactory();
             using (var conn = dbConnection.CreateConnection())
 
             {
                 conn.Open();
-                var jobCO = conn.Get<JobCO>(coID);
-                jobCO.Active = active;
-                jobCO.DateUpdated = DateTime.Now;
-                var isUpdated = conn.Update(jobCO);
+                var jobCo = conn.Get<JobCO>(coId);
+                jobCo.Active = active;
+                jobCo.DateUpdated = DateTime.Now;
+                var isUpdated = conn.Update(jobCo);
                 return isUpdated;
             }
         }
@@ -1247,21 +1247,21 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// </summary>
         /// <param name="poID"></param>
         /// <returns></returns>
-        public byte[] CreateCODocument(int coID)
+        public byte[] CreateCODocument(int coId)
         {
-            JobCO jobCO = null;
-            Job job = null;
-            Core.Entities.Sales.Lead cust = null;
-            KRF.Core.Entities.Sales.CustomerAddress custAdd = null;
-            var coEstimates = new List<COEstimateItem>();
+            JobCO jobCo;
+            Job job;
+            Core.Entities.Sales.Lead customer;
+            KRF.Core.Entities.Sales.CustomerAddress customerAddress;
+            List<COEstimateItem> coEstimates;
             var estimateRepo = ObjectFactory.GetInstance<IEstimateManagementRepository>();
-            KRF.Core.Entities.ValueList.City city = null;
-            State state = null;
-            KRF.Core.Entities.ValueList.City custcity = null;
-            State custstate = null;
-            Employee rep = null;
-            var items = new List<Core.Entities.Product.Item>();
-            var assemblies = new List<Core.Entities.Product.Assembly>();
+            KRF.Core.Entities.ValueList.City city;
+            State state;
+            KRF.Core.Entities.ValueList.City customerCity;
+            State customerState;
+            Employee rep;
+            List<Item> items;
+            List<Assembly> assemblies;
 
             var dbConnection = new DataAccessFactory();
             using (var conn = dbConnection.CreateConnection())
@@ -1269,25 +1269,25 @@ namespace KRF.Persistence.FunctionalContractImplementation
             {
                 conn.Open();
 
-                jobCO = conn.Get<JobCO>(coID);
-                job = conn.Get<Job>(jobCO.JobID);
-                cust = conn.Get<Core.Entities.Sales.Lead>(job.LeadID);
-                custAdd = conn.Get<KRF.Core.Entities.Sales.CustomerAddress>(job.JobAddressID);
-                city = conn.Get<KRF.Core.Entities.ValueList.City>(custAdd.City);
-                state = conn.Get<State>(custAdd.State);
-                custcity = conn.Get<KRF.Core.Entities.ValueList.City>(cust.BillCity);
-                custstate = conn.Get<State>(cust.BillState);
-                items = conn.GetList<Core.Entities.Product.Item>().ToList();
-                assemblies = conn.GetList<Core.Entities.Product.Assembly>().ToList();
+                jobCo = conn.Get<JobCO>(coId);
+                job = conn.Get<Job>(jobCo.JobID);
+                customer = conn.Get<Core.Entities.Sales.Lead>(job.LeadID);
+                customerAddress = conn.Get<KRF.Core.Entities.Sales.CustomerAddress>(job.JobAddressID);
+                city = conn.Get<KRF.Core.Entities.ValueList.City>(customerAddress.City);
+                state = conn.Get<State>(customerAddress.State);
+                customerCity = conn.Get<KRF.Core.Entities.ValueList.City>(customer.BillCity);
+                customerState = conn.Get<State>(customer.BillState);
+                items = conn.GetList<Item>().ToList();
+                assemblies = conn.GetList<Assembly>().ToList();
 
 
                 var predicateGroup = new PredicateGroup
                     {Operator = GroupOperator.And, Predicates = new List<IPredicate>()};
-                predicateGroup.Predicates.Add(Predicates.Field<COEstimateItem>(s => s.COID, Operator.Eq, jobCO.COID));
+                predicateGroup.Predicates.Add(Predicates.Field<COEstimateItem>(s => s.COID, Operator.Eq, jobCo.COID));
                 coEstimates = conn.GetList<COEstimateItem>(predicateGroup).ToList();
 
                 predicateGroup = new PredicateGroup {Operator = GroupOperator.And, Predicates = new List<IPredicate>()};
-                predicateGroup.Predicates.Add(Predicates.Field<Employee>(s => s.EmpId, Operator.Eq, jobCO.SalesRepID));
+                predicateGroup.Predicates.Add(Predicates.Field<Employee>(s => s.EmpId, Operator.Eq, jobCo.SalesRepID));
                 rep = conn.GetList<Employee>(predicateGroup).FirstOrDefault();
 
             }
@@ -1297,7 +1297,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
 
             using (var mem = new MemoryStream())
             {
-                mem.Write(byteArray, 0, (int) byteArray.Length);
+                mem.Write(byteArray, 0, byteArray.Length);
                 using (var wordDoc =
                     WordprocessingDocument.Open(mem, true))
                 {
@@ -1305,7 +1305,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
                         "http://schemas.openxmlformats.org/wordprocessingml/2006/main";
 
 
-                    IDictionary<String, BookmarkStart> bookmarkMap = new Dictionary<String, BookmarkStart>();
+                    IDictionary<string, BookmarkStart> bookmarkMap = new Dictionary<string, BookmarkStart>();
 
                     foreach (var bookmarkStart in wordDoc.MainDocumentPart.RootElement
                         .Descendants<BookmarkStart>())
@@ -1322,48 +1322,48 @@ namespace KRF.Persistence.FunctionalContractImplementation
                             {
                                 if (bookmarkStart.Name.ToString() == "CONO")
                                 {
-                                    bookmarkText.GetFirstChild<Text>().Text = jobCO.COCode;
+                                    bookmarkText.GetFirstChild<Text>().Text = jobCo.COCode;
                                 }
 
                                 if (bookmarkStart.Name.ToString() == "DATE")
                                 {
-                                    bookmarkText.GetFirstChild<Text>().Text = jobCO.Date.ToShortDateString();
+                                    bookmarkText.GetFirstChild<Text>().Text = jobCo.Date.ToShortDateString();
                                 }
 
                                 if (bookmarkStart.Name.ToString() == "CUSTNAME")
                                 {
-                                    bookmarkText.GetFirstChild<Text>().Text = cust.BusinessName;
+                                    bookmarkText.GetFirstChild<Text>().Text = customer.BusinessName;
                                 }
 
                                 if (bookmarkStart.Name.ToString() == "CUSTADDRESS")
                                 {
-                                    if (cust != null)
+                                    if (customer != null)
                                     {
-                                        bookmarkText.AppendChild(new Text(cust.BillAddress1));
-                                        if (!string.IsNullOrEmpty(cust.BillAddress2))
+                                        bookmarkText.AppendChild(new Text(customer.BillAddress1));
+                                        if (!string.IsNullOrEmpty(customer.BillAddress2))
                                         {
                                             bookmarkText.AppendChild(new Break());
-                                            bookmarkText.AppendChild(new Text(cust.BillAddress2));
+                                            bookmarkText.AppendChild(new Text(customer.BillAddress2));
                                         }
 
                                         bookmarkText.AppendChild(new Break());
                                         bookmarkText.AppendChild(new Text(
-                                            (custcity != null ? custcity.Description : "") + ", " +
-                                            (custstate != null ? custstate.Abbreviation.Trim() : "") + " " +
-                                            cust.BillZipCode));
+                                            (customerCity != null ? customerCity.Description : "") + ", " +
+                                            (customerState != null ? customerState.Abbreviation.Trim() : "") + " " +
+                                            customer.BillZipCode));
                                     }
                                 }
 
                                 if (bookmarkStart.Name.ToString() == "PHONE")
                                 {
-                                    bookmarkText.GetFirstChild<Text>().Text = (cust != null
-                                        ? Common.EncryptDecrypt.formatPhoneNumber(cust.Telephone, "(###) ###-####")
+                                    bookmarkText.GetFirstChild<Text>().Text = (customer != null
+                                        ? Common.EncryptDecrypt.formatPhoneNumber(customer.Telephone, "(###) ###-####")
                                         : "");
                                 }
 
                                 if (bookmarkStart.Name.ToString() == "SALESREPEMAIL1")
                                 {
-                                    bookmarkText.GetFirstChild<Text>().Text = jobCO.SalesRepEmail;
+                                    bookmarkText.GetFirstChild<Text>().Text = jobCo.SalesRepEmail;
                                 }
 
                                 if (bookmarkStart.Name.ToString() == "SALESREP")
@@ -1375,7 +1375,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
                                 //Job Address
                                 if (bookmarkStart.Name.ToString() == "ADDRESS")
                                 {
-                                    bookmarkText.GetFirstChild<Text>().Text = (custAdd != null ? custAdd.Address1 : "");
+                                    bookmarkText.GetFirstChild<Text>().Text = (customerAddress != null ? customerAddress.Address1 : "");
                                 }
 
                                 if (bookmarkStart.Name.ToString() == "CITYSTATEZIP")
@@ -1383,24 +1383,24 @@ namespace KRF.Persistence.FunctionalContractImplementation
                                     bookmarkText.GetFirstChild<Text>().Text =
                                         (city != null ? city.Description + ", " : "") +
                                         (state != null ? state.Abbreviation.Trim() : "") + " " +
-                                        (custAdd != null ? custAdd.ZipCode : "");
+                                        (customerAddress != null ? customerAddress.ZipCode : "");
                                 }
 
                                 //Job Info
                                 if (bookmarkStart.Name.ToString() == "PROJECTNAME")
                                 {
-                                    bookmarkText.GetFirstChild<Text>().Text = job.Title.ToString();
+                                    bookmarkText.GetFirstChild<Text>().Text = job.Title;
                                 }
 
                                 if (bookmarkStart.Name.ToString() == "NAME")
                                 {
-                                    bookmarkText.GetFirstChild<Text>().Text = (cust != null ? cust.LeadName : "");
+                                    bookmarkText.GetFirstChild<Text>().Text = (customer != null ? customer.LeadName : "");
                                 }
 
                                 if (bookmarkStart.Name.ToString() == "TOTAL")
                                 {
                                     bookmarkText.GetFirstChild<Text>().Text =
-                                        "$" + jobCO.TotalAmount.ToString("N", new CultureInfo("en-US"));
+                                        "$" + jobCo.TotalAmount.ToString("N", new CultureInfo("en-US"));
                                 }
                             }
                         }
@@ -1409,7 +1409,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
                     var maxrows = coEstimates.Count() < 15 ? coEstimates.Count() : 15;
                     for (var rowindex = 1; rowindex <= maxrows; rowindex++)
                     {
-                        var bookmarkStart = bookmarkMap["QTY" + rowindex.ToString()];
+                        var bookmarkStart = bookmarkMap["QTY" + rowindex];
                         var bookmarkText = bookmarkStart.NextSibling<Run>();
                         if (bookmarkText != null)
                         {
@@ -1420,8 +1420,8 @@ namespace KRF.Persistence.FunctionalContractImplementation
                         var itemDesc = string.Empty;
                         if (coEstimates[rowindex - 1].ItemAssemblyType == 1)
                         {
-                            var assembly = assemblies.Where(p => p.Id == coEstimates[rowindex - 1].ItemAssemblyID)
-                                .FirstOrDefault();
+                            var assembly = assemblies
+                                .FirstOrDefault(p => p.Id == coEstimates[rowindex - 1].ItemAssemblyID);
                             if (assembly != null)
                             {
                                 itemCode = assembly.Code;
@@ -1430,7 +1430,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
                         }
                         else
                         {
-                            var item = items.Where(p => p.Id == coEstimates[rowindex - 1].ItemAssemblyID)
+                            var item = Enumerable.Where(items, p => p.Id == coEstimates[rowindex - 1].ItemAssemblyID)
                                 .FirstOrDefault();
                             if (item != null)
                             {
@@ -1439,21 +1439,21 @@ namespace KRF.Persistence.FunctionalContractImplementation
                             }
                         }
 
-                        bookmarkStart = bookmarkMap["DESC" + rowindex.ToString()];
+                        bookmarkStart = bookmarkMap["DESC" + rowindex];
                         bookmarkText = bookmarkStart.NextSibling<Run>();
                         if (bookmarkText != null)
                         {
                             bookmarkText.GetFirstChild<Text>().Text = itemCode + " - " + itemDesc;
                         }
 
-                        bookmarkStart = bookmarkMap["COST" + rowindex.ToString()];
+                        bookmarkStart = bookmarkMap["COST" + rowindex];
                         bookmarkText = bookmarkStart.NextSibling<Run>();
                         if (bookmarkText != null)
                         {
                             bookmarkText.GetFirstChild<Text>().Text = coEstimates[rowindex - 1].Price.ToString();
                         }
 
-                        bookmarkStart = bookmarkMap["AMOUNT" + rowindex.ToString()];
+                        bookmarkStart = bookmarkMap["AMOUNT" + rowindex];
                         bookmarkText = bookmarkStart.NextSibling<Run>();
                         if (bookmarkText != null)
                         {
@@ -1494,9 +1494,9 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <summary>
         /// Get List of Job Documents
         /// </summary>
-        /// <param name="jobID"></param>
+        /// <param name="jobId"></param>
         /// <returns></returns>
-        public List<JobDocument> GetJobDocuments(int jobID)
+        public List<JobDocument> GetJobDocuments(int jobId)
         {
             var dbConnection = new DataAccessFactory();
             using (var conn = dbConnection.CreateConnection())
@@ -1505,7 +1505,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
                 conn.Open();
                 var predicateGroup = new PredicateGroup
                     {Operator = GroupOperator.And, Predicates = new List<IPredicate>()};
-                predicateGroup.Predicates.Add(Predicates.Field<JobDocument>(s => s.JobID, Operator.Eq, jobID));
+                predicateGroup.Predicates.Add(Predicates.Field<JobDocument>(s => s.JobID, Operator.Eq, jobId));
                 predicateGroup.Predicates.Add(Predicates.Field<JobDocument>(s => s.Type, Operator.Gt, 0));
                 IList<JobDocument> jobDocuments = conn.GetList<JobDocument>(predicateGroup).ToList();
                 return jobDocuments.ToList();
@@ -1515,15 +1515,15 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <summary>
         /// Get a job document
         /// </summary>
-        /// <param name="jobDocumentID"></param>
+        /// <param name="jobDocumentId"></param>
         /// <returns></returns>
-        public JobDocument GetJobDocument(int jobDocumentID)
+        public JobDocument GetJobDocument(int jobDocumentId)
         {
             var dbConnection = new DataAccessFactory();
             using (var conn = dbConnection.CreateConnection())
 
             {
-                var jobDocument = conn.Get<JobDocument>(jobDocumentID);
+                var jobDocument = conn.Get<JobDocument>(jobDocumentId);
                 return jobDocument;
             }
         }
@@ -1565,9 +1565,9 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <summary>
         /// Delete job document by jobDocumentID
         /// </summary>
-        /// <param name="jobDocumentID"></param>
+        /// <param name="jobDocumentId"></param>
         /// <returns></returns>
-        public bool DeleteJobDocument(int jobDocumentID)
+        public bool DeleteJobDocument(int jobDocumentId)
         {
             var isDeleted = false;
             using (var transactionScope = new TransactionScope())
@@ -1578,7 +1578,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
                 {
                     var predicateGroup = new PredicateGroup
                         {Operator = GroupOperator.And, Predicates = new List<IPredicate>()};
-                    predicateGroup.Predicates.Add(Predicates.Field<JobDocument>(s => s.ID, Operator.Eq, jobDocumentID));
+                    predicateGroup.Predicates.Add(Predicates.Field<JobDocument>(s => s.ID, Operator.Eq, jobDocumentId));
 
                     conn.Open();
                     isDeleted = conn.Delete<JobDocument>(predicateGroup);
@@ -1592,25 +1592,25 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <summary>
         /// Get Job Wo Detail
         /// </summary>
-        /// <param name="woID"></param>
+        /// <param name="woId"></param>
         /// <returns></returns>
-        public JobDTO GetJobWO(int woID)
+        public JobDTO GetJobWO(int woId)
         {
             var dbConnection = new DataAccessFactory();
             using (var conn = dbConnection.CreateConnection())
 
             {
                 conn.Open();
-                var jobWO = conn.Get<JobWO>(woID);
+                var jobWo = conn.Get<JobWO>(woId);
                 var predicateGroup = new PredicateGroup
                     {Operator = GroupOperator.And, Predicates = new List<IPredicate>()};
-                predicateGroup.Predicates.Add(Predicates.Field<WOEstimateItem>(s => s.WOID, Operator.Eq, woID));
-                IList<WOEstimateItem> jobWOItems = conn.GetList<WOEstimateItem>(predicateGroup).ToList();
+                predicateGroup.Predicates.Add(Predicates.Field<WOEstimateItem>(s => s.WOID, Operator.Eq, woId));
+                IList<WOEstimateItem> jobWoItems = conn.GetList<WOEstimateItem>(predicateGroup).ToList();
 
                 return new JobDTO()
                 {
-                    JobWO = jobWO,
-                    WOEstimateItems = jobWOItems.ToList()
+                    JobWO = jobWo,
+                    WOEstimateItems = jobWoItems.ToList()
                 };
             }
         }
@@ -1618,20 +1618,20 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <summary>
         /// Set Job WO status to active/inactive
         /// </summary>
-        /// <param name="woID"></param>
+        /// <param name="woId"></param>
         /// <param name="active"></param>
         /// <returns></returns>
-        public bool ToggleJobWOStatus(int woID, bool active)
+        public bool ToggleJobWOStatus(int woId, bool active)
         {
             var dbConnection = new DataAccessFactory();
             using (var conn = dbConnection.CreateConnection())
 
             {
                 conn.Open();
-                var jobWO = conn.Get<JobWO>(woID);
-                jobWO.Active = active;
-                jobWO.DateUpdated = DateTime.Now;
-                var isUpdated = conn.Update(jobWO);
+                var jobWo = conn.Get<JobWO>(woId);
+                jobWo.Active = active;
+                jobWo.DateUpdated = DateTime.Now;
+                var isUpdated = conn.Update(jobWo);
                 return isUpdated;
             }
         }
@@ -1639,9 +1639,9 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <summary>
         /// Get JobAssignment List
         /// </summary>
-        /// <param name="jobID"></param>
+        /// <param name="jobId"></param>
         /// <returns></returns>
-        public List<JobAssignment> GetJobAssignments(int jobID)
+        public List<JobAssignment> GetJobAssignments(int jobId)
         {
             var dbConnection = new DataAccessFactory();
             using (var conn = dbConnection.CreateConnection())
@@ -1650,7 +1650,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
                 conn.Open();
                 var predicateGroup = new PredicateGroup
                     {Operator = GroupOperator.And, Predicates = new List<IPredicate>()};
-                predicateGroup.Predicates.Add(Predicates.Field<JobAssignment>(s => s.JobID, Operator.Eq, jobID));
+                predicateGroup.Predicates.Add(Predicates.Field<JobAssignment>(s => s.JobID, Operator.Eq, jobId));
                 IList<JobAssignment> jobAssignments = conn.GetList<JobAssignment>(predicateGroup).ToList();
                 return jobAssignments.ToList();
             }
@@ -1659,9 +1659,9 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <summary>
         /// Get JobAssignment Crew Leader List
         /// </summary>
-        /// <param name="jobID"></param>
+        /// <param name="jobId"></param>
         /// <returns></returns>
-        public List<vw_JobAssignmentCrewLeaders> GetJobAssignmentCrewLeaders(int jobID)
+        public List<vw_JobAssignmentCrewLeaders> GetJobAssignmentCrewLeaders(int jobId)
         {
             var dbConnection = new DataAccessFactory();
             using (var conn = dbConnection.CreateConnection())
@@ -1671,19 +1671,19 @@ namespace KRF.Persistence.FunctionalContractImplementation
                 var predicateGroup = new PredicateGroup
                     {Operator = GroupOperator.And, Predicates = new List<IPredicate>()};
                 predicateGroup.Predicates.Add(
-                    Predicates.Field<vw_JobAssignmentCrewLeaders>(s => s.JobID, Operator.Eq, jobID));
-                IList<vw_JobAssignmentCrewLeaders> vw_JobAssignmentCrewLeaders =
+                    Predicates.Field<vw_JobAssignmentCrewLeaders>(s => s.JobID, Operator.Eq, jobId));
+                IList<vw_JobAssignmentCrewLeaders> vwJobAssignmentCrewLeaders =
                     conn.GetList<vw_JobAssignmentCrewLeaders>(predicateGroup).ToList();
-                return vw_JobAssignmentCrewLeaders.ToList();
+                return vwJobAssignmentCrewLeaders.ToList();
             }
         }
 
         /// <summary>
         /// Get List of Job WOs
         /// </summary>
-        /// <param name="jobID"></param>
+        /// <param name="jobId"></param>
         /// <returns></returns>
-        public List<JobWO> GetJobWOs(int jobID)
+        public List<JobWO> GetJobWOs(int jobId)
         {
             var dbConnection = new DataAccessFactory();
             using (var conn = dbConnection.CreateConnection())
@@ -1692,7 +1692,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
                 conn.Open();
                 var predicateGroup = new PredicateGroup
                     {Operator = GroupOperator.And, Predicates = new List<IPredicate>()};
-                predicateGroup.Predicates.Add(Predicates.Field<JobWO>(s => s.JobID, Operator.Eq, jobID));
+                predicateGroup.Predicates.Add(Predicates.Field<JobWO>(s => s.JobID, Operator.Eq, jobId));
                 predicateGroup.Predicates.Add(Predicates.Field<JobWO>(s => s.Active, Operator.Eq, true));
                 IList<JobWO> jobWOs = conn.GetList<JobWO>(predicateGroup).ToList();
                 return jobWOs.ToList();
@@ -1702,10 +1702,10 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <summary>
         /// Create Job WO
         /// </summary>
-        /// <param name="jobWO"></param>
+        /// <param name="jobWo"></param>
         /// <param name="woEstimateItems"></param>
         /// <returns></returns>
-        public int CreateJobWO(JobWO jobWO, List<WOEstimateItem> woEstimateItems)
+        public int CreateJobWO(JobWO jobWo, List<WOEstimateItem> woEstimateItems)
         {
             using (var transactionScope = new TransactionScope())
             {
@@ -1715,15 +1715,15 @@ namespace KRF.Persistence.FunctionalContractImplementation
                 {
                     var totalJobBalanceAmount = woEstimateItems.Sum(p => p.Budget * p.Rate);
                     conn.Open();
-                    jobWO.DateCreated = DateTime.Now;
-                    jobWO.Active = true;
-                    jobWO.TotalJobBalanceAmount = totalJobBalanceAmount;
-                    int id = conn.Insert(jobWO);
+                    jobWo.DateCreated = DateTime.Now;
+                    jobWo.Active = true;
+                    jobWo.TotalJobBalanceAmount = totalJobBalanceAmount;
+                    int id = conn.Insert(jobWo);
 
                     //Generate WO ID
-                    var jobWOCurrent = conn.Get<JobWO>(id);
-                    jobWOCurrent.WOCode = "WO-" + id.ToString();
-                    conn.Update(jobWOCurrent);
+                    var jobWoCurrent = conn.Get<JobWO>(id);
+                    jobWoCurrent.WOCode = "WO-" + id;
+                    conn.Update(jobWoCurrent);
 
                     foreach (var woItem in woEstimateItems)
                     {
@@ -1740,10 +1740,10 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <summary>
         /// Edit JobWO
         /// </summary>
-        /// <param name="jobWO"></param>
+        /// <param name="jobWo"></param>
         /// <param name="woEstimateItems"></param>
         /// <returns></returns>
-        public bool EditJobWO(JobWO jobWO, List<WOEstimateItem> woEstimateItems)
+        public bool EditJobWO(JobWO jobWo, List<WOEstimateItem> woEstimateItems)
         {
             using (var transactionScope = new TransactionScope())
             {
@@ -1752,20 +1752,20 @@ namespace KRF.Persistence.FunctionalContractImplementation
 
                 {
                     var totalJobBalanceAmount = woEstimateItems.Sum(p => p.Budget * p.Rate);
-                    var id = jobWO.WOID;
-                    var jobWOCurrent = conn.Get<JobWO>(id);
-                    jobWO.DateCreated = jobWOCurrent.DateCreated;
-                    jobWO.Active = jobWOCurrent.Active;
-                    jobWO.DateUpdated = DateTime.Now;
-                    jobWO.TotalJobBalanceAmount = totalJobBalanceAmount;
+                    var id = jobWo.WOID;
+                    var jobWoCurrent = conn.Get<JobWO>(id);
+                    jobWo.DateCreated = jobWoCurrent.DateCreated;
+                    jobWo.Active = jobWoCurrent.Active;
+                    jobWo.DateUpdated = DateTime.Now;
+                    jobWo.TotalJobBalanceAmount = totalJobBalanceAmount;
 
                     var predicateGroup = new PredicateGroup
                         {Operator = GroupOperator.And, Predicates = new List<IPredicate>()};
                     predicateGroup.Predicates.Add(Predicates.Field<WOEstimateItem>(s => s.WOID, Operator.Eq, id));
-                    IList<WOEstimateItem> jobWOItems = conn.GetList<WOEstimateItem>(predicateGroup).ToList();
-                    foreach (var jobWOItem in jobWOItems)
+                    IList<WOEstimateItem> jobWoItems = conn.GetList<WOEstimateItem>(predicateGroup).ToList();
+                    foreach (var jobWoItem in jobWoItems)
                     {
-                        conn.Delete(jobWOItem);
+                        conn.Delete(jobWoItem);
                     }
 
                     if (woEstimateItems != null)
@@ -1777,16 +1777,16 @@ namespace KRF.Persistence.FunctionalContractImplementation
                         }
                     }
 
-                    var isEdited = conn.Update(jobWO);
+                    var isEdited = conn.Update(jobWo);
                     transactionScope.Complete();
                     return isEdited;
                 }
             }
         }
 
-        public JobDocument CreateWODocument(int woID)
+        public JobDocument CreateWODocument(int woId)
         {
-            JobWO jobWO = null;
+            JobWO jobWo = null;
             Job job = null;
             KRF.Core.Entities.Sales.CustomerAddress custSiteAdd = null;
             Core.Entities.Sales.Lead lead = null;
@@ -1805,12 +1805,12 @@ namespace KRF.Persistence.FunctionalContractImplementation
             {
                 conn.Open();
 
-                jobWO = conn.Get<JobWO>(woID);
-                job = conn.Get<Job>(jobWO.JobID);
+                jobWo = conn.Get<JobWO>(woId);
+                job = conn.Get<Job>(jobWo.JobID);
                 custSiteAdd = conn.Get<KRF.Core.Entities.Sales.CustomerAddress>(job.JobAddressID);
                 city = conn.Get<KRF.Core.Entities.ValueList.City>(custSiteAdd.City);
                 state = conn.Get<State>(custSiteAdd.State);
-                emp = conn.Get<Employee>(jobWO.LeadID);
+                emp = conn.Get<Employee>(jobWo.LeadID);
                 roofTypes = conn.GetList<RoofType>().ToList();
 
                 lead = conn.Get<Core.Entities.Sales.Lead>(job.LeadID);
@@ -1819,19 +1819,19 @@ namespace KRF.Persistence.FunctionalContractImplementation
 
                 var predicateGroup = new PredicateGroup
                     {Operator = GroupOperator.And, Predicates = new List<IPredicate>()};
-                predicateGroup.Predicates.Add(Predicates.Field<WOEstimateItem>(s => s.WOID, Operator.Eq, jobWO.WOID));
+                predicateGroup.Predicates.Add(Predicates.Field<WOEstimateItem>(s => s.WOID, Operator.Eq, jobWo.WOID));
 
                 woEstimates = conn.GetList<WOEstimateItem>(predicateGroup).ToList();
             }
 
-            var estDTO = estimateRepo.Select(jobWO.EstimateID ?? 0);
+            var estDto = estimateRepo.Select(jobWo.EstimateID ?? 0);
 
             var document = GetJobDocumentByType(-3); // -3 = Work Order Document
             var byteArray = document.Text;
 
             using (var mem = new MemoryStream())
             {
-                mem.Write(byteArray, 0, (int) byteArray.Length);
+                mem.Write(byteArray, 0, byteArray.Length);
                 using (var wordDoc =
                     WordprocessingDocument.Open(mem, true))
                 {
@@ -1839,7 +1839,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
                         "http://schemas.openxmlformats.org/wordprocessingml/2006/main";
 
 
-                    IDictionary<String, BookmarkStart> bookmarkMap = new Dictionary<String, BookmarkStart>();
+                    IDictionary<string, BookmarkStart> bookmarkMap = new Dictionary<string, BookmarkStart>();
 
                     foreach (var bookmarkStart in wordDoc.MainDocumentPart.RootElement
                         .Descendants<BookmarkStart>())
@@ -1873,7 +1873,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
 
                                 if (bookmarkStart.Name.ToString() == "WO2")
                                 {
-                                    bookmarkText.GetFirstChild<Text>().Text = jobWO.WOCode;
+                                    bookmarkText.GetFirstChild<Text>().Text = jobWo.WOCode;
                                 }
 
                                 if (bookmarkStart.Name.ToString() == "JobName")
@@ -1889,26 +1889,26 @@ namespace KRF.Persistence.FunctionalContractImplementation
                                 if (bookmarkStart.Name.ToString() == "TotalJobBalanceAmount")
                                 {
                                     bookmarkText.GetFirstChild<Text>().Text =
-                                        "$" + jobWO.TotalJobBalanceAmount.ToString("N", new CultureInfo("en-US"));
+                                        "$" + jobWo.TotalJobBalanceAmount.ToString("N", new CultureInfo("en-US"));
                                 }
 
                                 if (bookmarkStart.Name.ToString() == "TOTALAMOUNT")
                                 {
                                     bookmarkText.GetFirstChild<Text>().Text = "";
                                     bookmarkText.GetFirstChild<Text>().Text =
-                                        "$" + jobWO.TotalAmount.ToString("N", new CultureInfo("en-US"));
+                                        "$" + jobWo.TotalAmount.ToString("N", new CultureInfo("en-US"));
                                 }
 
                                 if (bookmarkStart.Name.ToString() == "EMPTOTALAMOUNT")
                                 {
                                     bookmarkText.GetFirstChild<Text>().Text =
-                                        "$" + jobWO.TotalAmount.ToString("N", new CultureInfo("en-US"));
+                                        "$" + jobWo.TotalAmount.ToString("N", new CultureInfo("en-US"));
                                 }
 
                                 if (bookmarkStart.Name.ToString() == "CurrentDate")
                                 {
                                     bookmarkText.GetFirstChild<Text>().Text =
-                                        String.Format("{0:MM/dd/yyyy}", DateTime.Now);
+                                        string.Format("{0:MM/dd/yyyy}", DateTime.Now);
                                 }
 
                                 //Job Address
@@ -1935,7 +1935,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
                                 if (bookmarkStart.Name.ToString() == "WorkWeekEnding")
                                 {
                                     bookmarkText.GetFirstChild<Text>().Text =
-                                        String.Format("{0:MMMM dd, yyyy}", jobWO.WorkWeekEndingDate);
+                                        string.Format("{0:MMMM dd, yyyy}", jobWo.WorkWeekEndingDate);
                                 }
 
                                 if (bookmarkStart.Name.ToString() == "RoofType")
@@ -1951,7 +1951,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
                     decimal totalBalance = 0;
                     for (var rowindex = 1; rowindex <= maxrows; rowindex++)
                     {
-                        var bookmarkStart = bookmarkMap["BAL" + rowindex.ToString()];
+                        var bookmarkStart = bookmarkMap["BAL" + rowindex];
                         var bookmarkText = bookmarkStart.NextSibling<Run>();
                         if (bookmarkText != null)
                         {
@@ -1963,30 +1963,26 @@ namespace KRF.Persistence.FunctionalContractImplementation
                                 "$" + Math.Round(totalBal, 2).ToString("N", new CultureInfo("en-US"));
                         }
 
-                        var itemCode = string.Empty;
                         var itemDesc = string.Empty;
                         if (woEstimates[rowindex - 1].ItemAssemblyType == 1)
                         {
-                            var assembly = estDTO.Assemblies
-                                .Where(p => p.Id == woEstimates[rowindex - 1].ItemAssemblyID).FirstOrDefault();
+                            var assembly = estDto.Assemblies.FirstOrDefault(p => p.Id == woEstimates[rowindex - 1].ItemAssemblyID);
                             if (assembly != null)
                             {
-                                itemCode = assembly.Code;
                                 itemDesc = assembly.AssemblyName;
                             }
                         }
                         else
                         {
-                            var item = estDTO.Items.Where(p => p.Id == woEstimates[rowindex - 1].ItemAssemblyID)
-                                .FirstOrDefault();
+                            var item = estDto.Items
+                                .FirstOrDefault(p => p.Id == woEstimates[rowindex - 1].ItemAssemblyID);
                             if (item != null)
                             {
-                                itemCode = item.Code;
                                 itemDesc = item.Name;
                             }
                         }
 
-                        bookmarkStart = bookmarkMap["DESC" + rowindex.ToString()];
+                        bookmarkStart = bookmarkMap["DESC" + rowindex];
                         bookmarkText = bookmarkStart.NextSibling<Run>();
                         if (bookmarkText != null)
                         {
@@ -1995,44 +1991,50 @@ namespace KRF.Persistence.FunctionalContractImplementation
                             runProperties.Append(new Text() {Text = itemDesc});
                         }
 
-                        bookmarkStart = bookmarkMap["BUDGET" + rowindex.ToString()];
-                        bookmarkText = bookmarkStart.NextSibling<Run>();
-                        if (bookmarkText != null)
-                        {
-                            bookmarkText.GetFirstChild<Text>().Text = "";
-                            var runProperties = bookmarkText.AppendChild(new RunProperties());
-                            runProperties.Append(new Text() {Text = woEstimates[rowindex - 1].Budget.ToString()});
-                        }
-
-                        bookmarkStart = bookmarkMap["USED" + rowindex.ToString()];
-                        bookmarkText = bookmarkStart.NextSibling<Run>();
-                        if (bookmarkText != null)
-                        {
-                            bookmarkText.GetFirstChild<Text>().Text = "";
-                            var runProperties = bookmarkText.AppendChild(new RunProperties());
-                            runProperties.Append(new Text() {Text = woEstimates[rowindex - 1].Used.ToString()});
-                        }
-
-                        bookmarkStart = bookmarkMap["RATE" + rowindex.ToString()];
+                        bookmarkStart = bookmarkMap["BUDGET" + rowindex];
                         bookmarkText = bookmarkStart.NextSibling<Run>();
                         if (bookmarkText != null)
                         {
                             bookmarkText.GetFirstChild<Text>().Text = "";
                             var runProperties = bookmarkText.AppendChild(new RunProperties());
                             runProperties.Append(new Text()
-                                {Text = Math.Round(woEstimates[rowindex - 1].Rate, 2).ToString()});
+                                {Text = woEstimates[rowindex - 1].Budget.ToString(CultureInfo.InvariantCulture)});
                         }
 
-                        bookmarkStart = bookmarkMap["BALANCE" + rowindex.ToString()];
+                        bookmarkStart = bookmarkMap["USED" + rowindex];
                         bookmarkText = bookmarkStart.NextSibling<Run>();
                         if (bookmarkText != null)
                         {
                             bookmarkText.GetFirstChild<Text>().Text = "";
                             var runProperties = bookmarkText.AppendChild(new RunProperties());
-                            runProperties.Append(new Text() {Text = woEstimates[rowindex - 1].Balance.ToString()});
+                            runProperties.Append(new Text()
+                                {Text = woEstimates[rowindex - 1].Used.ToString(CultureInfo.InvariantCulture)});
                         }
 
-                        bookmarkStart = bookmarkMap["AMOUNT" + rowindex.ToString()];
+                        bookmarkStart = bookmarkMap["RATE" + rowindex];
+                        bookmarkText = bookmarkStart.NextSibling<Run>();
+                        if (bookmarkText != null)
+                        {
+                            bookmarkText.GetFirstChild<Text>().Text = "";
+                            var runProperties = bookmarkText.AppendChild(new RunProperties());
+                            runProperties.Append(new Text()
+                                {
+                                Text = Math.Round(woEstimates[rowindex - 1].Rate, 2)
+                                    .ToString(CultureInfo.InvariantCulture)
+                            });
+                        }
+
+                        bookmarkStart = bookmarkMap["BALANCE" + rowindex];
+                        bookmarkText = bookmarkStart.NextSibling<Run>();
+                        if (bookmarkText != null)
+                        {
+                            bookmarkText.GetFirstChild<Text>().Text = "";
+                            var runProperties = bookmarkText.AppendChild(new RunProperties());
+                            runProperties.Append(new Text()
+                                {Text = woEstimates[rowindex - 1].Balance.ToString(CultureInfo.InvariantCulture)});
+                        }
+
+                        bookmarkStart = bookmarkMap["AMOUNT" + rowindex];
                         bookmarkText = bookmarkStart.NextSibling<Run>();
                         if (bookmarkText != null)
                         {
@@ -2054,8 +2056,8 @@ namespace KRF.Persistence.FunctionalContractImplementation
 
                 var e = new JobDocument
                 {
-                    JobID = jobWO.JobID,
-                    Name = "WorkOrder_" + jobWO.WorkWeekEndingDate.ToString("dd-MMM-yyyy") + ".docx",
+                    JobID = jobWo.JobID,
+                    Name = "WorkOrder_" + jobWo.WorkWeekEndingDate.ToString("dd-MMM-yyyy") + ".docx",
                     Description = "Work Order",
                     UploadDateTime = DateTime.Now,
                     Text = mem.ToArray()
@@ -2068,9 +2070,9 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <summary>
         /// Get List of Job Invoices
         /// </summary>
-        /// <param name="jobID"></param>
+        /// <param name="jobId"></param>
         /// <returns></returns>
-        public List<JobInvoice> GetJobInvoices(int jobID)
+        public List<JobInvoice> GetJobInvoices(int jobId)
         {
             var dbConnection = new DataAccessFactory();
             using (var conn = dbConnection.CreateConnection())
@@ -2079,7 +2081,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
                 conn.Open();
                 var predicateGroup = new PredicateGroup
                     {Operator = GroupOperator.And, Predicates = new List<IPredicate>()};
-                predicateGroup.Predicates.Add(Predicates.Field<JobInvoice>(s => s.JobID, Operator.Eq, jobID));
+                predicateGroup.Predicates.Add(Predicates.Field<JobInvoice>(s => s.JobID, Operator.Eq, jobId));
                 predicateGroup.Predicates.Add(Predicates.Field<JobInvoice>(s => s.Active, Operator.Eq, true));
                 IList<JobInvoice> jobInvoices = conn.GetList<JobInvoice>(predicateGroup).ToList();
                 return jobInvoices.ToList();
@@ -2166,19 +2168,19 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <summary>
         /// Get Job Invoice Detail
         /// </summary>
-        /// <param name="invoiceID"></param>
+        /// <param name="invoiceId"></param>
         /// <returns></returns>
-        public JobDTO GetJobInvoice(int invoiceID)
+        public JobDTO GetJobInvoice(int invoiceId)
         {
             var dbConnection = new DataAccessFactory();
             using (var conn = dbConnection.CreateConnection())
 
             {
                 conn.Open();
-                var jobInvoice = conn.Get<JobInvoice>(invoiceID);
+                var jobInvoice = conn.Get<JobInvoice>(invoiceId);
                 var predicateGroup = new PredicateGroup
                     {Operator = GroupOperator.And, Predicates = new List<IPredicate>()};
-                predicateGroup.Predicates.Add(Predicates.Field<InvoiceItems>(s => s.InvoiceID, Operator.Eq, invoiceID));
+                predicateGroup.Predicates.Add(Predicates.Field<InvoiceItems>(s => s.InvoiceID, Operator.Eq, invoiceId));
                 IList<InvoiceItems> jobInvoiceItems = conn.GetList<InvoiceItems>(predicateGroup).ToList();
 
                 return new JobDTO()
@@ -2192,17 +2194,17 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <summary>
         /// Toggle Job Invoice status
         /// </summary>
-        /// <param name="invoiceID"></param>
+        /// <param name="invoiceId"></param>
         /// <param name="active"></param>
         /// <returns></returns>
-        public bool ToggleJobInvoiceStatus(int invoiceID, bool active)
+        public bool ToggleJobInvoiceStatus(int invoiceId, bool active)
         {
             var dbConnection = new DataAccessFactory();
             using (var conn = dbConnection.CreateConnection())
 
             {
                 conn.Open();
-                var jobInvoice = conn.Get<JobInvoice>(invoiceID);
+                var jobInvoice = conn.Get<JobInvoice>(invoiceId);
                 jobInvoice.Active = active;
                 jobInvoice.DateUpdated = DateTime.Now;
                 var isUpdated = conn.Update(jobInvoice);
@@ -2213,9 +2215,9 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <summary>
         /// Create Invoice Document
         /// </summary>
-        /// <param name="invoiceID"></param>
+        /// <param name="invoiceId"></param>
         /// <returns></returns>
-        public JobDocument CreateInvoiceDocument(int invoiceID)
+        public JobDocument CreateInvoiceDocument(int invoiceId)
         {
             JobInvoice jobInvoice = null;
             Job job = null;
@@ -2235,7 +2237,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
             {
                 conn.Open();
 
-                jobInvoice = conn.Get<JobInvoice>(invoiceID);
+                jobInvoice = conn.Get<JobInvoice>(invoiceId);
                 job = conn.Get<Job>(jobInvoice.JobID);
                 custSiteAdd = conn.Get<KRF.Core.Entities.Sales.CustomerAddress>(job.JobAddressID);
                 city = conn.Get<KRF.Core.Entities.ValueList.City>(custSiteAdd.City);
@@ -2253,14 +2255,14 @@ namespace KRF.Persistence.FunctionalContractImplementation
                 invoiceItems = conn.GetList<InvoiceItems>(predicateGroup).ToList();
             }
 
-            var estDTO = estimateRepo.Select(jobInvoice.EstimateID ?? 0);
+            var estDto = estimateRepo.Select(jobInvoice.EstimateID ?? 0);
 
             var document = GetJobDocumentByType(-4); // -4 = Invoice Document
             var byteArray = document.Text;
 
             using (var mem = new MemoryStream())
             {
-                mem.Write(byteArray, 0, (int) byteArray.Length);
+                mem.Write(byteArray, 0, byteArray.Length);
                 using (var wordDoc =
                     WordprocessingDocument.Open(mem, true))
                 {
@@ -2268,7 +2270,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
                         "http://schemas.openxmlformats.org/wordprocessingml/2006/main";
 
 
-                    IDictionary<String, BookmarkStart> bookmarkMap = new Dictionary<String, BookmarkStart>();
+                    IDictionary<string, BookmarkStart> bookmarkMap = new Dictionary<string, BookmarkStart>();
 
                     foreach (var bookmarkStart in wordDoc.MainDocumentPart.RootElement
                         .Descendants<BookmarkStart>())
@@ -2291,7 +2293,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
                                 if (bookmarkStart.Name.ToString() == "InvoiceDate")
                                 {
                                     bookmarkText.GetFirstChild<Text>().Text =
-                                        String.Format("{0:MMMM dd, yyyy}", jobInvoice.InvoiceDate);
+                                        $"{jobInvoice.InvoiceDate:MMMM dd, yyyy}";
                                 }
 
                                 if (bookmarkStart.Name.ToString() == "CustomerContact")
@@ -2372,56 +2374,53 @@ namespace KRF.Persistence.FunctionalContractImplementation
                     var maxrows = invoiceItems.Count() < 21 ? invoiceItems.Count() : 21;
                     for (var rowindex = 1; rowindex <= maxrows; rowindex++)
                     {
-                        var bookmarkStart = bookmarkMap["QTY" + rowindex.ToString()];
+                        var bookmarkStart = bookmarkMap["QTY" + rowindex];
                         var bookmarkText = bookmarkStart.NextSibling<Run>();
                         if (bookmarkText != null)
                         {
                             bookmarkText.GetFirstChild<Text>().Text =
-                                Convert.ToString(invoiceItems[rowindex - 1].Quantity);
+                                Convert.ToString(invoiceItems[rowindex - 1].Quantity, CultureInfo.InvariantCulture);
                         }
 
-                        var itemCode = string.Empty;
                         var itemDesc = string.Empty;
                         if (invoiceItems[rowindex - 1].ItemAssemblyType == 1)
                         {
-                            var assembly = estDTO.Assemblies
-                                .Where(p => p.Id == invoiceItems[rowindex - 1].ItemAssemblyID).FirstOrDefault();
+                            var assembly = estDto.Assemblies.FirstOrDefault(p =>
+                                invoiceItems != null && p.Id == invoiceItems[rowindex - 1].ItemAssemblyID);
                             if (assembly != null)
                             {
-                                itemCode = assembly.Code;
                                 itemDesc = assembly.AssemblyName;
                             }
                         }
                         else
                         {
-                            var item = estDTO.Items.Where(p => p.Id == invoiceItems[rowindex - 1].ItemAssemblyID)
-                                .FirstOrDefault();
+                            var item = estDto.Items
+                                .FirstOrDefault(p => p.Id == invoiceItems[rowindex - 1].ItemAssemblyID);
                             if (item != null)
                             {
-                                itemCode = item.Code;
                                 itemDesc = item.Name;
                             }
                         }
 
-                        bookmarkStart = bookmarkMap["DESC" + rowindex.ToString()];
+                        bookmarkStart = bookmarkMap["DESC" + rowindex];
                         bookmarkText = bookmarkStart.NextSibling<Run>();
                         if (bookmarkText != null)
                         {
                             bookmarkText.GetFirstChild<Text>().Text = "";
                             var runProperties = bookmarkText.AppendChild(new RunProperties());
-                            runProperties.Append(new Text() {Text = itemDesc});
+                            runProperties.Append(new Text {Text = itemDesc});
                         }
 
-                        bookmarkStart = bookmarkMap["UC" + rowindex.ToString()];
+                        bookmarkStart = bookmarkMap["UC" + rowindex];
                         bookmarkText = bookmarkStart.NextSibling<Run>();
                         if (bookmarkText != null)
                         {
                             bookmarkText.GetFirstChild<Text>().Text = "";
                             var runProperties = bookmarkText.AppendChild(new RunProperties());
-                            runProperties.Append(new Text() {Text = invoiceItems[rowindex - 1].Price.ToString()});
+                            runProperties.Append(new Text {Text = invoiceItems[rowindex - 1].Price.ToString()});
                         }
 
-                        bookmarkStart = bookmarkMap["AMOUNT" + rowindex.ToString()];
+                        bookmarkStart = bookmarkMap["AMOUNT" + rowindex];
                         bookmarkText = bookmarkStart.NextSibling<Run>();
                         if (bookmarkText != null)
                         {
@@ -2449,16 +2448,16 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <summary>
         /// Get List of Job Inspection
         /// </summary>
-        /// <param name="inspID"></param>
+        /// <param name="inspId"></param>
         /// <returns></returns>
-        public JobDTO GetJobInspection(int inspID)
+        public JobDTO GetJobInspection(int inspId)
         {
             var dbConnection = new DataAccessFactory();
             using (var conn = dbConnection.CreateConnection())
 
             {
                 conn.Open();
-                var jobInspection = conn.Get<JobInspection>(inspID);
+                var jobInspection = conn.Get<JobInspection>(inspId);
 
                 return new JobDTO()
                 {
@@ -2470,17 +2469,17 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <summary>
         /// Toggle job Inspection status
         /// </summary>
-        /// <param name="inspID"></param>
+        /// <param name="inspId"></param>
         /// <param name="active"></param>
         /// <returns></returns>
-        public bool ToggleJobInspectionStatus(int inspID, bool active)
+        public bool ToggleJobInspectionStatus(int inspId, bool active)
         {
             var dbConnection = new DataAccessFactory();
             using (var conn = dbConnection.CreateConnection())
 
             {
                 conn.Open();
-                var jobInspection = conn.Get<JobInspection>(inspID);
+                var jobInspection = conn.Get<JobInspection>(inspId);
                 jobInspection.Active = active;
                 jobInspection.DateUpdated = DateTime.Now;
                 var isUpdated = conn.Update(jobInspection);
@@ -2491,9 +2490,9 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <summary>
         /// Get List of Job Inspections
         /// </summary>
-        /// <param name="jobID"></param>
+        /// <param name="jobId"></param>
         /// <returns></returns>
-        public List<JobInspection> GetJobInspections(int jobID)
+        public List<JobInspection> GetJobInspections(int jobId)
         {
             var dbConnection = new DataAccessFactory();
             using (var conn = dbConnection.CreateConnection())
@@ -2502,7 +2501,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
                 conn.Open();
                 var predicateGroup = new PredicateGroup
                     {Operator = GroupOperator.And, Predicates = new List<IPredicate>()};
-                predicateGroup.Predicates.Add(Predicates.Field<JobInspection>(s => s.JobID, Operator.Eq, jobID));
+                predicateGroup.Predicates.Add(Predicates.Field<JobInspection>(s => s.JobID, Operator.Eq, jobId));
                 predicateGroup.Predicates.Add(Predicates.Field<JobInspection>(s => s.Active, Operator.Eq, true));
                 IList<JobInspection> jobInspections = conn.GetList<JobInspection>(predicateGroup).ToList();
                 return jobInspections.ToList();
@@ -2570,7 +2569,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// Get Permit List
         /// </summary>
         /// <returns></returns>
-        public List<Permit> GetPrmitList()
+        public List<Permit> GetPermitList()
         {
             var dbConnection = new DataAccessFactory();
             using (var conn = dbConnection.CreateConnection())
@@ -2589,7 +2588,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// Get Permit Inspection List
         /// </summary>
         /// <returns></returns>
-        public List<PermitInspection> GetPrmitInspectionList()
+        public List<PermitInspection> GetPermitInspectionList()
         {
             var dbConnection = new DataAccessFactory();
             using (var conn = dbConnection.CreateConnection())
@@ -2608,7 +2607,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// Get Permit Status List
         /// </summary>
         /// <returns></returns>
-        public List<PermitStatus> GetPrmitStatusList()
+        public List<PermitStatus> GetPermitStatusList()
         {
             var dbConnection = new DataAccessFactory();
             using (var conn = dbConnection.CreateConnection())
@@ -2623,7 +2622,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
             }
         }
 
-        public string GetJobAddress(int jobID)
+        public string GetJobAddress(int jobId)
         {
             Job job = null;
             KRF.Core.Entities.Sales.CustomerAddress custAdd = null;
@@ -2636,7 +2635,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
             {
                 conn.Open();
 
-                job = conn.Get<Job>(jobID);
+                job = conn.Get<Job>(jobId);
                 custAdd = conn.Get<KRF.Core.Entities.Sales.CustomerAddress>(job.JobAddressID);
                 city = conn.Get<KRF.Core.Entities.ValueList.City>(custAdd.City);
                 state = conn.Get<State>(custAdd.State);

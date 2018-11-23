@@ -214,11 +214,13 @@ namespace KRF.Web.Controllers
                 job,
                 keyValue = new
                 {
-                    statuses = estimateDto.Status.Where(k => k.ID == 1 || k.ID == 2 || k.ID == 6),
+                    statuses = estimateDto.Status.Where(k =>
+                        k.ID == (int) EstimateStatusType.New || k.ID == (int) EstimateStatusType.InProgress ||
+                        k.ID == (int) EstimateStatusType.Complete),
                     customerName = lead.FirstName + " " + lead.LastName,
-                    jobSiteAddress = jobAddress.Address1.Trim() + ", " + jobAddress.Address2.Trim() + ", " +
-                                     (city != null ? city.Description.Trim() : "") + " " + state.Abbreviation.Trim() +
-                                     ", " + jobAddress.ZipCode.Trim(),
+                    jobSiteAddress = jobAddress?.Address1.Trim() + ", " + jobAddress?.Address2?.Trim() + ", " +
+                                     (city != null ? city.Description?.Trim() : "") + " " + state?.Abbreviation.Trim() +
+                                     ", " + jobAddress.ZipCode?.Trim(),
                     contactPerson = lead.LeadName,
                     salesPerson = relevantEmployee != null
                         ? relevantEmployee.FirstName + " " + relevantEmployee.LastName
@@ -495,6 +497,7 @@ namespace KRF.Web.Controllers
             }
             catch (Exception ex)
             {
+                Console.WriteLine(ex);
                 hasSaved = false;
                 message = "Task could not be updated.";
             }
@@ -1178,17 +1181,22 @@ namespace KRF.Web.Controllers
             {
                 keyValue = new
                 {
-                    documents = documentList.Select(k => new
+                    documents = documentList.Select(k =>
                     {
-                        k.ID,
-                        k.JobID,
-                        k.Name,
-                        k.Type,
-                        TypeName = documentTypes.Where(p => p.ID.ToString() == k.Type.Trim()).FirstOrDefault() != null
-                            ? documentTypes.Where(p => p.ID.ToString() == k.Type.Trim()).FirstOrDefault().DocumentType
-                            : "",
-                        k.Description,
-                        UploadDateTime = Convert.ToDateTime(k.UploadDateTime).ToString("MM/dd/yyyy HH:mm")
+                        var relevantJobDocumentType =
+                            documentTypes.FirstOrDefault(p => p.ID.ToString() == k.Type.Trim());
+                        return new
+                        {
+                            k.ID,
+                            k.JobID,
+                            k.Name,
+                            k.Type,
+                            TypeName = relevantJobDocumentType != null
+                                ? relevantJobDocumentType.DocumentType
+                                : "",
+                            k.Description,
+                            UploadDateTime = Convert.ToDateTime(k.UploadDateTime).ToString("MM/dd/yyyy HH:mm")
+                        };
                     }),
                     documentTypes = documentTypes.Select(k => new {k.ID, Description = k.DocumentType})
                 }
@@ -1289,22 +1297,26 @@ namespace KRF.Web.Controllers
             {
                 keyValue = new
                 {
-                    WOs = woList.Select(k => new
+                    WOs = woList.Select(k =>
                     {
-                        k.WOID,
-                        k.JobID,
-                        k.WOCode,
-                        k.WorkWeekEndingDate,
-                        k.LeadID,
-                        CrewLeader = employDto.Employees.Where(p => p.EmpId == k.LeadID).FirstOrDefault() != null
-                            ? employDto.Employees.Where(p => p.EmpId == k.LeadID).FirstOrDefault().FirstName + " " +
-                              employDto.Employees.Where(p => p.EmpId == k.LeadID).FirstOrDefault().LastName
-                            : "",
-                        k.EstimateID,
-                        k.TotalAmount,
-                        k.TotalJobBalanceAmount,
-                        k.COIDs,
-                        k.Active
+                        var relevantEmployee = employDto.Employees.FirstOrDefault(p => p.EmpId == k.LeadID);
+                        return new
+                        {
+                            k.WOID,
+                            k.JobID,
+                            k.WOCode,
+                            k.WorkWeekEndingDate,
+                            k.LeadID,
+                            CrewLeader = relevantEmployee != null
+                                ? relevantEmployee.FirstName + " " +
+                                  relevantEmployee.LastName
+                                : "",
+                            k.EstimateID,
+                            k.TotalAmount,
+                            k.TotalJobBalanceAmount,
+                            k.COIDs,
+                            k.Active
+                        };
                     }).OrderByDescending(p => p.WOID),
                     estimates = estimateDto.Estimates.Where(e => e.Status == (int) EstimateStatusType.Complete)
                         .Select(k => new {k.ID, k.JobAddressID, Description = k.Name}).OrderBy(k => k.Description),

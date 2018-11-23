@@ -146,9 +146,9 @@ namespace KRF.Web.Controllers
         public JsonResult DeleteCustomer(int id)
         {
             var leadRepo = ObjectFactory.GetInstance<ILeadManagementRepository>();
-            leadRepo.Delete(id);
+            var isDeleted = leadRepo.Delete(id);
 
-            return Json(new { hasDeleted = true });
+            return Json(new { hasDeleted = isDeleted });
         }
     }
 }

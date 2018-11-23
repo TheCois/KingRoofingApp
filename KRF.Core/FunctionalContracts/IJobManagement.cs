@@ -325,17 +325,17 @@ namespace KRF.Core.FunctionalContracts
         /// Get Permit List
         /// </summary>
         /// <returns></returns>
-        List<Permit> GetPrmitList();
+        List<Permit> GetPermitList();
         /// <summary>
         /// Get Permit Inspection List
         /// </summary>
         /// <returns></returns>
-        List<PermitInspection> GetPrmitInspectionList();
+        List<PermitInspection> GetPermitInspectionList();
         /// <summary>
         /// Get Permit Status List
         /// </summary>
         /// <returns></returns>
-        List<PermitStatus> GetPrmitStatusList();
+        List<PermitStatus> GetPermitStatusList();
         string GetJobAddress(int jobID);
     }
 }

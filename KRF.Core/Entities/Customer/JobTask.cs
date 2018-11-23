@@ -16,7 +16,6 @@ namespace KRF.Core.Entities.Customer
         public string InspectionNotes { get; set; }
         public bool IsCompleted { get; set; }
         public DateTime DateCreated { get; set; }
-        public DateTime? DateUpdated { get; set; }
-    
+        public DateTime? DateUpdated { get; set; }    
     }
 }

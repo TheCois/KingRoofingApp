@@ -77,6 +77,8 @@
     <Compile Include="Entities\Employee\Employee.cs" />
     <Compile Include="Entities\Employee\EmployeeRole.cs" />
     <Compile Include="Entities\MISC\CityAndState.cs" />
+    <Compile Include="Entities\MISC\JobStatus.cs" />
+    <Compile Include="Entities\MISC\LeadStatus.cs" />
     <Compile Include="Entities\ValueList\ExistingRoof.cs" />
     <Compile Include="Entities\ValueList\NumberOfStories.cs" />
     <Compile Include="Enums\LeadStageType.cs" />

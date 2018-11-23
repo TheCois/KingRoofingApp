@@ -489,7 +489,7 @@ namespace KRF.Persistence.RepositoryImplementation
         /// <returns></returns>
         public List<Permit> GetPermitList()
         {
-            return jobManagement_.GetPrmitList();
+            return jobManagement_.GetPermitList();
         }
         /// <summary>
         /// Get Permit Inspection List
@@ -497,7 +497,7 @@ namespace KRF.Persistence.RepositoryImplementation
         /// <returns></returns>
         public List<PermitInspection> GetPermitInspectionList()
         {
-            return jobManagement_.GetPrmitInspectionList();
+            return jobManagement_.GetPermitInspectionList();
         }
         /// <summary>
         /// Get Permit Status List
@@ -505,7 +505,7 @@ namespace KRF.Persistence.RepositoryImplementation
         /// <returns></returns>
         public List<PermitStatus> GetPermitStatusList()
         {
-            return jobManagement_.GetPrmitStatusList();
+            return jobManagement_.GetPermitStatusList();
         }
         public string GetJobAddress(int jobId)
         {

@@ -52,7 +52,7 @@ namespace KRF.Web.Controllers
                               p.Telephone,
                               p.Cell,
                               p.Office,
-                              p.Status == 0 ? "": leadDto.Statuses.First(k => k.ID == p.Status).Description,
+                              p.Status == (int)LeadStatus.Inactive ? "": leadDto.Statuses.First(k => k.ID == p.Status).Description,
                               (estimateDto.Estimates.FirstOrDefault(e => e.LeadID == p.ID) != null ? estimateDto.Estimates.Count(e => e.LeadID == p.ID).ToString() : "0"),
                               "<span class='delete-lead' data-val=" + p.ID + "><ul><li class='delete'><a href='#non'>Delete</a></li></ul></span>"
                           }).ToArray(),
@@ -78,7 +78,7 @@ namespace KRF.Web.Controllers
 
         private Func<Lead, bool> GetNonConvertedLeadsPredicate()
         {
-            return x => x.LeadStage == (int)LeadStageType.Lead && x.Status != (int)Status.ConvertToCustomer && x.Status != (int)Status.ConvertToEstimate;
+            return x => x.LeadStage == (int)LeadStageType.Lead && x.Status != (int)LeadStatus.ConvertToCustomer && x.Status != (int)LeadStatus.ConvertToEstimate;
         }
 
         public ActionResult GetLead(int id)

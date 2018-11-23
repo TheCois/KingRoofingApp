@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using KRF.Core.Entities.Sales;
 using KRF.Core.FunctionalContracts;
 using KRF.Core.DTO.Sales;
@@ -14,34 +13,25 @@ namespace KRF.Persistence.FunctionalContractImplementation
 {
     public class ProspectManagement : IProspectManagement
     {
-        private string _connectionString;
-
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        public ProspectManagement()
-        {
-            _connectionString = Convert.ToString(ConfigurationManager.AppSettings["ApplicationDSN"]);
-        }
-
         /// <summary>
         /// Create an Prospect
         /// </summary>
-        /// <param name="Prospect">Prospect details</param>
+        /// <param name="prospect">Prospect details</param>
         /// <returns>Newly created Prospect identifier</returns>
         public int Create(Prospect prospect)
         {
             using (var transactionScope = new TransactionScope())
             {
-                var dbConnection = new DataAccessFactory();             using (var conn = dbConnection.CreateConnection()) 
+                var dbConnection = new DataAccessFactory();
+                using (var conn = dbConnection.CreateConnection())
                 {
                     conn.Open();
-                    var id = conn.Insert<Prospect>(prospect);
+                    var id = conn.Insert(prospect);
 
                     if (prospect.Status == 4)
                     {
                         var lead = InsertProspectIntoLead(prospect);
-                        conn.Insert<Lead>(lead);
+                        conn.Insert(lead);
                     }
 
                     transactionScope.Complete();
@@ -53,21 +43,22 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <summary>
         /// Edit an Prospect based on updated Prospect details.
         /// </summary>
-        /// <param name="Prospect">Updated Prospect details.</param>
+        /// <param name="prospect">Updated Prospect details.</param>
         /// <returns>Updated Prospect details.</returns>
         public Prospect Edit(Prospect prospect)
         {
             using (var transactionScope = new TransactionScope())
             {
-                var dbConnection = new DataAccessFactory();             using (var conn = dbConnection.CreateConnection()) 
+                var dbConnection = new DataAccessFactory();
+                using (var conn = dbConnection.CreateConnection())
                 {
                     conn.Open();
-                    var isEdited = conn.Update<Prospect>(prospect);
+                    conn.Update(prospect);
 
                     if (prospect.Status == 4)
                     {
                         var lead = InsertProspectIntoLead(prospect);
-                        conn.Insert<Lead>(lead);
+                        conn.Insert(lead);
                     }
 
                     transactionScope.Complete();
@@ -82,13 +73,15 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <param name="prospects"></param>
         public void SaveProspects(IList<Prospect> prospects)
         {
-            var dbConnection = new DataAccessFactory();             using (var conn = dbConnection.CreateConnection()) 
+            var dbConnection = new DataAccessFactory();
+            using (var conn = dbConnection.CreateConnection())
             {
                 conn.Open();
+                //TODO weird; why are we reading this?
                 IList<Prospect> existingProspects = conn.GetList<Prospect>().ToList();
                 foreach (var prospect in prospects)
                 {
-                    conn.Insert<Prospect>(prospect);
+                    conn.Insert(prospect);
                 }
             }
         }
@@ -128,15 +121,17 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <summary>
         /// Delete an  Prospect.
         /// </summary>
-        /// <param name="ProspectId"> Prospect unique identifier</param>
+        /// <param name="id"> Prospect unique identifier</param>
         /// <returns>True - if successful deletion; False - If failure.</returns>
         public bool Delete(int id)
         {
             try
             {
-                var dbConnection = new DataAccessFactory();             using (var conn = dbConnection.CreateConnection()) 
+                var dbConnection = new DataAccessFactory();
+                using (var conn = dbConnection.CreateConnection())
                 {
-                    var predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
+                    var predicateGroup = new PredicateGroup
+                        {Operator = GroupOperator.And, Predicates = new List<IPredicate>()};
                     predicateGroup.Predicates.Add(Predicates.Field<Prospect>(s => s.ID, Operator.Eq, id));
 
                     conn.Open();
@@ -146,6 +141,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
             }
             catch (Exception ex)
             {
+                Console.WriteLine(ex);
                 return false;
             }
         }
@@ -157,42 +153,52 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <returns>List of  Prospect.</returns>
         public ProspectDTO GetProspects(bool isActive = true)
         {
-            var dbConnection = new DataAccessFactory();             using (var conn = dbConnection.CreateConnection()) 
+            var dbConnection = new DataAccessFactory();
+            using (var conn = dbConnection.CreateConnection())
             {
                 conn.Open();
                 IList<Prospect> prospects = conn.GetList<Prospect>().ToList();
-                var predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
+                var predicateGroup = new PredicateGroup
+                    {Operator = GroupOperator.And, Predicates = new List<IPredicate>()};
                 predicateGroup.Predicates.Add(Predicates.Field<City>(s => s.Active, Operator.Eq, true));
                 IList<City> cities = conn.GetList<City>(predicateGroup).ToList();
-                predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
+                predicateGroup = new PredicateGroup {Operator = GroupOperator.And, Predicates = new List<IPredicate>()};
                 predicateGroup.Predicates.Add(Predicates.Field<State>(s => s.Active, Operator.Eq, true));
                 IList<State> states = conn.GetList<State>(predicateGroup).ToList();
                 IList<Country> countries = conn.GetList<Country>().ToList();
-                predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
+                predicateGroup = new PredicateGroup {Operator = GroupOperator.And, Predicates = new List<IPredicate>()};
                 predicateGroup.Predicates.Add(Predicates.Field<Status>(s => s.Active, Operator.Eq, true));
                 IList<Status> status = conn.GetList<Status>(predicateGroup).ToList();
                 status = status.Where(k => k.ID != 5).ToList();
 
-                return new ProspectDTO { Propects = prospects, States = states.OrderBy(p => p.Description).ToList(), Statuses = status.OrderBy(p => p.Description).ToList(), Cities = cities.OrderBy(p => p.Description).ToList(), Countries = countries.OrderBy(p => p.Description).ToList() };
+                return new ProspectDTO
+                {
+                    Propects = prospects, States = states.OrderBy(p => p.Description).ToList(),
+                    Statuses = status.OrderBy(p => p.Description).ToList(),
+                    Cities = cities.OrderBy(p => p.Description).ToList(),
+                    Countries = countries.OrderBy(p => p.Description).ToList()
+                };
             }
         }
 
         /// <summary>
         /// Get  Prospect details based on  id.
         /// </summary>
-        /// <param name="ProspectId">Prospect's unique identifier</param>
+        /// <param name="id">Prospect's unique identifier</param>
         /// <returns>Prospect details.</returns>
         public ProspectDTO GetProspect(int id)
         {
-            var dbConnection = new DataAccessFactory();             using (var conn = dbConnection.CreateConnection()) 
+            var dbConnection = new DataAccessFactory();
+            using (var conn = dbConnection.CreateConnection())
             {
-                var predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
+                var predicateGroup = new PredicateGroup
+                    {Operator = GroupOperator.And, Predicates = new List<IPredicate>()};
                 predicateGroup.Predicates.Add(Predicates.Field<Prospect>(s => s.ID, Operator.Eq, id));
                 conn.Open();
                 var prospect = conn.Get<Prospect>(id);
                 IList<Prospect> p = new List<Prospect>();
                 p.Add(prospect);
-                return new ProspectDTO { Propects = p }; ;
+                return new ProspectDTO {Propects = p};
             }
         }
 
