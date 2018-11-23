@@ -32,7 +32,7 @@ $(document).ready(function () {
     $("#job-information").on("change", "#leads", function () {
         var optionSelected = $("option:selected", this);
         var valueSelected = this.value;
-        GetBuildingInformaiton(valueSelected);
+        GetBuildingInformation(valueSelected);
     })
     $("#job-information").on("change", "#address", function () {
         var optionSelected = $("option:selected", this);
@@ -49,15 +49,15 @@ function GetCustomerDetail(customerID) {
     ClearJobAddressInformation();
     if (contacts.length > 0) {
         $("#contact").val(contacts[0].Contact);
-        $("#leads").populateDropDownList(JobNS.leads, contacts[0].LeadID);
-        GetBuildingInformaiton(contacts[0].LeadID);
+        $("#leads").populateDropDownList(JobNS.leads, contacts[0].ID);
+        GetBuildingInformation(contacts[0].ID);
     }
     else {
         $("#contact").val("");
         ClearBuildingInformation();
     }
 }
-function GetBuildingInformaiton(leadID) {
+function GetBuildingInformation(leadID) {
     openModal();
     $.ajax({
         url: getWebsiteBaseUrl() + 'Job/GetBuildingInformation',
@@ -161,7 +161,7 @@ function populateJobInformationForm(data) {
     $("#address").change();
 
     GetCustomerDetail(data.job.LeadID);
-    GetBuildingInformaiton(data.job.LeadID);
+    GetBuildingInformation(data.job.LeadID);
     GetJobAddress(data.job.JobAddressID);
 
     $("#job-id").val(data.job.Id);
