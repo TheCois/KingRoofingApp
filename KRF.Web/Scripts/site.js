@@ -966,14 +966,6 @@ function editAssemblies(id) {
 // Product page
 function save_Assemblies(id) {
     var assemblyItems = new Array();
-    //$("#rightBlockrowHolder .row").each(function (index) {
-    //    var assemblyItem = new Object();
-    //    assemblyItem.ItemID = $(this).attr("data-ID");
-    //    assemblyItem.ItemID = $(this).attr("data-ItemID");
-    //    assemblyItem.ItemCode = $(this).find(".assColumn1").text();
-    //    assemblyItem.Quantity = $(this).find(".assColumn3 .myspin").attr("data-val");
-    //    assemblyItems.push(assemblyItem);
-    //});
     assemblyItems = aItemList;
     var token = $('[name=__RequestVerificationToken]').val();
     var assembly = new Object();
@@ -1019,19 +1011,10 @@ function save_Assemblies(id) {
         datatype: "json",
         data: { "assembly": JSON.stringify(assembly), "__RequestVerificationToken": token }
     }).done(function (data) {
-        //$("#_tab02 #gridHolder2 [data-val=" + data.id + "]").remove();
-
-        //$("<div class='inventoryRow' data-val=" + data.id + "><div class='inventoryColumn1'>" + assembly.Code + "</div>" +
-        //    "<div class='inventoryColumn2'>" + assembly.Name + "</div>" +
-        //    "<div class='inventoryColumn3' style='width: calc(46% - 11px)'>" + assembly.Description + "</div>" +
-        //    "<div class='inventoryColumn6'><a href='#' id='edit_3' class='edit_class inventoryColumn_linkBtn' onclick='editAssemblies(this.id)'>Edit</a></div>" +
-        //    "<div class='inventoryColumn7'> <a id='delete_3' class='delete_class inventoryColumn_linkBtn' onclick='deleteAssembly(this.id)' href='#'></a></div>" +
-        //    "</div>").appendTo($("#gridHolder2"));
         $("#addAssembly_popup").hide();
         $("#madals").hide();
         $("#assembly-form").attr("data-val", data.id);
         closeModal();
-        //window.location.href = getWebsiteBaseUrl() + 'Product/Index';
         $("#addItem").hide();
         $("#addAssembly").show();
         $('#grid-assembly').dataTable().fnDestroy();
@@ -1061,16 +1044,41 @@ function save_Assemblies(id) {
     });
 }
 
+function close_AssembliesWithoutSaving(id) {
+    openModal();
+    $("#addAssembly_popup").hide();
+    $("#madals").hide();
+    $("#assembly-form").attr("data-val", data.id);
+    closeModal();
+    $("#addItem").hide();
+    $("#addAssembly").show();
+    $('#grid-assembly').dataTable().fnDestroy();
+    $('#grid-assembly').dataTable({
+        "order": [[0, "asc"]],
+        "iDisplayLength": 100,
+        "sAjaxSource": getWebsiteBaseUrl() + "Product/GetAssemblies",
+        "bSort": true,
+        "aoColumns": [
+            { "sType": "html" },
+            { "sType": "html" },
+            { "sType": "html" },
+            { "sType": "html" },
+            { "sType": "html" },
+            { "sType": "html" }
+        ],
+        //"aLengthMenu": [[5, 10, 25, 50, 100, -1], [5, 10, 25, 50, 100, "All"]],
+        "fnServerData": function (sSource, aoData, fnCallback) {
+            aoData.push({ "name": "ID", "value": 5 });
+            $.getJSON(sSource, aoData, function (json) {
+                keyValue = json.keyValue;
+                fnCallback(json);
+            });
+        }
+    });
+}
+
 function save_AssembliesWithoutClose(id) {
     var assemblyItems = new Array();
-    //$("#rightBlockrowHolder .row").each(function (index) {
-    //    var assemblyItem = new Object();
-    //    assemblyItem.ItemID = $(this).attr("data-ID");
-    //    assemblyItem.ItemID = $(this).attr("data-ItemID");
-    //    assemblyItem.ItemCode = $(this).find(".assColumn1").text();
-    //    assemblyItem.Quantity = $(this).find(".assColumn3 .myspin").attr("data-val");
-    //    assemblyItems.push(assemblyItem);
-    //});
     assemblyItems = aItemList;
     var token = $('[name=__RequestVerificationToken]').val();
     var assembly = new Object();
@@ -1116,16 +1124,6 @@ function save_AssembliesWithoutClose(id) {
         datatype: "json",
         data: { "assembly": JSON.stringify(assembly), "__RequestVerificationToken": token }
     }).done(function (data) {
-        //$("#_tab02 #gridHolder2 [data-val=" + data.id + "]").remove();
-
-        //$("<div class='inventoryRow' data-val=" + data.id + "><div class='inventoryColumn1'>" + assembly.Code + "</div>" +
-        //    "<div class='inventoryColumn2'>" + assembly.Name + "</div>" +
-        //    "<div class='inventoryColumn3' style='width: calc(46% - 11px)'>" + assembly.Description + "</div>" +
-        //    "<div class='inventoryColumn6'><a href='#' id='edit_3' class='edit_class inventoryColumn_linkBtn' onclick='editAssemblies(this.id)'>Edit</a></div>" +
-        //    "<div class='inventoryColumn7'> <a id='delete_3' class='delete_class inventoryColumn_linkBtn' onclick='deleteAssembly(this.id)' href='#'></a></div>" +
-        //    "</div>").appendTo($("#gridHolder2"));
-        //$("#addAssembly_popup").hide();
-        //$("#madals").hide();
         closeModal();
         $("#assembly-form").attr("data-val", data.id);
         $('.alert-success').show();
@@ -1196,7 +1194,6 @@ $(document).on("click", "#grid-assembly .delete-assembly", function () {
                         }
                     });
                     closeModal();
-                    //window.location.href = getWebsiteBaseUrl() + 'Product/Index';
                 }
             });
         } else {

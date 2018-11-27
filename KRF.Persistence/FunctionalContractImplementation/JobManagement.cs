@@ -2624,10 +2624,10 @@ namespace KRF.Persistence.FunctionalContractImplementation
 
         public string GetJobAddress(int jobId)
         {
-            Job job = null;
-            KRF.Core.Entities.Sales.CustomerAddress custAdd = null;
-            KRF.Core.Entities.ValueList.City city = null;
-            State state = null;
+            Job job;
+            KRF.Core.Entities.Sales.CustomerAddress custAdd;
+            KRF.Core.Entities.ValueList.City city;
+            State state;
             var jobAddress = string.Empty;
             var dbConnection = new DataAccessFactory();
             using (var conn = dbConnection.CreateConnection())

@@ -2115,31 +2115,31 @@ namespace KRF.Web.Controllers
                         k.JobID,
                         k.JobAddress,
                         k.EmployeeID,
-                        EmployeeName = employDto.Employees.Where(p => p.EmpId == k.EmployeeID).FirstOrDefault() != null
-                            ? employDto.Employees.Where(p => p.EmpId == k.EmployeeID).FirstOrDefault().FirstName + " " +
-                              employDto.Employees.Where(p => p.EmpId == k.EmployeeID).FirstOrDefault().LastName
+                        EmployeeName = employDto.Employees.FirstOrDefault(p => p.EmpId == k.EmployeeID) != null
+                            ? employDto.Employees.FirstOrDefault(p => p.EmpId == k.EmployeeID).FirstName + " " +
+                              employDto.Employees.FirstOrDefault(p => p.EmpId == k.EmployeeID).LastName
                             : "",
                         Address = "",
                         k.PermitID,
-                        Permit = permits.Where(p => p.ID == k.PermitID).FirstOrDefault() != null
-                            ? permits.Where(p => p.ID == k.PermitID).FirstOrDefault().Description
+                        Permit = permits.FirstOrDefault(p => p.ID == k.PermitID) != null
+                            ? permits.FirstOrDefault(p => p.ID == k.PermitID).Description
                             : "",
                         k.Phone,
                         k.CalledDate,
                         k.ResultDate,
                         k.InspectionID,
-                        Inspection = permitInspection.Where(p => p.ID == k.InspectionID).FirstOrDefault() != null
-                            ? permitInspection.Where(p => p.ID == k.InspectionID).FirstOrDefault().Inspections
+                        Inspection = permitInspection.FirstOrDefault(p => p.ID == k.InspectionID) != null
+                            ? permitInspection.FirstOrDefault(p => p.ID == k.InspectionID).Inspections
                             : "",
                         k.StatusID,
-                        Status = permitStatus.Where(p => p.ID == k.StatusID).FirstOrDefault() != null
+                        Status = permitStatus.FirstOrDefault(p => p.ID == k.StatusID) != null
                             ? permitStatus.Where(p => p.ID == k.StatusID).FirstOrDefault().Description
                             : "",
                         k.InspectorID,
                         InspectorName =
-                            employDto.Employees.Where(p => p.EmpId == k.InspectorID).FirstOrDefault() != null
-                                ? employDto.Employees.Where(p => p.EmpId == k.InspectorID).FirstOrDefault().FirstName +
-                                  " " + employDto.Employees.Where(p => p.EmpId == k.InspectorID).FirstOrDefault()
+                            employDto.Employees.FirstOrDefault(p => p.EmpId == k.InspectorID) != null
+                                ? employDto.Employees.FirstOrDefault(p => p.EmpId == k.InspectorID).FirstName +
+                                  " " + employDto.Employees.FirstOrDefault(p => p.EmpId == k.InspectorID)
                                       .LastName
                                 : "",
                         k.Notes,
