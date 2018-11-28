@@ -306,7 +306,7 @@
             var itemsWithZeroQty = $.grep(EstimateNS.estimateItems, function (v) { return v.Quantity == 0 });
             if (itemsWithZeroQty.length > 0) {
                 $('.alert-danger').show();
-                $('.alert-danger').find('#dvError').text('Items with 0 quantity is not allowed. Please enter at least one quantity for item.');
+                $('.alert-danger').find('#dvError').text('Items with 0 quantity are not allowed. Please enter at least one quantity for item.');
                 return;
             }
             openModal();
@@ -345,7 +345,7 @@
             var itemsWithZeroQty = $.grep(EstimateNS.estimateItems, function (v) { return v.Quantity == 0 });
             if (itemsWithZeroQty.length > 0) {
                 $('.alert-danger').show();
-                $('.alert-danger').find('#dvError').text('Items with 0 quantity is not allowed. Please enter at least one quantity for item.');
+                $('.alert-danger').find('#dvError').text('Items with 0 quantity are not allowed. Please enter at least one quantity for item.');
                 return;
             }
             openModal();

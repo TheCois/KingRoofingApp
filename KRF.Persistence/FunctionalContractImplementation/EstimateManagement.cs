@@ -8,6 +8,7 @@ using System.Text;
 using System.Transactions;
 using Dapper;
 using DapperExtensions;
+using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
 using KRF.Core.DTO.Sales;
@@ -679,17 +680,44 @@ namespace KRF.Persistence.FunctionalContractImplementation
 
                                     case "PText":
                                     {
-                                        var list = new StringBuilder();
+                                        var numberingPartId = Guid.NewGuid().ToString();
+                                        NumberingDefinitionsPart numberingPart = wordDoc.MainDocumentPart.NumberingDefinitionsPart;
+                                        if (numberingPart == null)
+                                        {
+                                            numberingPart =
+                                                wordDoc.MainDocumentPart.AddNewPart<NumberingDefinitionsPart>(
+                                                    numberingPartId);
+                                        }
+
+                                        var element =
+                                            new Numbering(
+                                                new AbstractNum(
+                                                    new Level(
+                                                        new NumberingFormat {Val = NumberFormatValues.Ordinal}
+                                                    ) {LevelIndex = 0}
+                                                ) {AbstractNumberId = 1},
+                                                new NumberingInstance(
+                                                    new AbstractNumId {Val = 1}
+                                                ) {NumberID = 1});
+
+                                        element.Save(numberingPart);
                                         var count = 1;
                                         foreach (var i in assemblies)
                                         {
                                             if (!string.IsNullOrWhiteSpace(i.ProposalText))
                                             {
-                                                list.AppendLine((count++).ToString() + ". " + i.ProposalText);
-                                            }
+                                                var p = new Paragraph(
+                                                    new ParagraphProperties(
+                                                        new NumberingProperties(
+                                                            new NumberingLevelReference {Val = 0},
+                                                            new NumberingId {Val = 1})),
+                                                    new Run(
+                                                        new RunProperties(),
+                                                        new Text($"{count++}. {i.ProposalText}")
+                                                            {Space = SpaceProcessingModeValues.Preserve}));
+                                                bookmarkText.AppendChild(p);
+                                            }                                             
                                         }
-
-                                        bookmarkText.GetFirstChild<Text>().Text = list.ToString();
                                         break;
                                     }
 
