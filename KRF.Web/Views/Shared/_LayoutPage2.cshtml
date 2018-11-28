@@ -140,7 +140,7 @@
             <div class="btnHolders">
                 @if (KRF.Web.Common.Common.IsUserHasBothViewAndEditPermission(KRF.Web.SessionManager.RoleId, (int)KRF.Core.Enums.PageType.Job))
                 {
-                    @Html.ActionLink("Jobs", "Index", "Job", null, new { id = "jobs-link", @class = "linkBtn" })
+                    @Html.ActionLink("Projects", "Index", "Job", null, new { id = "jobs-link", @class = "linkBtn" })
                 }
                 @if (KRF.Web.Common.Common.IsUserHasBothViewAndEditPermission(KRF.Web.SessionManager.RoleId, (int)KRF.Core.Enums.PageType.Item) || KRF.Web.Common.Common.IsUserHasBothViewAndEditPermission(KRF.Web.SessionManager.RoleId, (int)KRF.Core.Enums.PageType.Assembly))
                 {
