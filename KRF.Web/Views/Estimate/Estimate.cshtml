@@ -338,6 +338,10 @@
             var estimateData = {};
             estimateData.Estimate = populateEstimateViewModel();
             estimateData.EstimateItem = EstimateNS.estimateItems;
+            if (estimateData.EstimateItem.length === 0) {
+                estimateData.Estimate.TotalMaterialCost = 0.00;
+                estimateData.Estimate.TotalLaborCost = 0.00;                
+            }
             var itemsWithZeroQty = $.grep(EstimateNS.estimateItems, function (v) { return v.Quantity == 0 });
             if (itemsWithZeroQty.length > 0) {
                 $('.alert-danger').show();
@@ -477,8 +481,6 @@
                 (day < 10 ? '0' : '') + day;
 
             var uploaddatetime = output;
-
-            //alert(uploaddatetime);
 
             $("#estimate-document #id").val(id);
             $("#estimate-document #description").val(description.trim());
