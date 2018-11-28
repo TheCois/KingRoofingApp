@@ -142,7 +142,6 @@ namespace KRF.Persistence.FunctionalContractImplementation
                     conn.Open();
                     var predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
                     predicateGroup.Predicates.Add(Predicates.Field<Estimate>(s => s.ID, Operator.Eq, estimateId));
-                    conn.Open();
                     var estimate = conn.Get<Estimate>(estimateId);
                     var estimateStatus = estimate.Status;
                     conn.Delete<Estimate>(predicateGroup);
