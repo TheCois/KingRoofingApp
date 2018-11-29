@@ -273,7 +273,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
                 return new LeadDTO
                 {
                     Leads = leads,
-                    Cities = cities.OrderBy(p => p.Description).ToList(),
+                    Cities = cities.OrderBy(p => p.ID).ToList(),
                     States = states.OrderBy(p => p.Description).ToList(),
                     CustomerAddress = customerAddress
                 };

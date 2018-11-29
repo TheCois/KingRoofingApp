@@ -270,7 +270,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
 
                 return new EmployeeDTO
                 {
-                    Cities = cities.OrderBy(t => t.Description).ToList(),
+                    Cities = cities.OrderBy(t => t.ID).ToList(),
                     States = states.OrderBy(t => t.Description).ToList(),
                     Employees = p,
                     Territories = territories.Where(t => t.Active).OrderBy(q => q.TerritoryDesc).ToList(),
@@ -308,7 +308,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
                 IList<State> states = conn.GetList<State>(predicateGroup).ToList();
                 return new EmployeeDTO
                 {
-                    Cities = cities.OrderBy(t => t.Description).ToList(),
+                    Cities = cities.OrderBy(t => t.ID).ToList(),
                     States = states.OrderBy(t => t.Description).ToList(),
                     Employees = p,
                     Territories = territories.Where(t => t.Active).OrderBy(q => q.TerritoryDesc).ToList(),
@@ -341,7 +341,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
                 IList<State> states = conn.GetList<State>(predicateGroup).ToList();
                 return new EmployeeDTO
                 {
-                    Cities = cities.OrderBy(p => p.Description).ToList(),
+                    Cities = cities.OrderBy(p => p.ID).ToList(),
                     States = states.OrderBy(p => p.Description).ToList(),
                     Employees = employees,
                     Territories = territories.Where(t => t.Active).OrderBy(q => q.TerritoryDesc).ToList(),

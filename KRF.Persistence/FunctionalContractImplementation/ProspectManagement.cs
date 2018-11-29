@@ -175,7 +175,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
                 {
                     Propects = prospects, States = states.OrderBy(p => p.Description).ToList(),
                     Statuses = status.OrderBy(p => p.Description).ToList(),
-                    Cities = cities.OrderBy(p => p.Description).ToList(),
+                    Cities = cities.OrderBy(p => p.ID).ToList(),
                     Countries = countries.OrderBy(p => p.Description).ToList()
                 };
             }
