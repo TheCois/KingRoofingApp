@@ -431,6 +431,36 @@ li a:hover:before, li a:focus:before, li a:active:before {
 .edit a:hover:before, .edit a:focus:before, .edit a:active:before, .edit a:hover:after, .edit a:focus:after, .edit a:active:after {
     background: none repeat scroll 0 0 #730800;
 }
+.clone a:before {
+    content: '';
+    position: absolute;
+    margin-left: 4px;
+    margin-top: 7px;
+    border-radius: 1px;
+    border: solid 1px currentColor;
+    left: 2px;
+    width: 11px;
+    height: 9px;
+    border-left: solid 3px white;
+    border-right: solid 3px white;
+    background-color: currentColor;
+}
+.clone a:after {
+    content: '';
+    position: absolute;
+    margin-left: 4px;
+    margin-top: 7px;
+    border-radius: 1px;
+    left: 3px;
+    width: 4px;
+    height: 4px;
+    border: 1px solid;
+    transform: rotate(-45deg);
+}
+.clone a:hover:before, .clone a:focus:before, .clone a:active:before, .clone a:hover:after, .clone a:focus:after, .clone a:active:after {
+    background: none repeat scroll 0 0 #730800;
+}
+
 .download a:before {
     -moz-border-bottom-colors: none;
     -moz-border-left-colors: none;

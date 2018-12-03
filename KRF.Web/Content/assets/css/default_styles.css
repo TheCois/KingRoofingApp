@@ -1882,7 +1882,7 @@ html {
     left:0;
     right:0;
     bottom:0;
-    top: calc(50%-200px);
+    top: calc(50% - 200px);
     margin: auto;
     background: #fff;
 }
@@ -2156,7 +2156,7 @@ html {
 }
 
 .link, .delete-customer, .edit-customer, .delete-lead, .edit-lead,
-.delete-prospect, .edit-prospect, .edit-item, .edit-assembly, .delete-item, .delete-assembly, .delete-cust-addr, .edit-cust-addr {
+.delete-prospect, .edit-prospect, .edit-item, .clone-item, .clone-estimate, .edit-assembly, .delete-item, .delete-assembly, .delete-cust-addr, .edit-cust-addr {
     cursor: pointer;
     color: #015cb5;
 }

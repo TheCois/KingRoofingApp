@@ -284,7 +284,7 @@ function productReady() {
 
         var isNew = "n";
         if (item.id == "0" || item.id == "")
-            isNew = "y"
+            isNew = "y";
         openModal();
         $.ajax({
             url: getWebsiteBaseUrl() + 'Product/SaveItem',
@@ -875,6 +875,42 @@ $(document).on("click", "#grid-item .edit-item", function () {
     });
 });
 
+$(document).on("click", "#grid-item .clone-item", function () {
+    $('.alert-success').hide();
+    $('.alert-success').find('#dvSuccessItem').text('');
+    $('#dangerItem').hide();
+    $('#dangerItem').find('#dvErrorItem').html('');
+    var id = new String($(this).attr("data-val")).split(',')[0];
+    var token = $('[name=__RequestVerificationToken]').val();
+
+    openModal();
+    $.ajax({
+        url: getWebsiteBaseUrl() + 'Product/GetItem',
+        type: 'POST',
+        data: { __RequestVerificationToken: token, id: id },
+        success: function (data) {
+            $("#itemForm").attr("data-val", id);
+            $("#Item_Code").val("");
+            $("#Name").val(data.item.Name);
+            $("#myNotes").text(data.item.Description);
+
+            $("#item-type").populateDropDownList(Product.itemTypes, data.item.ItemTypeId);
+            $("#Category_pop").populateDropDownList(Product.categories, data.item.CategoryId);
+            $("#Manufacturer_pop").populateDropDownList(Product.manufacturers, data.item.ManufacturerId);
+            $("#Measure_pop").populateDropDownList(Product.unitsOfMeasure, data.item.UnitOfMeasureId);
+
+            $("#Price").val(data.item.Price);
+            $("#chkIsInventoryItem").prop("checked", data.item.IsInventoryItem);
+
+            $("#addItem_popup").show();
+
+            $("#madals").css({ "height": $(document).height(), "width": $(document).width() });
+            $("#madals").show();
+            closeModal();
+        }
+    });
+});
+
 $(document).on("click", "#grid-item .delete-item", function () {
     var id = new String($(this).attr("data-val")).split(',')[0];
     var token = $('[name=__RequestVerificationToken]').val();
@@ -1048,7 +1084,6 @@ function close_AssembliesWithoutSaving(id) {
     openModal();
     $("#addAssembly_popup").hide();
     $("#madals").hide();
-    $("#assembly-form").attr("data-val", data.id);
     closeModal();
     $("#addItem").hide();
     $("#addAssembly").show();
@@ -1827,7 +1862,7 @@ $(document).on("blur", "#form-estimate #priceAdjDisplay", function () {
 
 $(document).on("click", "#form-estimate #add-item", function () {
     // Get selected AssemblyItem object
-    var itemSelectedID = parseInt($("#items option:selected").val())
+    var itemSelectedID = parseInt($("#items option:selected").val());
     // Create estimate item object
     EstimateItem = {
         ID: 0,
