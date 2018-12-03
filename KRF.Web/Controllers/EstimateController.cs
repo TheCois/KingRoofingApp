@@ -87,6 +87,7 @@ namespace KRF.Web.Controllers
                     select new[]
                     {
                         "<span class='edit-customer edit-estimate' data-val=" + p.ID + "><ul><li class='edit'><a href='#non'>View</a></li></ul></span>",
+                        "<span class='edit-customer clone-estimate' data-val=" + p.ID + "><ul><li class='clone'><a href='#non'>Clone</a></li></ul></span>",
                         p.ID.ToString(),
                         p.Name,
                         roofType,
@@ -112,6 +113,7 @@ namespace KRF.Web.Controllers
                     select new[]
                     {
                         "<span class='edit-customer edit-estimate' data-val=" + p.ID + "><ul><li class='edit'><a href='#non'>View</a></li></ul></span>",
+                        "<span class='edit-customer clone-estimate' data-val=" + p.ID + "><ul><li class='clone'><a href='#non'>Clone</a></li></ul></span>",
                         p.ID.ToString(),
                         p.Name,
                         roofType,

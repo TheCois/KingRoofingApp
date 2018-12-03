@@ -17,6 +17,7 @@
                         {
                             <th></th>
                         }
+                        <th></th>
                         <th>ID</th>
                         <th>Name</th>
                         <th>Roof Type</th>
@@ -51,20 +52,11 @@
         }
 
         $('#grid-estimates').dataTable({
-            "order": [[1, "desc"]],
+            "order": [[2, "desc"]],
             "iDisplayLength": 100,
-            //"sAjaxSource": '@Url.Action("GetEstimates", "Estimate")',
-            //"fnServerData": function (sSource, aoData, fnCallback) {
-            //    aoData.push({ "customerID": customerID});
-            //    $.getJSON(sSource, aoData, function (json) {
-            //        customer = json.customers;
-            //        status = json.status;
-            //        fnCallback(json);
-            //    });
-            //},
             columnDefs: [
-                { className: "dt-left", targets: [0, 1, 2, 3, 4, 7, 8] },
-                { className: "dt-right", targets: [5, 6] }
+                { className: "dt-left", targets: [0, 1, 2, 3, 4, 5, 8, 9] },
+                { className: "dt-right", targets: [6, 7] }
             ],
             "ajax": {
                 'type': 'GET',
@@ -92,6 +84,32 @@
                 success: function (data) {
                     if ($("#cust-estimate").length > 0) {
 
+                        $("#cust-estimate").html(data);
+                    }
+                    else {
+                        $("#est").html(data);
+                    }
+
+                    $("#list-customer").hide();
+                    $("#madals").hide();
+                    $("#customer-form-popup").hide();
+
+                    $("#list-estimate").hide();
+                    closeModal();
+                }
+            });
+
+        });
+        $("#grid-estimates").on("click", ".clone-estimate", function () {
+
+            var id = $(this).attr("data-val");
+            openModal();
+            $.ajax({
+                url: '@Url.Action("Estimate", "Estimate")',
+                type: 'POST',
+                data: { id: id },
+                success: function (data) {
+                    if ($("#cust-estimate").length > 0) {
                         $("#cust-estimate").html(data);
                     }
                     else {
