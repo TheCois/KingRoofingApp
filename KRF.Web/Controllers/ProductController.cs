@@ -62,9 +62,8 @@ namespace KRF.Web.Controllers
                 iTotalDisplayRecords = items.Count,
                 aaData = (from p in items
                           select new[] {
-                              "<span class='edit-item' data-val=" + p.Id + "><ul><li class='edit'><a href='#non'>View</a></li></ul></span>",
-                              "<span class='clone-item' data-val=" + p.Id + "><ul><li class='clone'><a href='#non'>Clone</a></li></ul></span>",
-                              p.ItemCode,
+                              "<span class='edit-item' data-val=" + p.Id + "><ul><li class='edit'><a href='#non'></a></li></ul></span>",
+                              "<a class='clone-item' data-val=" + p.Id + " href='#non'>" + p.ItemCode + "</a>",
                               p.Name,
                               p.Category,
                               p.IsInventoryItem ? "YES" : "",

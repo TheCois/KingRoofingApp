@@ -102,8 +102,7 @@ namespace KRF.Web.Controllers
             var customers = jobDto.Leads.Where(k => k.LeadStage == (int) LeadStageType.Customer)
                 .Select(k => new {k.ID, Description = k.FirstName + " " + k.LastName, Contact = k.LeadName})
                 .OrderBy(k => k.Description).ToList();
-            var leads = jobDto.Leads.Where(k => k.LeadStage == (int) LeadStageType.Lead)
-                .Where(p => !string.IsNullOrEmpty(p.LeadName)).Select(k => new {k.ID, Description = k.LeadName ?? ""})
+            var leads = jobDto.Leads.Where(p => !string.IsNullOrEmpty(p.LeadName)).Select(k => new {k.ID, Description = $"{k.LeadName} - {k.FirstName} {k.LastName}" ?? ""})
                 .ToList();
             var job = jobDto.Jobs[0];
             var leadRepo = ObjectFactory.GetInstance<ILeadManagementRepository>();

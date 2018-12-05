@@ -890,7 +890,7 @@ $(document).on("click", "#grid-item .clone-item", function () {
         data: { __RequestVerificationToken: token, id: id },
         success: function (data) {
             $("#itemForm").attr("data-val", 0); // cloning (so behave as if new item)
-            $("#Item_Code").val("");
+            $("#Item_Code").val(data.item.ItemCode);
             $("#Name").val(data.item.Name);
             $("#myNotes").text(data.item.Description);
 

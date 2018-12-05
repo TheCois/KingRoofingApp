@@ -291,7 +291,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
 
                 estimateDto.EstimateItems = conn.GetList<EstimateItem>(predicateGroup).ToList();
 
-                estimateDto.Leads = conn.GetList<Lead>().Where(l => l.LeadStage == (int)LeadStageType.Lead).ToList();
+                estimateDto.Leads = conn.GetList<Lead>().ToList();
                 estimateDto.Customers = conn.GetList<Lead>().Where(l => l.LeadStage == (int)LeadStageType.Customer).ToList();
                 estimateDto.CustomerAddress = conn.GetList<CustomerAddress>().ToList();
                 predicateGroup = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };

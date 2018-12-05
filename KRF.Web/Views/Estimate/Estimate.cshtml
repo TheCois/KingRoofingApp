@@ -45,19 +45,10 @@
                         </div>
                         <div class="row">
                             <div class="colLeft" style="width:200px">
-                                <div style="display: inline-block">Lead<input type="radio" name="rdbLeadCustomer" id="rdbLead" value="1" checked="checked"  /></div>
-                                <div style="display: inline-block">Customer<input type="radio" name="rdbLeadCustomer" id="rdbCustomer" value="2" /></div>
+                                <div class="colLeft" style="width:200px">Lead</div>
                             </div>
                             <div class="colRight" style="width:260px" id="leadDdlDiv">
                                 <select id="lead" class="inputText">
-                                    <option value="volvo">Please select</option>
-                                    <option value="saab">State1</option>
-                                    <option value="mercedes">State2</option>
-                                    <option value="audi">State3</option>
-                                </select>
-                            </div>
-                            <div class="colRight" style="display: none; width:260px" id="customerDdlDiv">
-                                <select id="customer" class="inputText">
                                     <option value="volvo">Please select</option>
                                     <option value="saab">State1</option>
                                     <option value="mercedes">State2</option>
@@ -519,19 +510,6 @@
 
         $("#estimate-form").on("click", "#create-proposal", function() {
             window.location = '@Url.Action("CreateProposalDocument", "Estimate")?estimateID=' + ID;
-        });
-
-        $("input[name$='rdbLeadCustomer']").click(function () {
-            var value = $(this).val();
-
-            if (value == 1) {
-                $("#customerDdlDiv").hide();
-                $("#leadDdlDiv").show();
-            }
-            else {
-                $("#leadDdlDiv").hide();
-                $("#customerDdlDiv").show();
-            }
         });
     });
 </script>

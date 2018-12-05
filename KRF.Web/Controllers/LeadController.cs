@@ -18,7 +18,7 @@ namespace KRF.Web.Controllers
         public ActionResult Index()
         {
             var leadRepo = ObjectFactory.GetInstance<ILeadManagementRepository>();
-            var leads = leadRepo.GetLeads(GetNonConvertedLeadsPredicate());
+            var leads = leadRepo.GetLeads(GetAll());
             TempData["Leads"] = leads;
             return View();
         }
@@ -79,6 +79,11 @@ namespace KRF.Web.Controllers
         private Func<Lead, bool> GetNonConvertedLeadsPredicate()
         {
             return x => x.LeadStage == (int)LeadStageType.Lead && x.Status != (int)LeadStatus.ConvertToCustomer && x.Status != (int)LeadStatus.ConvertToEstimate;
+        }
+
+        private Func<Lead, bool> GetAll()
+        {
+            return x => true;
         }
 
         public ActionResult GetLead(int id)

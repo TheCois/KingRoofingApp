@@ -117,15 +117,11 @@
                 } *@
                 @if (KRF.Web.Common.Common.IsUserHasBothViewAndEditPermission(KRF.Web.SessionManager.RoleId, (int)KRF.Core.Enums.PageType.Lead))
                 {
-                    @Html.ActionLink("Lead", "Index", "Lead", null, new { id = "lead-link", @class = "linkBtn" })
-                }
-                @if (KRF.Web.Common.Common.IsUserHasBothViewAndEditPermission(KRF.Web.SessionManager.RoleId, (int)KRF.Core.Enums.PageType.Customer))
-                {
-                    @Html.ActionLink("Customer", "Index", "Customer", null, new { id = "customer-link", @class = "linkBtn" })
+                    @Html.ActionLink("Leads", "Index", "Lead", null, new { id = "lead-link", @class = "linkBtn" })
                 }
                 @if (KRF.Web.Common.Common.IsUserHasBothViewAndEditPermission(KRF.Web.SessionManager.RoleId, (int)KRF.Core.Enums.PageType.Estimate))
                 {
-                    @Html.ActionLink("Estimates / Proposal", "EstimateIndex", "Estimate", null, new { id = "estimate-link", @class = "linkBtn" })
+                    @Html.ActionLink("Estimates / Proposals", "EstimateIndex", "Estimate", null, new { id = "estimate-link", @class = "linkBtn" })
                 }
             </div>
             <div class="clear_fix"></div>
