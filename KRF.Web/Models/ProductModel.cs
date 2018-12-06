@@ -2,6 +2,7 @@
 using KRF.Core.Entities.Sales;
 using System.Collections.Generic;
 using System.Linq;
+using NLog;
 using ProductNS = KRF.Core.Entities.Product;
 using ValueListNS = KRF.Core.Entities.ValueList;
 
@@ -108,8 +109,16 @@ namespace KRF.Web.Models
 
     public static class ModelData
     {
+        private static readonly Logger logger_;
+
+        static ModelData()
+        {
+            logger_ = LogManager.GetCurrentClassLogger();
+        }
+        
         public static IList<Item> Items(ProductDTO product)
         {
+            logger_.Info("Entering ModelData.Items(ProductDTO)");
             IList<Item> items = new List<Item>();
             //var itemTypesKeyValue = product.ItemTypes.ToDictionary(k => k.Id);
 
@@ -124,13 +133,14 @@ namespace KRF.Web.Models
                          Description = m.Code + "[" + m.Name + " (" + (product.ItemTypes.FirstOrDefault(p => p.Id == m.ItemTypeId) != null ? product.ItemTypes.FirstOrDefault(p => p.Id == m.ItemTypeId).Description.Trim() : "") + ")" + "]",
                          Name = m.Name,
                          Price = m.Price.ToString(),
-                         Category = m.CategoryId > 0 ? product.Categories.Where(k => k.Id == m.CategoryId).First().Name : "nil",
-                         Manufacturer = m.ManufacturerId > 0 ? product.Manufacturers.Where(k => k.Id == m.ManufacturerId).First().Name : "nil",
-                         UnitOfMeasure = m.UnitOfMeasureId > 0 ? product.UnitsOfMeasure.Where(k => k.Id == m.UnitOfMeasureId).First().Name : "nil",
+                         Category = m.CategoryId > 0 ? product.Categories.First(k => k.Id == m.CategoryId).Name : "nil",
+                         Manufacturer = m.ManufacturerId > 0 ? product.Manufacturers.First(k => k.Id == m.ManufacturerId).Name : "nil",
+                         UnitOfMeasure = m.UnitOfMeasureId > 0 ? product.UnitsOfMeasure.First(k => k.Id == m.UnitOfMeasureId).Name : "nil",
                          IsInventoryItem = m.IsInventoryItem
                      }
                      ).ToList();
 
+            logger_.Info("Leaving ModelData.Items(ProductDTO)");
             return items;
         }
 

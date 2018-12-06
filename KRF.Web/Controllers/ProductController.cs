@@ -5,12 +5,19 @@ using System.Web.Mvc;
 using KRF.Core.Repository;
 using ProductNS = KRF.Core.Entities.Product;
 using KRF.Core.DTO.Product;
+using NLog;
 
 namespace KRF.Web.Controllers
 {
     [CustomActionFilter.CustomActionFilter]
     public class ProductController : BaseController
     {
+        private Logger logger_;
+
+        public ProductController()
+        {
+            logger_ = LogManager.GetCurrentClassLogger();
+        }
         //
         // GET: /Product/
 
@@ -26,6 +33,7 @@ namespace KRF.Web.Controllers
         [ValidateAntiForgeryToken]
         public JsonResult Products()
         {
+            logger_.Info("Entering ProductController.Products()");
             var product = (ProductDTO)TempData["Product"];
 
             var itemTypes = product.ItemTypes;
@@ -33,7 +41,7 @@ namespace KRF.Web.Controllers
             var manufacturers = product.Manufacturers;
             var unitOfMeasures = product.UnitsOfMeasure;
 
-            return Json(new
+            var ret = Json(new
             {
                 items = ModelData.Items(product).Select(k => new { ID = k.Id, k.Description }),
                 itemTypes = ModelData.ItemTypes(itemTypes),
@@ -43,10 +51,13 @@ namespace KRF.Web.Controllers
                 unitsOfMeasure = ModelData.UnitsOfMeasure(unitOfMeasures),
                 divisions = ModelData.Divisions()
             });
+            logger_.Info("Leaving ProductController.Products()");
+            return ret;
         }
 
         public ActionResult GetItems(jQueryDataTableParamModel param)
         {
+            logger_.Info("Entering ProductController.GetItems()");
             var itemRepository = ObjectFactory.GetInstance<IItemManagementRepository>();
             var product = itemRepository.GetProduct();
             var items = ModelData.Items(product);
@@ -55,7 +66,7 @@ namespace KRF.Web.Controllers
             var unitOfMeasures = product.UnitsOfMeasure;
             //var assemblies = product.Assemblies;
 
-            return Json(new
+            var ret = Json(new
             {
                 param.sEcho,
                 iTotalRecords = items.Count,
@@ -81,6 +92,8 @@ namespace KRF.Web.Controllers
                     divisions = ModelData.Divisions()
                 }
             }, JsonRequestBehavior.AllowGet);
+            logger_.Info("Leaving ProductController.GetItems()");
+            return ret;
         }
 
         public ActionResult GetAssemblies(jQueryDataTableParamModel param)

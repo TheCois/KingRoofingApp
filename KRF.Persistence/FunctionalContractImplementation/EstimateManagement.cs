@@ -28,7 +28,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
 
         public EstimateManagement()
         {
-            logger_ = NLog.LogManager.GetCurrentClassLogger();
+            logger_ = LogManager.GetCurrentClassLogger();
         }
         
         public int Create(Estimate estimate, IList<EstimateItem> estimateItem)

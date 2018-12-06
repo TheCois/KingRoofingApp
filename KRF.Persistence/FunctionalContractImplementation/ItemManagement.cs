@@ -8,11 +8,18 @@ using KRF.Core.Entities.ValueList;
 using KRF.Core.DTO.Product;
 using System.Data;
 using System.Transactions;
+using NLog;
 
 namespace KRF.Persistence.FunctionalContractImplementation
 {
     public class ItemManagement : IItemManagement
     {
+        private Logger logger_;
+
+        public ItemManagement()
+        {
+            logger_ = LogManager.GetCurrentClassLogger();
+        }
         /// <summary>
         /// Create an item
         /// </summary>
@@ -218,6 +225,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
         /// <returns> Items and its dependent value List objects and Assembly list</returns>
         public ProductDTO GetProduct()
         {
+            logger_.Info("Entering ItemManagement.GetProduct()");
             var product = new ProductDTO();
             var dbConnection = new DataAccessFactory();
             using (var conn = dbConnection.CreateConnection())
@@ -236,6 +244,7 @@ namespace KRF.Persistence.FunctionalContractImplementation
                 product.UnitsOfMeasure = unitOfMeasures.Where(p => p.Active).ToList();
                 product.Items = items.OrderBy(p => p.Code).ToList();
                 product.Assemblies = assemblies;
+                logger_.Info("Leaving ItemManagement.GetProduct()");
                 return product;
             }
         }
